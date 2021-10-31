@@ -1,20 +1,3 @@
-/*
-  This example requires Tailwind CSS v2.0+ 
-  
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, ShoppingBagIcon, XIcon } from "@heroicons/react/outline";
@@ -38,20 +21,7 @@ const sortOptions = [
   { name: "Price: Low to High", href: "#" },
   { name: "Price: High to Low", href: "#" },
 ];
-const filters = [
-  {
-    id: "category",
-    name: "Category",
-    options: [
-      { value: "tees", label: "Tees" },
-      { value: "crewnecks", label: "Crewnecks" },
-      { value: "hats", label: "Hats" },
-      { value: "bundles", label: "Bundles" },
-      { value: "carry", label: "Carry" },
-      { value: "objects", label: "Objects" },
-    ],
-  },
-];
+
 const products1 = [
   {
     id: 1,
