@@ -1,190 +1,344 @@
-import * as React from "react";
-import Image from "next/image";
-import DungeonImg from "../public/img/cave.jpeg";
-import MarketplaceLogo from "../public/img/treasure-marketplace-logo.png";
+import { Fragment, useState } from "react";
+import { Dialog, Transition, Listbox } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
+import { SelectorIcon, CheckIcon } from "@heroicons/react/solid";
+import bottomlessElixir from "../public/img/gifs/Bottomless-Elixir.gif";
+import smolBrains from "../public/img/smolbrains.png";
+import legions from "../public/img/All-Class14.png";
 
-const IMGS = [
-  {
-    src: "/img/1.png",
-    type: "Ancient Relic",
-  },
-  {
-    src: "/img/2.png",
-    type: "Bottomless Elixir",
-  },
-  {
-    src: "/img/3.png",
-    type: "Grin",
-  },
-  {
-    src: "/img/4.png",
-    type: "Immovable Stone",
-  },
-  {
-    src: "/img/5.png",
-    type: "Castle",
-  },
-  {
-    src: "/img/6.png",
-    type: "Bait for Monsters",
-  },
-  {
-    src: "/img/7.png",
-    type: "Thread of Divine Silk",
-  },
-  {
-    src: "/img/8.png",
-    type: "Ancient Relic",
-  },
-  {
-    src: "/img/9.png",
-    type: "Bottomless Elixir",
-  },
-  {
-    src: "/img/10.png",
-    type: "Grin",
-  },
-  {
-    src: "/img/11.png",
-    type: "Immovable Stone",
-  },
-  {
-    src: "/img/12.png",
-    type: "Castle",
-  },
-  {
-    src: "/img/13.png",
-    type: "Bait for Monsters",
-  },
-  {
-    src: "/img/14.png",
-    type: "Thread of Divine Silk",
-  },
-  {
-    src: "/img/15.png",
-    type: "Ancient Relic",
-  },
-  {
-    src: "/img/16.png",
-    type: "Bottomless Elixir",
-  },
-  {
-    src: "/img/17.png",
-    type: "Grin",
-  },
-  {
-    src: "/img/18.png",
-    type: "Immovable Stone",
-  },
+const date = [
+  { id: 1, expireDate: "1 Week" },
+  { id: 2, expireDate: "2 Weeks" },
+  { id: 3, expireDate: "1 Month" },
+  { id: 4, expireDate: "3 Months" },
 ];
 
-const Inventory = () => {
-  const [select, onSelect] = React.useState<typeof IMGS[number]>(null);
-  return (
-    <div
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `url("${DungeonImg.src}")`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
-        backgroundBlendMode: "darken",
-      }}
-    >
-      <div className="absolute filter invert left-4 top-4">
-        <Image
-          src={MarketplaceLogo.src}
-          width={MarketplaceLogo.width / 3}
-          height={MarketplaceLogo.height / 3}
-        />
-      </div>
+const tabs = [
+  { name: "Collected", href: "#", current: true },
+  { name: "Listed", href: "#", current: false },
+  { name: "Sold", href: "#", current: false },
+];
+const files = [
+  {
+    name: "Bottomless Elixir",
+    collection: "Treasures",
+    source: bottomlessElixir.src,
+  },
+  {
+    name: "Smol Brains #32",
+    collection: "Smol Brains",
+    source: smolBrains.src,
+  },
+  {
+    name: "All-Class 14",
+    collection: "Legions",
+    source: legions.src,
+  },
+] as const;
 
-      <div className="max-w-7xl w-full mx-auto flex items-center justify-center min-h-screen">
-        <div
-          className="p-1 relative flex border-4 border-white"
-          style={{
-            boxShadow: "12px 12px 2px 1px rgba(255, 255, 255, 0.3)",
-          }}
-        >
-          <div className="p-6 flex-1 bg-brown-600 border-8 border-brown-800 mr-2">
-            <div className="grid grid-flow-col auto-cols-min grid-rows-5 gap-3 justify-center">
-              {IMGS.map((img) => (
-                <div className="border-2 border-brown-300 p-1 bg-brown-700">
-                  <button
-                    className="aspect-w-1 aspect-h-1 w-24 h-24 border-2 bg-brown-100 relative p-2 shadow-2xl hover:shadow-none"
-                    onClick={() => onSelect(img)}
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const Inventory = () => {
+  const [selectedDate, setSelectedDate] = useState(date[3]);
+  const [drawerProps, setDrawerProps] = useState<{
+    isOpen: boolean;
+    selectedNft: null | typeof files[number];
+  }>({
+    isOpen: false,
+    selectedNft: null,
+  });
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex items-stretch overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
+          <div className="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="flex-1 text-2xl font-bold text-gray-900">
+              Inventory
+            </h1>
+
+            <div className="mt-3 sm:mt-2">
+              <div className="sm:hidden">
+                <label htmlFor="tabs" className="sr-only">
+                  Select a tab
+                </label>
+                <select
+                  id="tabs"
+                  name="tabs"
+                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                  defaultValue="Collected"
+                >
+                  <option>Collected</option>
+                  <option>Listed</option>
+                  <option>Sold</option>
+                </select>
+              </div>
+              <div className="hidden sm:block">
+                <div className="flex items-center border-b border-gray-200">
+                  <nav
+                    className="flex-1 -mb-px flex space-x-6 xl:space-x-8"
+                    aria-label="Tabs"
                   >
-                    <Image src={img.src} width={96} height={96} />
-                    <div className="absolute bottom-0 right-1 text-brown-300 text-sm">
-                      2
-                    </div>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="bg-brown-600 w-full flex flex-col border-8 border-brown-800">
-            {select ? (
-              <div className="flex flex-col h-full w-96 px-6">
-                <div className="py-6">
-                  <div className="border-2 p-1 bg-brown-800 rounded w-44 m-auto">
-                    <div className="border-2 p-6 bg-brown-200 rounded flex justify-center items-center">
-                      <Image src={select.src} width={160} height={160} />
-                    </div>
-                  </div>
-                </div>
-                <hr className="border-brown-800 border-2" />
-                <div className="relative h-full py-6">
-                  <div className="space-y-3">
-                    <p className="text-brown-50 font-bold text-4xl tracking-wider">
-                      {select.type.toUpperCase()}
-                    </p>
-                    <p className="text-brown-200 font-light text-lg">
-                      A castle is a type of fortified structure built during the
-                      Middle Ages predominantly by the nobility or royalty and
-                      by military orders. Scholars debate the scope of the word
-                      castle, but usually consider it to be the private
-                      fortified residence of a lord or noble
-                    </p>
-                  </div>
-                  <div className="absolute bottom-6 right-0">
-                    <button
-                      className="block w-full items-center py-3 px-4 border text-sm leading-4 font-bold rounded-sm hover:bg-brown-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brown-500 tracking-wider shadow-md text-white"
-                      // style={{
-                      //   textShadow:
-                      //     "#000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px, #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px",
-                      //   WebkitFontSmoothing: "antialiased",
-                      // }}
-                    >
-                      SELL
-                    </button>
-                  </div>
+                    {tabs.map((tab) => (
+                      <a
+                        key={tab.name}
+                        href={tab.href}
+                        aria-current={tab.current ? "page" : undefined}
+                        className={classNames(
+                          tab.current
+                            ? "border-red-500 text-red-600"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
+                          "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                        )}
+                      >
+                        {tab.name}
+                      </a>
+                    ))}
+                  </nav>
                 </div>
               </div>
-            ) : null}
+            </div>
+
+            <section className="mt-8 pb-16">
+              <ul
+                role="list"
+                className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+              >
+                {files.map((file) => (
+                  <li key={file.name} className="relative">
+                    <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                      <img
+                        src={file.source}
+                        alt=""
+                        className="object-fill object-center pointer-events-none group-hover:opacity-75"
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-0 focus:outline-none"
+                        onClick={() =>
+                          setDrawerProps({
+                            isOpen: true,
+                            selectedNft: file,
+                          })
+                        }
+                      >
+                        <span className="sr-only">
+                          View details for {file.name}
+                        </span>
+                      </button>
+                    </div>
+                    <p className="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none">
+                      {file.name}
+                    </p>
+                    <p className="block text-sm font-medium text-gray-500 pointer-events-none">
+                      {file.collection}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
-        </div>
+        </main>
+
+        <Transition.Root show={drawerProps.isOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="fixed inset-0 overflow-hidden"
+            onClose={() =>
+              setDrawerProps((props) => ({
+                ...props,
+                isOpen: false,
+              }))
+            }
+          >
+            <div className="absolute inset-0 overflow-hidden">
+              <Dialog.Overlay className="absolute inset-0 bg-gray-300 opacity-60" />
+
+              <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+                <Transition.Child
+                  as={Fragment}
+                  enter="transform transition ease-in-out duration-500 sm:duration-700"
+                  enterFrom="translate-x-full"
+                  enterTo="translate-x-0"
+                  leave="transform transition ease-in-out duration-500 sm:duration-700"
+                  leaveFrom="translate-x-0"
+                  leaveTo="translate-x-full"
+                >
+                  <div className="w-screen max-w-md">
+                    <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
+                      <div className="px-4 sm:px-6">
+                        <div className="flex items-start justify-between">
+                          <Dialog.Title className="text-lg font-medium text-gray-900">
+                            Sell {drawerProps.selectedNft?.name}
+                          </Dialog.Title>
+                          <div className="ml-3 h-7 flex items-center">
+                            <button
+                              type="button"
+                              className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              onClick={() =>
+                                setDrawerProps((props) => ({
+                                  ...props,
+                                  isOpen: false,
+                                }))
+                              }
+                            >
+                              <span className="sr-only">Close panel</span>
+                              <XIcon className="h-6 w-6" aria-hidden="true" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-6 relative flex-1 px-4 sm:px-6 pb-24">
+                        <div className="space-y-6">
+                          <div>
+                            <div className="block w-full aspect-w-1 aspect-h-1 sm:aspect-w-5 sm:aspect-h-5 rounded-lg overflow-hidden">
+                              <img
+                                src={drawerProps.selectedNft?.source}
+                                alt={drawerProps.selectedNft?.name}
+                                className="object-fill object-center"
+                              />
+                            </div>
+                            <div className="mt-4 flex items-start justify-between">
+                              <div>
+                                <h2 className="text-lg font-medium text-gray-900">
+                                  <span className="sr-only">Details for </span>
+                                  {drawerProps.selectedNft?.name}
+                                </h2>
+                                <p className="text-sm font-medium text-gray-500">
+                                  {drawerProps.selectedNft?.collection}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <div>
+                              <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Price
+                              </label>
+                              <div className="mt-1 relative rounded-md shadow-sm">
+                                <input
+                                  type="text"
+                                  name="price"
+                                  id="price"
+                                  className="focus:ring-red-500 focus:border-red-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
+                                  placeholder="0.00"
+                                  aria-describedby="price-currency"
+                                />
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                  <span
+                                    className="text-gray-500 sm:text-sm"
+                                    id="price-currency"
+                                  >
+                                    MAGIC
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <Listbox
+                                value={selectedDate}
+                                onChange={setSelectedDate}
+                              >
+                                <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                  Expire Date
+                                </Listbox.Label>
+                                <div className="mt-1 relative">
+                                  <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                                    <span className="block truncate">
+                                      {selectedDate.expireDate}
+                                    </span>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                      <SelectorIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                      {date.map((person) => (
+                                        <Listbox.Option
+                                          key={person.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? "text-white bg-red-600"
+                                                : "text-gray-900",
+                                              "cursor-default select-none relative py-2 pl-3 pr-9"
+                                            )
+                                          }
+                                          value={person}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <span
+                                                className={classNames(
+                                                  selected
+                                                    ? "font-semibold"
+                                                    : "font-normal",
+                                                  "block truncate"
+                                                )}
+                                              >
+                                                {person.expireDate}
+                                              </span>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? "text-white"
+                                                      : "text-red-600",
+                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </Listbox>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="flex-1 bg-red-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full"
+                          >
+                            Sell
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition.Root>
       </div>
     </div>
-    // <div className="min-h-screen flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    //   <div className="flex flex-wrap flex-grow">
-    //     <div className="w-full">
-    //       <div className="flex-shrink flex-grow absolute w-9/12 min-h-screen border-2">
-    //         <div className="grid grid-cols-4">
-    //           {IMGS.map((img) => (
-    //             <div className="aspect-w-1 aspect-h-1 w-14 h-14 overflow-hidden flex items-center border-2">
-    //               <img src={img.imgSrc} />
-    //             </div>
-    //           ))}
-    //         </div>
-    //       </div>
-    //       <div className="w-3/12 bottom-0 right-0 top-0 fixed border-2">
-    //         Test
-    //       </div>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
+
+Inventory.showSamuraiBg = false;
 
 export default Inventory;
