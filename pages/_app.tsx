@@ -7,11 +7,15 @@ import samurai2Img from "../public/img/samurai2.png";
 
 import Header from "../components/Header";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
+
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Treasure Farm</title>
+        <title>Treasure Marketplace</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -23,23 +27,25 @@ function MyApp({ Component, pageProps }) {
           rel="stylesheet"
         />
       </Head>
-      <div className="min-h-screen relative overflow-hidden dark:bg-black">
-        {Component.showSamuraiBg && (
-          <>
-            <img
-              src={samurai1Img.src}
-              className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
-            />
-            <img
-              src={samurai2Img.src}
-              className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
-            />
-          </>
-        )}
-        <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
-        <Header />
-        <Component {...pageProps} />
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen relative overflow-hidden dark:bg-black">
+          {Component.showSamuraiBg && (
+            <>
+              <img
+                src={samurai1Img.src}
+                className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
+              />
+              <img
+                src={samurai2Img.src}
+                className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
+              />
+            </>
+          )}
+          <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
+          <Header />
+          <Component {...pageProps} />
+        </div>
+      </QueryClientProvider>
     </>
   );
 }

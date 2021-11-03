@@ -1,0 +1,610 @@
+import { GraphQLClient } from 'graphql-request';
+import * as Dom from 'graphql-request/dist/types.dom';
+import gql from 'graphql-tag';
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  BigDecimal: any;
+  BigInt: any;
+  Bytes: any;
+};
+
+export type Block_Height = {
+  hash?: Maybe<Scalars['Bytes']>;
+  number?: Maybe<Scalars['Int']>;
+};
+
+export type Collection = {
+  __typename?: 'Collection';
+  address: Scalars['Bytes'];
+  id: Scalars['ID'];
+  listings: Array<Listing>;
+  name: Scalars['String'];
+  symbol: Scalars['String'];
+  tokens: Array<Token>;
+};
+
+
+export type CollectionListingsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Listing_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  where?: Maybe<Listing_Filter>;
+};
+
+
+export type CollectionTokensArgs = {
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Token_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  where?: Maybe<Token_Filter>;
+};
+
+export type Collection_Filter = {
+  address?: Maybe<Scalars['Bytes']>;
+  address_contains?: Maybe<Scalars['Bytes']>;
+  address_in?: Maybe<Array<Scalars['Bytes']>>;
+  address_not?: Maybe<Scalars['Bytes']>;
+  address_not_contains?: Maybe<Scalars['Bytes']>;
+  address_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  id?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  listings?: Maybe<Array<Scalars['String']>>;
+  listings_contains?: Maybe<Array<Scalars['String']>>;
+  listings_not?: Maybe<Array<Scalars['String']>>;
+  listings_not_contains?: Maybe<Array<Scalars['String']>>;
+  name?: Maybe<Scalars['String']>;
+  name_contains?: Maybe<Scalars['String']>;
+  name_ends_with?: Maybe<Scalars['String']>;
+  name_gt?: Maybe<Scalars['String']>;
+  name_gte?: Maybe<Scalars['String']>;
+  name_in?: Maybe<Array<Scalars['String']>>;
+  name_lt?: Maybe<Scalars['String']>;
+  name_lte?: Maybe<Scalars['String']>;
+  name_not?: Maybe<Scalars['String']>;
+  name_not_contains?: Maybe<Scalars['String']>;
+  name_not_ends_with?: Maybe<Scalars['String']>;
+  name_not_in?: Maybe<Array<Scalars['String']>>;
+  name_not_starts_with?: Maybe<Scalars['String']>;
+  name_starts_with?: Maybe<Scalars['String']>;
+  symbol?: Maybe<Scalars['String']>;
+  symbol_contains?: Maybe<Scalars['String']>;
+  symbol_ends_with?: Maybe<Scalars['String']>;
+  symbol_gt?: Maybe<Scalars['String']>;
+  symbol_gte?: Maybe<Scalars['String']>;
+  symbol_in?: Maybe<Array<Scalars['String']>>;
+  symbol_lt?: Maybe<Scalars['String']>;
+  symbol_lte?: Maybe<Scalars['String']>;
+  symbol_not?: Maybe<Scalars['String']>;
+  symbol_not_contains?: Maybe<Scalars['String']>;
+  symbol_not_ends_with?: Maybe<Scalars['String']>;
+  symbol_not_in?: Maybe<Array<Scalars['String']>>;
+  symbol_not_starts_with?: Maybe<Scalars['String']>;
+  symbol_starts_with?: Maybe<Scalars['String']>;
+  tokens?: Maybe<Array<Scalars['String']>>;
+  tokens_contains?: Maybe<Array<Scalars['String']>>;
+  tokens_not?: Maybe<Array<Scalars['String']>>;
+  tokens_not_contains?: Maybe<Array<Scalars['String']>>;
+};
+
+export enum Collection_OrderBy {
+  Address = 'address',
+  Id = 'id',
+  Listings = 'listings',
+  Name = 'name',
+  Symbol = 'symbol',
+  Tokens = 'tokens'
+}
+
+export type Listing = {
+  __typename?: 'Listing';
+  collection: Collection;
+  expires: Scalars['BigInt'];
+  id: Scalars['ID'];
+  pricePerItem: Scalars['BigInt'];
+  quantity: Scalars['BigInt'];
+  status: Status;
+  token: Token;
+  user: User;
+};
+
+export type Listing_Filter = {
+  collection?: Maybe<Scalars['String']>;
+  collection_contains?: Maybe<Scalars['String']>;
+  collection_ends_with?: Maybe<Scalars['String']>;
+  collection_gt?: Maybe<Scalars['String']>;
+  collection_gte?: Maybe<Scalars['String']>;
+  collection_in?: Maybe<Array<Scalars['String']>>;
+  collection_lt?: Maybe<Scalars['String']>;
+  collection_lte?: Maybe<Scalars['String']>;
+  collection_not?: Maybe<Scalars['String']>;
+  collection_not_contains?: Maybe<Scalars['String']>;
+  collection_not_ends_with?: Maybe<Scalars['String']>;
+  collection_not_in?: Maybe<Array<Scalars['String']>>;
+  collection_not_starts_with?: Maybe<Scalars['String']>;
+  collection_starts_with?: Maybe<Scalars['String']>;
+  expires?: Maybe<Scalars['BigInt']>;
+  expires_gt?: Maybe<Scalars['BigInt']>;
+  expires_gte?: Maybe<Scalars['BigInt']>;
+  expires_in?: Maybe<Array<Scalars['BigInt']>>;
+  expires_lt?: Maybe<Scalars['BigInt']>;
+  expires_lte?: Maybe<Scalars['BigInt']>;
+  expires_not?: Maybe<Scalars['BigInt']>;
+  expires_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  id?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  pricePerItem?: Maybe<Scalars['BigInt']>;
+  pricePerItem_gt?: Maybe<Scalars['BigInt']>;
+  pricePerItem_gte?: Maybe<Scalars['BigInt']>;
+  pricePerItem_in?: Maybe<Array<Scalars['BigInt']>>;
+  pricePerItem_lt?: Maybe<Scalars['BigInt']>;
+  pricePerItem_lte?: Maybe<Scalars['BigInt']>;
+  pricePerItem_not?: Maybe<Scalars['BigInt']>;
+  pricePerItem_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  quantity?: Maybe<Scalars['BigInt']>;
+  quantity_gt?: Maybe<Scalars['BigInt']>;
+  quantity_gte?: Maybe<Scalars['BigInt']>;
+  quantity_in?: Maybe<Array<Scalars['BigInt']>>;
+  quantity_lt?: Maybe<Scalars['BigInt']>;
+  quantity_lte?: Maybe<Scalars['BigInt']>;
+  quantity_not?: Maybe<Scalars['BigInt']>;
+  quantity_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  status?: Maybe<Status>;
+  status_in?: Maybe<Array<Status>>;
+  status_not?: Maybe<Status>;
+  status_not_in?: Maybe<Array<Status>>;
+  token?: Maybe<Scalars['String']>;
+  token_contains?: Maybe<Scalars['String']>;
+  token_ends_with?: Maybe<Scalars['String']>;
+  token_gt?: Maybe<Scalars['String']>;
+  token_gte?: Maybe<Scalars['String']>;
+  token_in?: Maybe<Array<Scalars['String']>>;
+  token_lt?: Maybe<Scalars['String']>;
+  token_lte?: Maybe<Scalars['String']>;
+  token_not?: Maybe<Scalars['String']>;
+  token_not_contains?: Maybe<Scalars['String']>;
+  token_not_ends_with?: Maybe<Scalars['String']>;
+  token_not_in?: Maybe<Array<Scalars['String']>>;
+  token_not_starts_with?: Maybe<Scalars['String']>;
+  token_starts_with?: Maybe<Scalars['String']>;
+  user?: Maybe<Scalars['String']>;
+  user_contains?: Maybe<Scalars['String']>;
+  user_ends_with?: Maybe<Scalars['String']>;
+  user_gt?: Maybe<Scalars['String']>;
+  user_gte?: Maybe<Scalars['String']>;
+  user_in?: Maybe<Array<Scalars['String']>>;
+  user_lt?: Maybe<Scalars['String']>;
+  user_lte?: Maybe<Scalars['String']>;
+  user_not?: Maybe<Scalars['String']>;
+  user_not_contains?: Maybe<Scalars['String']>;
+  user_not_ends_with?: Maybe<Scalars['String']>;
+  user_not_in?: Maybe<Array<Scalars['String']>>;
+  user_not_starts_with?: Maybe<Scalars['String']>;
+  user_starts_with?: Maybe<Scalars['String']>;
+};
+
+export enum Listing_OrderBy {
+  Collection = 'collection',
+  Expires = 'expires',
+  Id = 'id',
+  PricePerItem = 'pricePerItem',
+  Quantity = 'quantity',
+  Status = 'status',
+  Token = 'token',
+  User = 'user'
+}
+
+export enum OrderDirection {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
+export type Query = {
+  __typename?: 'Query';
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+  collection?: Maybe<Collection>;
+  collections: Array<Collection>;
+  listing?: Maybe<Listing>;
+  listings: Array<Listing>;
+  token?: Maybe<Token>;
+  tokens: Array<Token>;
+  user?: Maybe<User>;
+  users: Array<User>;
+};
+
+
+export type Query_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryCollectionArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryCollectionsArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Collection_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Collection_Filter>;
+};
+
+
+export type QueryListingArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryListingsArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Listing_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Listing_Filter>;
+};
+
+
+export type QueryTokenArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryTokensArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Token_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Token_Filter>;
+};
+
+
+export type QueryUserArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryUsersArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<User_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<User_Filter>;
+};
+
+export enum Status {
+  Active = 'Active',
+  Canceled = 'Canceled',
+  Expired = 'Expired',
+  Sold = 'Sold',
+  Unlisted = 'Unlisted'
+}
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+  collection?: Maybe<Collection>;
+  collections: Array<Collection>;
+  listing?: Maybe<Listing>;
+  listings: Array<Listing>;
+  token?: Maybe<Token>;
+  tokens: Array<Token>;
+  user?: Maybe<User>;
+  users: Array<User>;
+};
+
+
+export type Subscription_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionCollectionArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionCollectionsArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Collection_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Collection_Filter>;
+};
+
+
+export type SubscriptionListingArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionListingsArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Listing_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Listing_Filter>;
+};
+
+
+export type SubscriptionTokenArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionTokensArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Token_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Token_Filter>;
+};
+
+
+export type SubscriptionUserArgs = {
+  block?: Maybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionUsersArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<User_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<User_Filter>;
+};
+
+export type Token = {
+  __typename?: 'Token';
+  collection: Collection;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  quantity: Scalars['BigInt'];
+  tokenId: Scalars['BigInt'];
+  user: User;
+};
+
+export type Token_Filter = {
+  collection?: Maybe<Scalars['String']>;
+  collection_contains?: Maybe<Scalars['String']>;
+  collection_ends_with?: Maybe<Scalars['String']>;
+  collection_gt?: Maybe<Scalars['String']>;
+  collection_gte?: Maybe<Scalars['String']>;
+  collection_in?: Maybe<Array<Scalars['String']>>;
+  collection_lt?: Maybe<Scalars['String']>;
+  collection_lte?: Maybe<Scalars['String']>;
+  collection_not?: Maybe<Scalars['String']>;
+  collection_not_contains?: Maybe<Scalars['String']>;
+  collection_not_ends_with?: Maybe<Scalars['String']>;
+  collection_not_in?: Maybe<Array<Scalars['String']>>;
+  collection_not_starts_with?: Maybe<Scalars['String']>;
+  collection_starts_with?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  name?: Maybe<Scalars['String']>;
+  name_contains?: Maybe<Scalars['String']>;
+  name_ends_with?: Maybe<Scalars['String']>;
+  name_gt?: Maybe<Scalars['String']>;
+  name_gte?: Maybe<Scalars['String']>;
+  name_in?: Maybe<Array<Scalars['String']>>;
+  name_lt?: Maybe<Scalars['String']>;
+  name_lte?: Maybe<Scalars['String']>;
+  name_not?: Maybe<Scalars['String']>;
+  name_not_contains?: Maybe<Scalars['String']>;
+  name_not_ends_with?: Maybe<Scalars['String']>;
+  name_not_in?: Maybe<Array<Scalars['String']>>;
+  name_not_starts_with?: Maybe<Scalars['String']>;
+  name_starts_with?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['BigInt']>;
+  quantity_gt?: Maybe<Scalars['BigInt']>;
+  quantity_gte?: Maybe<Scalars['BigInt']>;
+  quantity_in?: Maybe<Array<Scalars['BigInt']>>;
+  quantity_lt?: Maybe<Scalars['BigInt']>;
+  quantity_lte?: Maybe<Scalars['BigInt']>;
+  quantity_not?: Maybe<Scalars['BigInt']>;
+  quantity_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  tokenId?: Maybe<Scalars['BigInt']>;
+  tokenId_gt?: Maybe<Scalars['BigInt']>;
+  tokenId_gte?: Maybe<Scalars['BigInt']>;
+  tokenId_in?: Maybe<Array<Scalars['BigInt']>>;
+  tokenId_lt?: Maybe<Scalars['BigInt']>;
+  tokenId_lte?: Maybe<Scalars['BigInt']>;
+  tokenId_not?: Maybe<Scalars['BigInt']>;
+  tokenId_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  user?: Maybe<Scalars['String']>;
+  user_contains?: Maybe<Scalars['String']>;
+  user_ends_with?: Maybe<Scalars['String']>;
+  user_gt?: Maybe<Scalars['String']>;
+  user_gte?: Maybe<Scalars['String']>;
+  user_in?: Maybe<Array<Scalars['String']>>;
+  user_lt?: Maybe<Scalars['String']>;
+  user_lte?: Maybe<Scalars['String']>;
+  user_not?: Maybe<Scalars['String']>;
+  user_not_contains?: Maybe<Scalars['String']>;
+  user_not_ends_with?: Maybe<Scalars['String']>;
+  user_not_in?: Maybe<Array<Scalars['String']>>;
+  user_not_starts_with?: Maybe<Scalars['String']>;
+  user_starts_with?: Maybe<Scalars['String']>;
+};
+
+export enum Token_OrderBy {
+  Collection = 'collection',
+  Id = 'id',
+  Name = 'name',
+  Quantity = 'quantity',
+  TokenId = 'tokenId',
+  User = 'user'
+}
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  listings: Array<Listing>;
+  tokens: Array<Token>;
+};
+
+
+export type UserListingsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Listing_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  where?: Maybe<Listing_Filter>;
+};
+
+
+export type UserTokensArgs = {
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Token_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  where?: Maybe<Token_Filter>;
+};
+
+export type User_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  listings?: Maybe<Array<Scalars['String']>>;
+  listings_contains?: Maybe<Array<Scalars['String']>>;
+  listings_not?: Maybe<Array<Scalars['String']>>;
+  listings_not_contains?: Maybe<Array<Scalars['String']>>;
+  tokens?: Maybe<Array<Scalars['String']>>;
+  tokens_contains?: Maybe<Array<Scalars['String']>>;
+  tokens_not?: Maybe<Array<Scalars['String']>>;
+  tokens_not_contains?: Maybe<Array<Scalars['String']>>;
+};
+
+export enum User_OrderBy {
+  Id = 'id',
+  Listings = 'listings',
+  Tokens = 'tokens'
+}
+
+export type _Block_ = {
+  __typename?: '_Block_';
+  /** The hash of the block */
+  hash?: Maybe<Scalars['Bytes']>;
+  /** The block number */
+  number: Scalars['Int'];
+};
+
+/** The type for the top-level _meta field */
+export type _Meta_ = {
+  __typename?: '_Meta_';
+  /**
+   * Information about a specific subgraph block. The hash of the block
+   * will be null if the _meta field has a block constraint that asks for
+   * a block number. It will be filled if the _meta field has no block constraint
+   * and therefore asks for the latest  block
+   *
+   */
+  block: _Block_;
+  /** The deployment ID */
+  deployment: Scalars['String'];
+  /** If `true`, the subgraph encountered indexing errors at some past block */
+  hasIndexingErrors: Scalars['Boolean'];
+};
+
+export enum _SubgraphErrorPolicy_ {
+  /** Data will be returned even if the subgraph has indexing errors */
+  Allow = 'allow',
+  /** If the subgraph has indexing errors, data will be omitted. The default. */
+  Deny = 'deny'
+}
+
+export type UserQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserQueryQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string }> };
+
+
+export const UserQueryDocument = gql`
+    query UserQuery {
+  users {
+    id
+  }
+}
+    `;
+
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string) => Promise<T>;
+
+
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
+
+export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
+  return {
+    UserQuery(variables?: UserQueryQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UserQueryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserQueryQuery>(UserQueryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UserQuery');
+    }
+  };
+}
+export type Sdk = ReturnType<typeof getSdk>;

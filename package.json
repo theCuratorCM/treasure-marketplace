@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "watch:codegen": "graphql-codegen --watch",
     "build": "next build",
     "start": "next start"
   },
@@ -13,11 +14,18 @@
     "@tailwindcss/forms": "^0.3.4",
     "@yuyao17/corefork": "^0.5.8",
     "date-fns": "^2.25.0",
+    "graphql": "^16.0.1",
+    "graphql-tag": "^2.12.5",
     "next": "latest",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-query": "^3.31.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.2.2",
+    "@graphql-codegen/typescript": "^2.3.0",
+    "@graphql-codegen/typescript-graphql-request": "^4.2.0",
+    "@graphql-codegen/typescript-operations": "^2.2.0",
     "@types/react": "^17.0.24",
     "autoprefixer": "^10.2.6",
     "postcss": "^8.3.5",

@@ -1,11 +1,12 @@
-import { Fragment, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
-import { MenuIcon, ShoppingBagIcon, XIcon } from "@heroicons/react/outline";
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 import ancientRelic from "../public/img/gifs/ANCIENT-RELIC.gif";
 import bagOfMushrooms from "../public/img/gifs/Bag-of-Mushrooms.gif";
 import beetleWings from "../public/img/gifs/BEETLE-WINGS.gif";
 import bottomlessElixir from "../public/img/gifs/Bottomless-Elixir.gif";
+import { useQuery } from "react-query";
+import client from "../lib/client";
 
 const sortOptions = [
   { name: "Price: Low to High", href: "#" },
@@ -59,6 +60,9 @@ function classNames(...classes) {
 }
 
 export default function Market() {
+  const { data, isLoading } = useQuery("users", () => client.UserQuery());
+  console.log(data);
+
   return (
     <main>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">

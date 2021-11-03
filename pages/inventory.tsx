@@ -112,7 +112,7 @@ const Inventory = () => {
                       <img
                         src={file.source}
                         alt=""
-                        className="object-fill object-center pointer-events-none group-hover:opacity-75"
+                        className="object-fill object-center pointer-events-none group-hover:opacity-80"
                       />
                       <button
                         type="button"
