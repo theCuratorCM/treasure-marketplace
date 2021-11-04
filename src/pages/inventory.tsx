@@ -4,10 +4,10 @@ import { XIcon } from "@heroicons/react/outline";
 import { SelectorIcon, CheckIcon } from "@heroicons/react/solid";
 import classNames from "clsx";
 import { useQuery } from "react-query";
-import client from "../lib/client";
+import client from "../../lib/client";
 import { useEthers } from "@yuyao17/corefork";
 import { AddressZero } from "@ethersproject/constants";
-import { GetUserTokensQuery } from "../generated/graphql";
+import { GetUserTokensQuery } from "../../generated/graphql";
 import { generateIpfsLink } from "../utils";
 
 const date = [

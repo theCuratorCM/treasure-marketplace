@@ -299,6 +299,7 @@ export type Query = {
   listings: Array<Listing>;
   metadata: Array<Metadata>;
   token?: Maybe<Token>;
+  tokenSearch: Array<Token>;
   tokens: Array<Token>;
   user?: Maybe<User>;
   users: Array<User>;
@@ -361,6 +362,15 @@ export type QueryTokenArgs = {
   block?: Maybe<Block_Height>;
   id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryTokenSearchArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  text: Scalars['String'];
 };
 
 
