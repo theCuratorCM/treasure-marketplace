@@ -1,10 +1,10 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
-import ancientRelic from "../public/img/gifs/ANCIENT-RELIC.gif";
-import bagOfMushrooms from "../public/img/gifs/Bag-of-Mushrooms.gif";
-import beetleWings from "../public/img/gifs/BEETLE-WINGS.gif";
-import bottomlessElixir from "../public/img/gifs/Bottomless-Elixir.gif";
+import ancientRelic from "../../public/img/gifs/ANCIENT-RELIC.gif";
+import bagOfMushrooms from "../../public/img/gifs/Bag-of-Mushrooms.gif";
+import beetleWings from "../../public/img/gifs/BEETLE-WINGS.gif";
+import bottomlessElixir from "../../public/img/gifs/Bottomless-Elixir.gif";
 
 const sortOptions = [
   { name: "Price: Low to High", href: "#" },

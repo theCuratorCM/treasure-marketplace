@@ -9,9 +9,6 @@ import { resolveValue, Toaster } from "react-hot-toast";
 import { Transition } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/outline";
 
-import samurai1Img from "../public/img/samurai1.png";
-import samurai2Img from "../public/img/samurai2.png";
-
 import Header from "../components/Header";
 
 const queryClient = new QueryClient();
@@ -48,11 +45,11 @@ function MyApp({ Component, pageProps }) {
             {Component.showSamuraiBg && (
               <>
                 <img
-                  src={samurai1Img.src}
+                  src={"/img/samurai1.png"}
                   className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
                 />
                 <img
-                  src={samurai2Img.src}
+                  src={"/img/samurai2.png"}
                   className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
                 />
               </>

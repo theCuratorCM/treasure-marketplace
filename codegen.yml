@@ -1,6 +1,6 @@
 overwrite: true
 schema: "https://api.thegraph.com/subgraphs/name/wyze/treasure-marketplace"
-documents: "graphql/**/*.graphql.ts"
+documents: "src/graphql/**/*.graphql.ts"
 generates:
   generated/graphql.ts:
     plugins:
