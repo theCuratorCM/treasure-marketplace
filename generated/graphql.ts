@@ -720,7 +720,7 @@ export type GetUserTokensQueryVariables = Exact<{
 }>;
 
 
-export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'Token', id: string, metadataUri?: string | null | undefined, quantity: any, tokenId: any, name?: string | null | undefined }> } | null | undefined };
+export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'Token', id: string, metadataUri?: string | null | undefined, quantity: any, tokenId: any, name?: string | null | undefined, collection: { __typename?: 'Collection', address: any } }> } | null | undefined };
 
 
 export const GetUserTokensDocument = gql`
@@ -728,6 +728,9 @@ export const GetUserTokensDocument = gql`
   user(id: $id) {
     tokens {
       id
+      collection {
+        address
+      }
       metadataUri
       quantity
       tokenId

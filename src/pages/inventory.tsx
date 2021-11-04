@@ -3,18 +3,21 @@ import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import { SelectorIcon, CheckIcon } from "@heroicons/react/solid";
 import classNames from "clsx";
-import { useQuery } from "react-query";
-import client from "../../lib/client";
-import { useEthers } from "@yuyao17/corefork";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import client from "../lib/client";
+import { addMonths, addWeeks } from "date-fns";
+import { ethers } from "ethers";
+import { useCreateListing } from "../lib/hooks";
+import { useEthers, useContractFunction } from "@yuyao17/corefork";
 import { AddressZero } from "@ethersproject/constants";
 import { GetUserTokensQuery } from "../../generated/graphql";
 import { generateIpfsLink } from "../utils";
 
 const date = [
-  { id: 1, expireDate: "1 Week" },
-  { id: 2, expireDate: "2 Weeks" },
-  { id: 3, expireDate: "1 Month" },
-  { id: 4, expireDate: "3 Months" },
+  { id: 1, label: "1 Week", value: addWeeks(new Date(), 1) },
+  { id: 2, label: "2 Weeks", value: addWeeks(new Date(), 2) },
+  { id: 3, label: "1 Month", value: addMonths(new Date(), 1) },
+  { id: 4, label: "3 Months", value: addMonths(new Date(), 3) },
 ];
 
 const tabs = [
@@ -24,6 +27,8 @@ const tabs = [
 ];
 
 const Inventory = () => {
+  const queryClient = useQueryClient();
+  const [price, setPrice] = useState("");
   const [selectedDate, setSelectedDate] = useState(date[3]);
   const [drawerProps, setDrawerProps] = useState<{
     isOpen: boolean;
@@ -31,6 +36,7 @@ const Inventory = () => {
       name: string;
       source: string;
       collection: string;
+      address: string;
       quantity: string;
       tokenId: string;
     };
@@ -38,6 +44,8 @@ const Inventory = () => {
     isOpen: false,
     selectedNft: null,
   });
+
+  // useContractFunction()
 
   const { account } = useEthers();
 
@@ -48,6 +56,34 @@ const Inventory = () => {
       enabled: !!account,
     }
   );
+
+  const createListing = useCreateListing();
+
+  // const sell = useMutation(
+  //   async () => {
+  //     return "";
+  //   },
+  //   {
+  //     onSuccess: (id) => {
+  //       queryClient.setQueriesData("inventory", (state: typeof data) => {
+  //         if (state?.user?.tokens) {
+  //           return {
+  //             ...state,
+  //             user: {
+  //               ...state.user,
+  //               tokens: state.user.tokens.filter((token) => token.id !== id),
+  //             },
+  //           };
+  //         }
+
+  //         return state;
+  //       });
+
+  //       // Not sure if this is needed since we are updating data above
+  //       queryClient.invalidateQueries("inventory");
+  //     },
+  //   }
+  // );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -201,12 +237,16 @@ const Inventory = () => {
                               </label>
                               <div className="mt-1 relative rounded-md shadow-sm">
                                 <input
-                                  type="text"
+                                  type="number"
                                   name="price"
                                   id="price"
                                   className="focus:ring-red-500 focus:border-red-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
                                   placeholder="0.00"
                                   aria-describedby="price-currency"
+                                  onChange={(event) =>
+                                    setPrice(event.target.value)
+                                  }
+                                  value={price}
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                   <span
@@ -229,7 +269,7 @@ const Inventory = () => {
                                 <div className="mt-1 relative">
                                   <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm">
                                     <span className="block truncate">
-                                      {selectedDate.expireDate}
+                                      {selectedDate.label}
                                     </span>
                                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                       <SelectorIcon
@@ -269,7 +309,7 @@ const Inventory = () => {
                                                   "block truncate"
                                                 )}
                                               >
-                                                {person.expireDate}
+                                                {person.label}
                                               </span>
 
                                               {selected ? (
@@ -386,6 +426,39 @@ const Inventory = () => {
                           <button
                             type="button"
                             className="flex-1 bg-red-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full"
+                            onClick={() => {
+                              const { selectedNft } = drawerProps;
+
+                              // Shouldn't happen, and helps TypeScript be smart
+                              if (!selectedNft) {
+                                return;
+                              }
+                              /*
+function createListing(
+  address _nftAddress,
+  uint256 _tokenId,
+  uint256 _quantity,
+  uint256 _pricePerItem,
+  uint256 _expirationTime
+) external notListed(_nftAddress, _tokenId, _msgSender()) {*/
+                              console.log(
+                                selectedNft.address,
+                                ethers.BigNumber.from(selectedNft.tokenId),
+                                // TODO: Need to move to useState
+                                ethers.BigNumber.from(selectedNft.quantity),
+                                ethers.utils.parseEther(price),
+                                selectedDate.value
+                              );
+                              createListing.send(
+                                selectedNft.address,
+                                Number(selectedNft.tokenId),
+                                // TODO: Need to move to useState
+                                Number(selectedNft.quantity),
+                                ethers.utils.parseEther(price),
+                                // Number(price),
+                                selectedDate.value.getTime()
+                              );
+                            }}
                           >
                             Sell
                           </button>
@@ -414,8 +487,10 @@ const Item = ({
       selectedNft: null | {
         name: string;
         source: string;
+        address: string;
         collection: string;
         quantity: string;
+        tokenId: string;
       };
     }>
   >;
@@ -451,10 +526,12 @@ const Item = ({
             setDrawerProps({
               isOpen: true,
               selectedNft: {
+                address: data.collection.address,
                 name: data.name || "",
                 source: generateIpfsLink(metadata.image),
                 collection: metadata.description,
                 quantity: data.quantity,
+                tokenId: data.tokenId,
               },
             })
           }
