@@ -28,7 +28,7 @@ export type Collection = {
   id: Scalars['ID'];
   listings: Array<Listing>;
   name: Scalars['String'];
-  symbol: Scalars['String'];
+  symbol?: Maybe<Scalars['String']>;
   tokens: Array<Token>;
 };
 
@@ -216,6 +216,74 @@ export enum Listing_OrderBy {
   User = 'user'
 }
 
+export type Metadata = {
+  __typename?: 'Metadata';
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  image?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type Metadata_Filter = {
+  description?: Maybe<Scalars['String']>;
+  description_contains?: Maybe<Scalars['String']>;
+  description_ends_with?: Maybe<Scalars['String']>;
+  description_gt?: Maybe<Scalars['String']>;
+  description_gte?: Maybe<Scalars['String']>;
+  description_in?: Maybe<Array<Scalars['String']>>;
+  description_lt?: Maybe<Scalars['String']>;
+  description_lte?: Maybe<Scalars['String']>;
+  description_not?: Maybe<Scalars['String']>;
+  description_not_contains?: Maybe<Scalars['String']>;
+  description_not_ends_with?: Maybe<Scalars['String']>;
+  description_not_in?: Maybe<Array<Scalars['String']>>;
+  description_not_starts_with?: Maybe<Scalars['String']>;
+  description_starts_with?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  image?: Maybe<Scalars['String']>;
+  image_contains?: Maybe<Scalars['String']>;
+  image_ends_with?: Maybe<Scalars['String']>;
+  image_gt?: Maybe<Scalars['String']>;
+  image_gte?: Maybe<Scalars['String']>;
+  image_in?: Maybe<Array<Scalars['String']>>;
+  image_lt?: Maybe<Scalars['String']>;
+  image_lte?: Maybe<Scalars['String']>;
+  image_not?: Maybe<Scalars['String']>;
+  image_not_contains?: Maybe<Scalars['String']>;
+  image_not_ends_with?: Maybe<Scalars['String']>;
+  image_not_in?: Maybe<Array<Scalars['String']>>;
+  image_not_starts_with?: Maybe<Scalars['String']>;
+  image_starts_with?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  name_contains?: Maybe<Scalars['String']>;
+  name_ends_with?: Maybe<Scalars['String']>;
+  name_gt?: Maybe<Scalars['String']>;
+  name_gte?: Maybe<Scalars['String']>;
+  name_in?: Maybe<Array<Scalars['String']>>;
+  name_lt?: Maybe<Scalars['String']>;
+  name_lte?: Maybe<Scalars['String']>;
+  name_not?: Maybe<Scalars['String']>;
+  name_not_contains?: Maybe<Scalars['String']>;
+  name_not_ends_with?: Maybe<Scalars['String']>;
+  name_not_in?: Maybe<Array<Scalars['String']>>;
+  name_not_starts_with?: Maybe<Scalars['String']>;
+  name_starts_with?: Maybe<Scalars['String']>;
+};
+
+export enum Metadata_OrderBy {
+  Description = 'description',
+  Id = 'id',
+  Image = 'image',
+  Name = 'name'
+}
+
 export enum OrderDirection {
   Asc = 'asc',
   Desc = 'desc'
@@ -229,6 +297,7 @@ export type Query = {
   collections: Array<Collection>;
   listing?: Maybe<Listing>;
   listings: Array<Listing>;
+  metadata: Array<Metadata>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   user?: Maybe<User>;
@@ -274,6 +343,17 @@ export type QueryListingsArgs = {
   skip?: Maybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: Maybe<Listing_Filter>;
+};
+
+
+export type QueryMetadataArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Metadata_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Metadata_Filter>;
 };
 
 
@@ -328,6 +408,7 @@ export type Subscription = {
   collections: Array<Collection>;
   listing?: Maybe<Listing>;
   listings: Array<Listing>;
+  metadata: Array<Metadata>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
   user?: Maybe<User>;
@@ -376,6 +457,17 @@ export type SubscriptionListingsArgs = {
 };
 
 
+export type SubscriptionMetadataArgs = {
+  block?: Maybe<Block_Height>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Metadata_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: Maybe<Metadata_Filter>;
+};
+
+
 export type SubscriptionTokenArgs = {
   block?: Maybe<Block_Height>;
   id: Scalars['ID'];
@@ -415,7 +507,9 @@ export type Token = {
   __typename?: 'Token';
   collection: Collection;
   id: Scalars['ID'];
-  name: Scalars['String'];
+  metadata?: Maybe<Metadata>;
+  metadataUri?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
   quantity: Scalars['BigInt'];
   tokenId: Scalars['BigInt'];
   user: User;
@@ -444,6 +538,34 @@ export type Token_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  metadata?: Maybe<Scalars['String']>;
+  metadataUri?: Maybe<Scalars['String']>;
+  metadataUri_contains?: Maybe<Scalars['String']>;
+  metadataUri_ends_with?: Maybe<Scalars['String']>;
+  metadataUri_gt?: Maybe<Scalars['String']>;
+  metadataUri_gte?: Maybe<Scalars['String']>;
+  metadataUri_in?: Maybe<Array<Scalars['String']>>;
+  metadataUri_lt?: Maybe<Scalars['String']>;
+  metadataUri_lte?: Maybe<Scalars['String']>;
+  metadataUri_not?: Maybe<Scalars['String']>;
+  metadataUri_not_contains?: Maybe<Scalars['String']>;
+  metadataUri_not_ends_with?: Maybe<Scalars['String']>;
+  metadataUri_not_in?: Maybe<Array<Scalars['String']>>;
+  metadataUri_not_starts_with?: Maybe<Scalars['String']>;
+  metadataUri_starts_with?: Maybe<Scalars['String']>;
+  metadata_contains?: Maybe<Scalars['String']>;
+  metadata_ends_with?: Maybe<Scalars['String']>;
+  metadata_gt?: Maybe<Scalars['String']>;
+  metadata_gte?: Maybe<Scalars['String']>;
+  metadata_in?: Maybe<Array<Scalars['String']>>;
+  metadata_lt?: Maybe<Scalars['String']>;
+  metadata_lte?: Maybe<Scalars['String']>;
+  metadata_not?: Maybe<Scalars['String']>;
+  metadata_not_contains?: Maybe<Scalars['String']>;
+  metadata_not_ends_with?: Maybe<Scalars['String']>;
+  metadata_not_in?: Maybe<Array<Scalars['String']>>;
+  metadata_not_starts_with?: Maybe<Scalars['String']>;
+  metadata_starts_with?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   name_contains?: Maybe<Scalars['String']>;
   name_ends_with?: Maybe<Scalars['String']>;
@@ -493,6 +615,8 @@ export type Token_Filter = {
 export enum Token_OrderBy {
   Collection = 'collection',
   Id = 'id',
+  Metadata = 'metadata',
+  MetadataUri = 'metadataUri',
   Name = 'name',
   Quantity = 'quantity',
   TokenId = 'tokenId',
@@ -581,15 +705,24 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type UserQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetUserTokensQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
 
 
-export type UserQueryQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string }> };
+export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'Token', id: string, metadataUri?: string | null | undefined, quantity: any, tokenId: any, name?: string | null | undefined }> } | null | undefined };
 
 
-export const UserQueryDocument = gql`
-    query UserQuery {
-  users {
+export const GetUserTokensDocument = gql`
+    query getUserTokens($id: ID!) {
+  user(id: $id) {
+    tokens {
+      id
+      metadataUri
+      quantity
+      tokenId
+      name
+    }
     id
   }
 }
@@ -602,8 +735,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    UserQuery(variables?: UserQueryQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UserQueryQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UserQueryQuery>(UserQueryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UserQuery');
+    getUserTokens(variables: GetUserTokensQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserTokensQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserTokensQuery>(GetUserTokensDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserTokens');
     }
   };
 }

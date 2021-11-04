@@ -2,17 +2,29 @@ import { useState, Fragment } from "react";
 import { MenuIcon, CollectionIcon, XIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
+import { useEthers, shortenAddress, useTokenBalance } from "@yuyao17/corefork";
+import { Zero } from "@ethersproject/constants";
+import { formatEther } from "ethers/lib/utils";
+import { Contracts } from "../const";
+import { truncateDecimal } from "../utils";
 
 const navigation = {
   pages: [
     { name: "Legions", href: "#" },
-    { name: "Consumables", href: "#" },
+    { name: "Smol Brains", href: "#" },
+    { name: "Getting Bodied", href: "#" },
     { name: "Treasures", href: "#" },
+    { name: "Life", href: "#" },
   ],
 };
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { activateBrowserWallet, account, chainId } = useEthers();
+
+  const magicBalance = formatEther(
+    useTokenBalance(Contracts[chainId || 4]?.magic, account) || Zero
+  );
 
   return (
     <div>
@@ -93,7 +105,7 @@ const Header = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 flex items-center lg:hidden">
+                <div className="lg:flex-1 flex items-center lg:hidden">
                   <button
                     type="button"
                     className="-ml-2 bg-white p-2 rounded-md text-gray-400"
@@ -105,8 +117,28 @@ const Header = () => {
                 </div>
 
                 <div className="flex-1 flex items-center justify-end">
-                  <div className="flex items-center lg:ml-8">
-                    <div className="ml-4 flow-root lg:ml-8">
+                  <div className="flex items-center">
+                    {account && (
+                      <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100">
+                        <span className="text-red-500">
+                          {truncateDecimal(magicBalance)}
+                        </span>{" "}
+                        <span className="text-red-800">MAGIC</span>
+                      </div>
+                    )}
+                    <button
+                      className="ml-4 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
+                      onClick={() => {
+                        if (!account) {
+                          activateBrowserWallet((err) => {
+                            console.log(err);
+                          });
+                        }
+                      }}
+                    >
+                      {account ? shortenAddress(account) : "Connect"}
+                    </button>
+                    <div className="ml-4 flow-root">
                       <Link href="/inventory" passHref>
                         <a className="group -m-2 px-4 flex items-center">
                           <CollectionIcon

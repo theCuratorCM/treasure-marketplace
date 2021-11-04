@@ -1,10 +1,14 @@
-import { Fragment, useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import { SelectorIcon, CheckIcon } from "@heroicons/react/solid";
-import bottomlessElixir from "../public/img/gifs/Bottomless-Elixir.gif";
-import smolBrains from "../public/img/smolbrains.png";
-import legions from "../public/img/All-Class14.png";
+import classNames from "clsx";
+import { useQuery } from "react-query";
+import client from "../lib/client";
+import { useEthers } from "@yuyao17/corefork";
+import { AddressZero } from "@ethersproject/constants";
+import { GetUserTokensQuery } from "../generated/graphql";
+import { generateIpfsLink } from "../utils";
 
 const date = [
   { id: 1, expireDate: "1 Week" },
@@ -18,37 +22,32 @@ const tabs = [
   { name: "Listed", href: "#", current: false },
   { name: "Sold", href: "#", current: false },
 ];
-const files = [
-  {
-    name: "Bottomless Elixir",
-    collection: "Treasures",
-    source: bottomlessElixir.src,
-  },
-  {
-    name: "Smol Brains #32",
-    collection: "Smol Brains",
-    source: smolBrains.src,
-  },
-  {
-    name: "All-Class 14",
-    collection: "Legions",
-    source: legions.src,
-  },
-] as const;
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState(date[3]);
   const [drawerProps, setDrawerProps] = useState<{
     isOpen: boolean;
-    selectedNft: null | typeof files[number];
+    selectedNft: null | {
+      name: string;
+      source: string;
+      collection: string;
+      quantity: string;
+      tokenId: string;
+    };
   }>({
     isOpen: false,
     selectedNft: null,
   });
+
+  const { account } = useEthers();
+
+  const { data } = useQuery(
+    "inventory",
+    () => client.getUserTokens({ id: account?.toLowerCase() ?? AddressZero }),
+    {
+      enabled: !!account,
+    }
+  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -106,37 +105,17 @@ const Inventory = () => {
                 role="list"
                 className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
               >
-                {files.map((file) => (
-                  <li key={file.name} className="relative">
-                    <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
-                      <img
-                        src={file.source}
-                        alt=""
-                        className="object-fill object-center pointer-events-none group-hover:opacity-80"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-0 focus:outline-none"
-                        onClick={() =>
-                          setDrawerProps({
-                            isOpen: true,
-                            selectedNft: file,
-                          })
-                        }
-                      >
-                        <span className="sr-only">
-                          View details for {file.name}
-                        </span>
-                      </button>
-                    </div>
-                    <p className="mt-2 block text-sm font-medium text-gray-900 truncate pointer-events-none">
-                      {file.name}
-                    </p>
-                    <p className="block text-sm font-medium text-gray-500 pointer-events-none">
-                      {file.collection}
-                    </p>
-                  </li>
-                ))}
+                {data?.user?.tokens.map(
+                  (
+                    token // TODO: if no tokens, show empty state
+                  ) => (
+                    <Item
+                      key={token.id}
+                      data={token}
+                      setDrawerProps={setDrawerProps}
+                    />
+                  )
+                )}
               </ul>
             </section>
           </div>
@@ -317,6 +296,91 @@ const Inventory = () => {
                                 </div>
                               </Listbox>
                             </div>
+                            <div>
+                              <Listbox
+                                value={drawerProps.selectedNft?.quantity}
+                                onChange={(e) => {
+                                  console.log(e);
+                                }}
+                              >
+                                <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                  Quantity
+                                </Listbox.Label>
+                                <div className="mt-1 relative">
+                                  <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                                    <span className="block truncate">
+                                      {drawerProps.selectedNft?.quantity}
+                                    </span>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                      <SelectorIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                      {Array.from({
+                                        length:
+                                          Number(
+                                            drawerProps.selectedNft?.quantity
+                                          ) || 0,
+                                      }).map((_, idx) => (
+                                        <Listbox.Option
+                                          key={idx}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? "text-white bg-red-600"
+                                                : "text-gray-900",
+                                              "cursor-default select-none relative py-2 pl-3 pr-9"
+                                            )
+                                          }
+                                          value={idx + 1}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <span
+                                                className={classNames(
+                                                  selected
+                                                    ? "font-semibold"
+                                                    : "font-normal",
+                                                  "block truncate"
+                                                )}
+                                              >
+                                                {idx + 1}
+                                              </span>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? "text-white"
+                                                      : "text-red-600",
+                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </Listbox>
+                            </div>
                           </div>
 
                           <button
@@ -336,6 +400,82 @@ const Inventory = () => {
         </Transition.Root>
       </div>
     </div>
+  );
+};
+
+const Item = ({
+  data,
+  setDrawerProps,
+}: {
+  data: Exclude<GetUserTokensQuery["user"], null | undefined>["tokens"][number];
+  setDrawerProps: Dispatch<
+    SetStateAction<{
+      isOpen: boolean;
+      selectedNft: null | {
+        name: string;
+        source: string;
+        collection: string;
+        quantity: string;
+      };
+    }>
+  >;
+}) => {
+  const {
+    data: metadata,
+    isLoading,
+    error,
+  } = useQuery<{
+    description: string;
+    image: string;
+    name: string;
+  }>(
+    ["item", data.id],
+    // @ts-expect-error
+    async () => await (await fetch(data.metadataUri)).json() // TODO: fix this typescript error
+  );
+
+  if (isLoading || !metadata) return <div>Loading..</div>; // TODO: better loading indicator
+
+  return (
+    <li key={data.id} className="relative">
+      <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+        <img
+          src={generateIpfsLink(metadata.image)}
+          alt={metadata.name}
+          className="object-fill object-center pointer-events-none group-hover:opacity-80"
+        />
+        <button
+          type="button"
+          className="absolute inset-0 focus:outline-none"
+          onClick={() =>
+            setDrawerProps({
+              isOpen: true,
+              selectedNft: {
+                name: data.name || "",
+                source: generateIpfsLink(metadata.image),
+                collection: metadata.description,
+                quantity: data.quantity,
+              },
+            })
+          }
+        >
+          <span className="sr-only">View details for {metadata.name}</span>
+        </button>
+      </div>
+      <div className="flex justify-between mt-2">
+        <div>
+          <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
+            {data.name}
+          </p>
+          <p className="block text-sm font-medium text-gray-500 pointer-events-none">
+            {metadata.description}
+          </p>
+        </div>
+        <p className="text-xs font-medium text-gray-500 pointer-events-none">
+          {data.quantity}
+        </p>
+      </div>
+    </li>
   );
 };
 

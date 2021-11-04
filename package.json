@@ -13,6 +13,7 @@
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@tailwindcss/forms": "^0.3.4",
     "@yuyao17/corefork": "^0.5.8",
+    "clsx": "^1.1.1",
     "date-fns": "^2.25.0",
     "graphql": "^16.0.1",
     "graphql-tag": "^2.12.5",
