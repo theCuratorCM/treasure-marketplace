@@ -7,9 +7,13 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { resolveValue, Toaster } from "react-hot-toast";
 import { Transition } from "@headlessui/react";
-import { CheckCircleIcon } from "@heroicons/react/outline";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/outline";
 
 import Header from "../components/Header";
+import { Spinner } from "../components/Spinner";
 
 const queryClient = new QueryClient();
 
@@ -75,18 +79,29 @@ function MyApp({ Component, pageProps }) {
           >
             <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
               <div className="p-4">
-                <div className="flex items-start">
+                <div className="flex justify-center items-center">
                   <div className="flex-shrink-0">
-                    <CheckCircleIcon
-                      className="h-6 w-6 text-green-400"
-                      aria-hidden="true"
-                    />
+                    {(() => {
+                      switch (t.type) {
+                        case "success":
+                          return (
+                            <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                          );
+                        case "error":
+                          return (
+                            <ExclamationCircleIcon className="h-6 w-6 text-red-500" />
+                          );
+                        case "loading":
+                          return <Spinner className="h-6 w-6 text-blue-500" />;
+                        default:
+                          return (
+                            <CheckCircleIcon className="h-6 w-6 text-yellow-500" />
+                          );
+                      }
+                    })()}
                   </div>
-                  <div className="ml-3 w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-medium text-gray-900">
-                      {t.type}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
+                  <div className="ml-3 w-0 flex-1">
+                    <p className="text-sm text-gray-500">
                       {resolveValue(t.message, t)}
                     </p>
                   </div>
@@ -99,5 +114,7 @@ function MyApp({ Component, pageProps }) {
     </>
   );
 }
+
+// 'success' | 'error' | 'loading' | 'blank' | 'custom'
 
 export default MyApp;
