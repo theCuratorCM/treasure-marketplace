@@ -7,6 +7,7 @@ import { Zero } from "@ethersproject/constants";
 import { formatEther } from "ethers/lib/utils";
 import { Contracts } from "../const";
 import { truncateDecimal } from "../utils";
+import { toast } from "react-hot-toast";
 
 const navigation = {
   pages: [
