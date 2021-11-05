@@ -720,7 +720,7 @@ export type GetUserTokensQueryVariables = Exact<{
 }>;
 
 
-export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'Token', id: string, metadataUri?: string | null | undefined, quantity: any, tokenId: any, name?: string | null | undefined, collection: { __typename?: 'Collection', address: any } }> } | null | undefined };
+export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'Token', id: string, quantity: any, tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined }> } | null | undefined };
 
 
 export const GetUserTokensDocument = gql`
@@ -731,10 +731,13 @@ export const GetUserTokensDocument = gql`
       collection {
         address
       }
-      metadataUri
+      metadata {
+        image
+        name
+        description
+      }
       quantity
       tokenId
-      name
     }
     id
   }

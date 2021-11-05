@@ -8,10 +8,13 @@ export const getUserTokens = gql`
         collection {
           address
         }
-        metadataUri
+        metadata {
+          image
+          name
+          description
+        }
         quantity
         tokenId
-        name
       }
       id
     }

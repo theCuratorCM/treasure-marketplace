@@ -29,6 +29,7 @@ const tabs = [
 const Inventory = () => {
   const queryClient = useQueryClient();
   const [price, setPrice] = useState("");
+  const [quanity, setQuanity] = useState("");
   const [selectedDate, setSelectedDate] = useState(date[3]);
   const [drawerProps, setDrawerProps] = useState<{
     isOpen: boolean;
@@ -141,17 +142,53 @@ const Inventory = () => {
                 role="list"
                 className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
               >
-                {data?.user?.tokens.map(
-                  (
-                    token // TODO: if no tokens, show empty state
-                  ) => (
-                    <Item
-                      key={token.id}
-                      data={token}
-                      setDrawerProps={setDrawerProps}
-                    />
-                  )
-                )}
+                {data?.user?.tokens.map((token) => (
+                  <li key={token.id} className="relative">
+                    <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                      <img
+                        src={generateIpfsLink(token.metadata?.image || "")}
+                        alt={token.metadata?.name || ""}
+                        className="object-fill object-center pointer-events-none group-hover:opacity-80"
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-0 focus:outline-none"
+                        onClick={() =>
+                          setDrawerProps({
+                            isOpen: true,
+                            selectedNft: {
+                              address: token.collection.address,
+                              name: token.metadata?.name || "",
+                              source: generateIpfsLink(
+                                token.metadata?.image || ""
+                              ),
+                              collection: token.metadata?.description || "",
+                              quantity: token.quantity,
+                              tokenId: token.tokenId,
+                            },
+                          })
+                        }
+                      >
+                        <span className="sr-only">
+                          View details for {token.metadata?.name}
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <div>
+                        <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
+                          {token.metadata?.name}
+                        </p>
+                        <p className="block text-sm font-medium text-gray-500 pointer-events-none">
+                          {token.metadata?.description}
+                        </p>
+                      </div>
+                      <p className="text-xs font-medium text-gray-500 pointer-events-none">
+                        {token.quantity}
+                      </p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </section>
           </div>
@@ -240,7 +277,7 @@ const Inventory = () => {
                                   type="number"
                                   name="price"
                                   id="price"
-                                  className="focus:ring-red-500 focus:border-red-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
+                                  className="focus:ring-red-500 focus:border-red-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md"
                                   placeholder="0.00"
                                   aria-describedby="price-currency"
                                   onChange={(event) =>
@@ -286,9 +323,9 @@ const Inventory = () => {
                                     leaveTo="opacity-0"
                                   >
                                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                      {date.map((person) => (
+                                      {date.map((d) => (
                                         <Listbox.Option
-                                          key={person.id}
+                                          key={d.id}
                                           className={({ active }) =>
                                             classNames(
                                               active
@@ -297,7 +334,7 @@ const Inventory = () => {
                                               "cursor-default select-none relative py-2 pl-3 pr-9"
                                             )
                                           }
-                                          value={person}
+                                          value={d}
                                         >
                                           {({ selected, active }) => (
                                             <>
@@ -309,7 +346,7 @@ const Inventory = () => {
                                                   "block truncate"
                                                 )}
                                               >
-                                                {person.label}
+                                                {d.label}
                                               </span>
 
                                               {selected ? (
@@ -473,86 +510,6 @@ function createListing(
         </Transition.Root>
       </div>
     </div>
-  );
-};
-
-const Item = ({
-  data,
-  setDrawerProps,
-}: {
-  data: Exclude<GetUserTokensQuery["user"], null | undefined>["tokens"][number];
-  setDrawerProps: Dispatch<
-    SetStateAction<{
-      isOpen: boolean;
-      selectedNft: null | {
-        name: string;
-        source: string;
-        address: string;
-        collection: string;
-        quantity: string;
-        tokenId: string;
-      };
-    }>
-  >;
-}) => {
-  const {
-    data: metadata,
-    isLoading,
-    error,
-  } = useQuery<{
-    description: string;
-    image: string;
-    name: string;
-  }>(
-    ["item", data.id],
-    // @ts-expect-error
-    async () => await (await fetch(data.metadataUri)).json() // TODO: fix this typescript error
-  );
-
-  if (isLoading || !metadata) return <div>Loading..</div>; // TODO: better loading indicator
-
-  return (
-    <li key={data.id} className="relative">
-      <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
-        <img
-          src={generateIpfsLink(metadata.image)}
-          alt={metadata.name}
-          className="object-fill object-center pointer-events-none group-hover:opacity-80"
-        />
-        <button
-          type="button"
-          className="absolute inset-0 focus:outline-none"
-          onClick={() =>
-            setDrawerProps({
-              isOpen: true,
-              selectedNft: {
-                address: data.collection.address,
-                name: data.name || "",
-                source: generateIpfsLink(metadata.image),
-                collection: metadata.description,
-                quantity: data.quantity,
-                tokenId: data.tokenId,
-              },
-            })
-          }
-        >
-          <span className="sr-only">View details for {metadata.name}</span>
-        </button>
-      </div>
-      <div className="flex justify-between mt-2">
-        <div>
-          <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
-            {data.name}
-          </p>
-          <p className="block text-sm font-medium text-gray-500 pointer-events-none">
-            {metadata.description}
-          </p>
-        </div>
-        <p className="text-xs font-medium text-gray-500 pointer-events-none">
-          {data.quantity}
-        </p>
-      </div>
-    </li>
   );
 };
 
