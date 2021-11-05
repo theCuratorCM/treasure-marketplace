@@ -5,6 +5,9 @@ export const getUserTokens = gql`
     user(id: $id) {
       tokens {
         id
+        collection {
+          address
+        }
         metadataUri
         quantity
         tokenId
