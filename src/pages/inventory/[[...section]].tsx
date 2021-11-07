@@ -163,7 +163,7 @@ const Drawer = ({
                               type="number"
                               name="price"
                               id="price"
-                              className="focus:ring-red-500 focus:border-red-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 disabled:pointer-events-none transition-placeholder transition-text ease-linear duration-300"
+                              className="form-input focus:ring-red-500 focus:border-red-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 disabled:pointer-events-none transition-placeholder transition-text ease-linear duration-300"
                               placeholder="0.00"
                               aria-describedby="price-currency"
                               onChange={(event) => setPrice(event.target.value)}

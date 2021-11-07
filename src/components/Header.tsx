@@ -9,22 +9,43 @@ import { Contracts } from "../const";
 import { truncateDecimal } from "../utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { Modal } from "./Modal";
+import { Item } from "react-stately";
+import { SearchAutocomplete } from "./SearchAutocomplete";
+import { useRouter } from "next/router";
 
-const navigation = {
-  pages: [
-    { name: "Legions", href: "#" },
-    { name: "Smol Brains", href: "#" },
-    { name: "Getting Bodied", href: "#" },
-    { name: "Treasures", href: "#" },
-    { name: "Life", href: "#" },
-  ],
-};
+const collections = [
+  // TODO: Move to const
+  { name: "Legions", address: "0x6Fd12312f70fa5b04d66584600f39aBE31A99708" },
+  {
+    name: "Legions Genesis",
+    address: "0xAC2F8732A67C15Bf81f8A6181364cE753E915037",
+  },
+  { name: "Smol Brains", address: "#" },
+  { name: "Getting Bodied", address: "#" },
+  {
+    name: "Treasures",
+    address: "0x61B468f85B2e50bAA0B1729ffC99eFe9EF0428f0", // TODO: replace with mainnet
+  },
+  {
+    name: "Keys",
+    address: "0x25EE208B4F8636B5cEaAfdee051bf0BFE514f5f6", // TODO: replace with mainnet
+  },
+  {
+    name: "Extra Life",
+    address: "0x5e6ae51147d1eC18EdCCAe516A59fb0A26a0b48F",
+  },
+  {
+    name: "Seed of Life",
+    address: "0x6A67fbf40142E3Db2e6a950A4D48B0EB41107cE8",
+  },
+  { name: "Life", address: "#" },
+] as const;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sushiModalOpen, setSushiModalOpen] = useState(false);
   const { activateBrowserWallet, account, chainId } = useEthers();
-
+  const Router = useRouter();
   const magicBalance = formatEther(
     useTokenBalance(Contracts[chainId || 4]?.magic, account) || Zero
   );
@@ -71,10 +92,10 @@ const Header = () => {
               </div>
 
               <div className="py-6 px-4 space-y-6">
-                {navigation.pages.map((page) => (
+                {collections.map((page) => (
                   <div key={page.name} className="flow-root">
                     <a
-                      href={page.href}
+                      href={page.address}
                       className="-m-2 p-2 block font-medium text-gray-900"
                     >
                       {page.name}
@@ -94,17 +115,25 @@ const Header = () => {
               <div className="h-16 flex items-center justify-between">
                 <div className="hidden h-full lg:flex">
                   <div className="px-4 bottom-0 inset-x-0">
-                    <div className="h-full flex justify-center space-x-8">
-                      {navigation.pages.map((page) => (
-                        <a
-                          key={page.name}
-                          href={page.href}
-                          className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                        >
-                          {page.name}
-                        </a>
+                    <SearchAutocomplete
+                      label="Search Collection"
+                      allowsCustomValue
+                      onSelectionChange={(name) => {
+                        const targetCollection = collections.find(
+                          (collection) => collection.name === name
+                        );
+
+                        if (targetCollection) {
+                          Router.push(
+                            `/collection/${targetCollection.address}`
+                          );
+                        }
+                      }}
+                    >
+                      {collections.map((collection) => (
+                        <Item key={collection.name}>{collection.name}</Item>
                       ))}
-                    </div>
+                    </SearchAutocomplete>
                   </div>
                 </div>
 
