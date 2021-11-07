@@ -94,12 +94,11 @@ const Header = () => {
               <div className="py-6 px-4 space-y-6">
                 {collections.map((page) => (
                   <div key={page.name} className="flow-root">
-                    <a
-                      href={page.address}
-                      className="-m-2 p-2 block font-medium text-gray-900"
-                    >
-                      {page.name}
-                    </a>
+                    <Link href={`/collection/${page.address}`} passHref>
+                      <a className="-m-2 p-2 block font-medium text-gray-900">
+                        {page.name}
+                      </a>
+                    </Link>
                   </div>
                 ))}
               </div>

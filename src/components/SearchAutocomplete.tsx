@@ -193,7 +193,7 @@ export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
           {...inputProps}
           ref={inputRef}
           placeholder="Search Collection..."
-          className="outline-none px-3 py-1 appearance-none"
+          className="outline-none px-3 py-1 appearance-none w-full"
         />
         <button
           {...buttonProps}
