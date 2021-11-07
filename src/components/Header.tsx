@@ -213,7 +213,6 @@ const Header = () => {
               height: "100%",
               zIndex: 1,
             }}
-            id="myId"
           />
         </div>
       </Modal>
