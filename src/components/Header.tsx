@@ -7,7 +7,8 @@ import { Zero } from "@ethersproject/constants";
 import { formatEther } from "ethers/lib/utils";
 import { Contracts } from "../const";
 import { truncateDecimal } from "../utils";
-import { toast } from "react-hot-toast";
+import * as HoverCard from "@radix-ui/react-hover-card";
+import { Modal } from "./Modal";
 
 const navigation = {
   pages: [
@@ -21,6 +22,7 @@ const navigation = {
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sushiModalOpen, setSushiModalOpen] = useState(false);
   const { activateBrowserWallet, account, chainId } = useEthers();
 
   const magicBalance = formatEther(
@@ -120,11 +122,47 @@ const Header = () => {
                 <div className="flex-1 flex items-center justify-end">
                   <div className="flex items-center">
                     {account && (
-                      <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100">
+                      <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100 flex justify-center items-center space-x-2">
                         <span className="text-red-500">
                           {truncateDecimal(magicBalance)}
                         </span>{" "}
                         <span className="text-red-800">MAGIC</span>
+                        <HoverCard.Root openDelay={100} closeDelay={100}>
+                          <HoverCard.Trigger asChild>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 text-red-800"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </HoverCard.Trigger>
+                          <HoverCard.Content
+                            align="center"
+                            side="bottom"
+                            sideOffset={2}
+                          >
+                            <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <div className="py-1">
+                                <div>
+                                  <button
+                                    className="text-gray-700 block px-4 py-2 text-sm"
+                                    onClick={() => setSushiModalOpen(true)}
+                                  >
+                                    Purchase MAGIC
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </HoverCard.Content>
+                        </HoverCard.Root>
                       </div>
                     )}
                     <button
@@ -157,6 +195,28 @@ const Header = () => {
           </div>
         </nav>
       </header>
+      <Modal
+        title="Convert between ETH and MAGIC"
+        onClose={() => setSushiModalOpen(false)}
+        isOpen={sushiModalOpen}
+      >
+        <div className="h-[610px] py-4">
+          <iframe
+            src="https://app.sushi.com/swap?inputCurrency=&outputCurrency=0x539bdE0d7Dbd336b79148AA742883198BBF60342"
+            width="100%"
+            style={{
+              border: 0,
+              borderRadius: "10px",
+              margin: "0px auto",
+              display: "block",
+              width: "100%",
+              height: "100%",
+              zIndex: 1,
+            }}
+            id="myId"
+          />
+        </div>
+      </Modal>
     </div>
   );
 };
