@@ -55,6 +55,7 @@ export const getCollectionListings = gql`
   query getCollectionListings($id: ID!, $orderDirection: OrderDirection!) {
     collection(id: $id) {
       name
+      address
       listings(orderBy: pricePerItem, orderDirection: $orderDirection) {
         user {
           id
@@ -63,6 +64,7 @@ export const getCollectionListings = gql`
         id
         pricePerItem
         token {
+          tokenId
           metadata {
             image
             name

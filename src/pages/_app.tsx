@@ -15,6 +15,7 @@ import { SSRProvider } from "@react-aria/ssr";
 
 import Header from "../components/Header";
 import { Spinner } from "../components/Spinner";
+import { BalanceContextProvider } from "../context/balanceContext";
 
 const queryClient = new QueryClient();
 
@@ -46,26 +47,28 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <SSRProvider>
         <DAppProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <div className="min-h-screen relative overflow-hidden dark:bg-black">
-              {Component.showSamuraiBg && (
-                <>
-                  <img
-                    src={"/img/samurai1.png"}
-                    className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
-                  />
-                  <img
-                    src={"/img/samurai2.png"}
-                    className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
-                  />
-                </>
-              )}
-              <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
-              <Header />
-              <Component {...pageProps} />
-            </div>
-            <ReactQueryDevtools />
-          </QueryClientProvider>
+          <BalanceContextProvider>
+            <QueryClientProvider client={queryClient}>
+              <div className="min-h-screen relative overflow-hidden dark:bg-black">
+                {Component.showSamuraiBg && (
+                  <>
+                    <img
+                      src={"/img/samurai1.png"}
+                      className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
+                    />
+                    <img
+                      src={"/img/samurai2.png"}
+                      className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
+                    />
+                  </>
+                )}
+                <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
+                <Header />
+                <Component {...pageProps} />
+              </div>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </BalanceContextProvider>
         </DAppProvider>
         <Toaster position="bottom-left">
           {(t) => (

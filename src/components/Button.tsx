@@ -26,7 +26,7 @@ const Button = ({
         variant === "secondary"
           ? "text-red-700 bg-red-100 hover:bg-red-200"
           : "text-white bg-red-600 hover:bg-red-700",
-        "flex justify-center flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full disabled:bg-red-300 disabled:pointer-events-none transition-bg ease-linear duration-300"
+        "flex justify-center flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full disabled:bg-red-300 disabled:cursor-not-allowed ease-linear duration-300"
       )}
       disabled={disabled}
       onClick={onClick}

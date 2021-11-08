@@ -157,6 +157,41 @@ export function useRemoveListing() {
   }, [remove]);
 }
 
+export function useBuyItem() {
+  const queryClient = useQueryClient();
+
+  const { send: sendBuy, state } = useContractFunction(
+    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    "buyItem"
+  );
+
+  useEffect(() => {
+    switch (state.status) {
+      case "Exception":
+      case "Fail":
+        toast.error(`Transaction failed! ${state.errorMessage}`);
+        return;
+      case "Success":
+        toast.success("Successfully purchased!");
+        queryClient.invalidateQueries("listings", { refetchInactive: true });
+        break;
+    }
+  }, [queryClient, state.errorMessage, state.status]);
+
+  return useMemo(() => {
+    const send = (
+      address: string,
+      ownerAddress: string,
+      tokenId: number,
+      quantity: number
+    ) => {
+      sendBuy(address, tokenId, ownerAddress, quantity);
+    };
+
+    return { send, state };
+  }, [sendBuy, state]);
+}
+
 export function useUpdateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
   const queryClient = useQueryClient();
@@ -188,7 +223,13 @@ export function useUpdateListing() {
 
         break;
     }
-  }, [name, quantity, queryClient, update.state.errorMessage, update.state.status]);
+  }, [
+    name,
+    quantity,
+    queryClient,
+    update.state.errorMessage,
+    update.state.status,
+  ]);
 
   return useMemo(() => {
     const send = (
