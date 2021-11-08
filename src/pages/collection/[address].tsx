@@ -16,7 +16,7 @@ import {
   GetCollectionListingsQuery,
   OrderDirection,
 } from "../../../generated/graphql";
-import { useBalance } from "../../context/balanceContext";
+import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
 import { useBuyItem } from "../../lib/hooks";
@@ -262,7 +262,7 @@ const PurchaseItemModal = ({
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const { address } = router.query;
-  const magicBalance = useBalance();
+  const { magicBalance, magicPrice } = useMagic();
 
   const normalizedAddress = Array.isArray(address)
     ? address[0]
@@ -340,8 +340,11 @@ const PurchaseItemModal = ({
           <dl className="py-6 px-4 space-y-6 sm:px-6">
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base font-medium">Total</dt>
-              <dd className="text-base font-medium text-gray-900">
-                {totalPrice} $MAGIC
+              <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
+                <p>{totalPrice} $MAGIC</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  ${(totalPrice * magicPrice).toFixed(2)}
+                </p>
               </dd>
             </div>
           </dl>

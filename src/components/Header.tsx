@@ -10,7 +10,7 @@ import { Modal } from "./Modal";
 import { Item } from "react-stately";
 import { SearchAutocomplete } from "./SearchAutocomplete";
 import { useRouter } from "next/router";
-import { useBalance } from "../context/balanceContext";
+import { useMagic } from "../context/magicContext";
 
 const collections = [
   // TODO: Move to const
@@ -45,7 +45,7 @@ const Header = () => {
   const [sushiModalOpen, setSushiModalOpen] = useState(false);
   const { activateBrowserWallet, account } = useEthers();
   const Router = useRouter();
-  const magicBalance = useBalance();
+  const { magicBalance, magicPrice } = useMagic();
 
   return (
     <div>

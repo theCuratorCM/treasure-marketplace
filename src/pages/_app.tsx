@@ -15,7 +15,7 @@ import { SSRProvider } from "@react-aria/ssr";
 
 import Header from "../components/Header";
 import { Spinner } from "../components/Spinner";
-import { BalanceContextProvider } from "../context/balanceContext";
+import { MagicProvider } from "../context/magicContext";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <SSRProvider>
         <DAppProvider config={config}>
-          <BalanceContextProvider>
+          <MagicProvider>
             <QueryClientProvider client={queryClient}>
               <div className="min-h-screen relative overflow-hidden dark:bg-black">
                 {Component.showSamuraiBg && (
@@ -68,7 +68,7 @@ function MyApp({ Component, pageProps }) {
               </div>
               <ReactQueryDevtools />
             </QueryClientProvider>
-          </BalanceContextProvider>
+          </MagicProvider>
         </DAppProvider>
         <Toaster position="bottom-left">
           {(t) => (
