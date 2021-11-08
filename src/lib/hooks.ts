@@ -1,5 +1,5 @@
 import * as abis from "./abis";
-import { ChainId } from "@yuyao17/corefork";
+import { ChainId, ERC20Interface } from "@yuyao17/corefork";
 import { Contract } from "ethers";
 import { Contracts } from "../const";
 import { Interface } from "@ethersproject/abi";
@@ -12,6 +12,7 @@ import {
 } from "@yuyao17/corefork";
 import { useQueryClient } from "react-query";
 import plur from "plur";
+import { MaxUint256 } from "@ethersproject/constants";
 
 export function useApproveContract(contract: string) {
   const approve = useContractFunction(
@@ -157,6 +158,41 @@ export function useRemoveListing() {
   }, [remove]);
 }
 
+export function useBuyItem() {
+  const queryClient = useQueryClient();
+
+  const { send: sendBuy, state } = useContractFunction(
+    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    "buyItem"
+  );
+
+  useEffect(() => {
+    switch (state.status) {
+      case "Exception":
+      case "Fail":
+        toast.error(`Transaction failed! ${state.errorMessage}`);
+        return;
+      case "Success":
+        toast.success("Successfully purchased!");
+        queryClient.invalidateQueries("listings", { refetchInactive: true });
+        break;
+    }
+  }, [queryClient, state.errorMessage, state.status]);
+
+  return useMemo(() => {
+    const send = (
+      address: string,
+      ownerAddress: string,
+      tokenId: number,
+      quantity: number
+    ) => {
+      sendBuy(address, tokenId, ownerAddress, quantity);
+    };
+
+    return { send, state };
+  }, [sendBuy, state]);
+}
+
 export function useUpdateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
   const queryClient = useQueryClient();
@@ -188,7 +224,13 @@ export function useUpdateListing() {
 
         break;
     }
-  }, [name, quantity, queryClient, update.state.errorMessage, update.state.status]);
+  }, [
+    name,
+    quantity,
+    queryClient,
+    update.state.errorMessage,
+    update.state.status,
+  ]);
 
   return useMemo(() => {
     const send = (
@@ -205,3 +247,13 @@ export function useUpdateListing() {
     return { ...update, send };
   }, [update]);
 }
+
+export const useApproveMagic = () => {
+  const contract = new Contract(Contracts[4].magic, ERC20Interface);
+  const { send, state } = useContractFunction(contract, "approve");
+
+  return {
+    send: () => send(Contracts[4].marketplace, MaxUint256.toString()),
+    state,
+  };
+};

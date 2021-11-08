@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 import { useQuery } from "react-query";
@@ -11,7 +11,17 @@ import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { OrderDirection } from "../../../generated/graphql";
+import { Modal } from "../../components/Modal";
+import {
+  GetCollectionListingsQuery,
+  OrderDirection,
+} from "../../../generated/graphql";
+import { useMagic } from "../../context/magicContext";
+import { BigNumber } from "@ethersproject/bignumber";
+import Button from "../../components/Button";
+import { useApproveMagic, useBuyItem } from "../../lib/hooks";
+import { useEthers, useTokenAllowance } from "@yuyao17/corefork";
+import { Contracts } from "../../const";
 
 const sortOptions = [
   { name: "Price: Low to High", value: "asc" },
@@ -35,6 +45,20 @@ const MapSortToEnum = (sort: string) => {
 const Collection = () => {
   const router = useRouter();
   const { address, sort } = router.query;
+  const { account } = useEthers();
+  const [modalProps, setModalProps] = useState<{
+    isOpen: boolean;
+    targetNft:
+      | Exclude<
+          GetCollectionListingsQuery["collection"],
+          null | undefined
+        >["listings"][number]
+      | null;
+  }>({
+    isOpen: false,
+    targetNft: null,
+  });
+
   const sortParam = sort ?? OrderDirection.Asc;
 
   const { data: nameData } = useQuery(
@@ -57,6 +81,7 @@ const Collection = () => {
         id: Array.isArray(address)
           ? address[0]
           : address?.toLowerCase() ?? AddressZero,
+        account: account?.toLowerCase() ?? AddressZero,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,
@@ -96,8 +121,8 @@ const Collection = () => {
               </div>
               <input
                 type="text"
-                className="focus:ring-red-500 focus:border-red-500 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400"
-                placeholder="Filter by keyword"
+                className="focus:ring-red-500 focus:border-red-500 focus:ring-2 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400 outline-none py-1"
+                placeholder="Search name..."
               />
             </div>
             <Menu as="div" className="relative z-10 inline-block text-left">
@@ -169,7 +194,12 @@ const Collection = () => {
                     <button
                       type="button"
                       className="absolute inset-0 focus:outline-none"
-                      onClick={() => console.log("yo")}
+                      onClick={() =>
+                        setModalProps({
+                          isOpen: true,
+                          targetNft: listing,
+                        })
+                      }
                     >
                       <span className="sr-only">
                         View details for {listing.token.metadata?.name}
@@ -210,7 +240,172 @@ const Collection = () => {
           </section>
         )}
       </div>
+      {modalProps.isOpen && modalProps.targetNft && (
+        <PurchaseItemModal
+          isOpen={true}
+          onClose={() => setModalProps({ isOpen: false, targetNft: null })}
+          list={modalProps.targetNft}
+        />
+      )}
     </main>
+  );
+};
+
+const PurchaseItemModal = ({
+  isOpen,
+  onClose,
+  list,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  list: Exclude<
+    GetCollectionListingsQuery["collection"],
+    null | undefined
+  >["listings"][number];
+}) => {
+  const [quantity, setQuantity] = useState(1);
+  const { account } = useEthers();
+  const router = useRouter();
+  const { address } = router.query;
+  const { magicBalance, magicPrice } = useMagic();
+
+  const normalizedAddress = Array.isArray(address)
+    ? address[0]
+    : address ?? AddressZero;
+
+  const totalPrice =
+    quantity * Number(parseFloat(formatEther(list.pricePerItem)).toFixed(2));
+
+  const canPurchase = magicBalance.gte(
+    BigNumber.from(list.pricePerItem).mul(quantity)
+  );
+
+  const { send: approve, state: approveState } = useApproveMagic();
+
+  const magicAllowance = useTokenAllowance(
+    Contracts[4].magic,
+    account ?? AddressZero,
+    Contracts[4].marketplace
+  );
+
+  const notAllowed = magicAllowance?.isZero() ?? true;
+
+  const { send, state } = useBuyItem();
+
+  useEffect(() => {
+    if (state.status === "Success") {
+      onClose();
+    }
+  }, [state.status, onClose]);
+
+  return (
+    <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">
+      <div className="mt-10 lg:mt-0">
+        <div className="mt-4">
+          <h3 className="sr-only">Items in your cart</h3>
+          <ul role="list" className="divide-y divide-gray-200">
+            <li key={list.id} className="flex py-6 px-4 sm:px-6">
+              <div className="flex-shrink-0">
+                <Image
+                  src={generateIpfsLink(list.token.metadata?.image ?? "")}
+                  alt={list.token.metadata?.name ?? ""}
+                  width="50%"
+                  height="50%"
+                />
+              </div>
+
+              <div className="ml-6 flex-1 flex flex-col">
+                <div className="flex">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm">
+                      <p className="text-sm text-gray-500 uppercase">
+                        {list.token.metadata?.description}
+                      </p>
+                      <p className="mt-1 font-medium text-gray-700 hover:text-gray-800">
+                        {list.token.metadata?.name ?? ""}
+                      </p>
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="flex-1 pt-2 flex items-end justify-between">
+                  <p className="mt-1 text-xs font-medium text-gray-900">
+                    {formatEther(list.pricePerItem)} $MAGIC{" "}
+                    <span className="text-[0.5rem] text-gray-500">
+                      Per Item
+                    </span>
+                  </p>
+
+                  <div className="ml-4">
+                    <label htmlFor="quantity" className="sr-only">
+                      Quantity
+                    </label>
+                    <select
+                      id="quantity"
+                      name="quantity"
+                      value={quantity}
+                      onChange={(e) => setQuantity(Number(e.target.value))}
+                      className="form-select rounded-md border border-gray-300 text-base font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                    >
+                      {Array.from({
+                        length: Number(list.quantity) || 0,
+                      }).map((_, idx) => (
+                        <option key={idx} value={idx + 1}>
+                          {idx + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <dl className="py-6 px-4 space-y-6 sm:px-6">
+            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+              <dt className="text-base font-medium">Total</dt>
+              <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
+                <p>{totalPrice} $MAGIC</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  ≈ $
+                  {new Intl.NumberFormat().format(
+                    parseFloat((totalPrice * magicPrice).toFixed(2))
+                  )}
+                </p>
+              </dd>
+            </div>
+          </dl>
+
+          <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
+            {notAllowed ? (
+              <Button
+                onClick={approve}
+                isLoading={approveState.status === "Mining"}
+                loadingText="Approving MAGIC..."
+                variant="secondary"
+              >
+                Approve $MAGIC to purchase this item
+              </Button>
+            ) : (
+              <Button
+                disabled={!canPurchase || state.status === "Mining"}
+                isLoading={state.status === "Mining"}
+                loadingText="Confirming order..."
+                onClick={() => {
+                  send(
+                    normalizedAddress,
+                    list.user.id,
+                    Number(list.token.tokenId),
+                    quantity
+                  );
+                }}
+              >
+                {canPurchase ? "Confirm order" : "You have insufficient funds"}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

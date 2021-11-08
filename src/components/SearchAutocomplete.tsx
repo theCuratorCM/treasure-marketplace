@@ -21,7 +21,7 @@ import {
   useListBoxSection,
   useOption,
 } from "react-aria";
-import { SearchIcon, XIcon, CheckIcon } from "@heroicons/react/solid";
+import { SearchIcon, XIcon } from "@heroicons/react/solid";
 
 interface ListBoxProps extends AriaListBoxOptions<unknown> {
   listBoxRef?: React.RefObject<HTMLUListElement>;

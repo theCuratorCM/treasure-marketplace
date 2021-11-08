@@ -52,10 +52,19 @@ export const getCollectionName = gql`
 `;
 
 export const getCollectionListings = gql`
-  query getCollectionListings($id: ID!, $orderDirection: OrderDirection!) {
+  query getCollectionListings(
+    $id: ID!
+    $account: String!
+    $orderDirection: OrderDirection!
+  ) {
     collection(id: $id) {
       name
-      listings(orderBy: pricePerItem, orderDirection: $orderDirection) {
+      address
+      listings(
+        orderBy: pricePerItem
+        orderDirection: $orderDirection
+        where: { user_not: $account, status: Active }
+      ) {
         user {
           id
         }
@@ -63,6 +72,7 @@ export const getCollectionListings = gql`
         id
         pricePerItem
         token {
+          tokenId
           metadata {
             image
             name
