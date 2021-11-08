@@ -31,7 +31,7 @@ export const MagicProvider = ({ children }) => {
 
     fetchMagicPrice();
 
-    const interval = setInterval(fetchMagicPrice, 1000 * 60);
+    const interval = setInterval(fetchMagicPrice, 1000 * 60); // fetch every minute
 
     return () => clearInterval(interval);
   }, []);
