@@ -24,7 +24,7 @@ export const MagicProvider = ({ children }) => {
 
         setPrice(data.magic.usd);
       } catch (e) {
-        // If we can't fetch the price, just use the previous value
+        // If we can't fetch the price (e.g. api limit), just use the previous value
         setPrice((price) => price);
       }
     };
