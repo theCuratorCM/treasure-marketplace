@@ -416,10 +416,7 @@ export type QueryUsersArgs = {
 
 export enum Status {
   Active = 'Active',
-  Canceled = 'Canceled',
-  Expired = 'Expired',
-  Sold = 'Sold',
-  Unlisted = 'Unlisted'
+  Sold = 'Sold'
 }
 
 export type Subscription = {
@@ -789,6 +786,21 @@ export type GetUserListingsQueryVariables = Exact<{
 
 export type GetUserListingsQuery = { __typename?: 'Query', user?: { __typename?: 'User', listings: Array<{ __typename?: 'Listing', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
 
+export type GetCollectionNameQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetCollectionNameQuery = { __typename?: 'Query', collection?: { __typename?: 'Collection', id: string, name: string } | null | undefined };
+
+export type GetCollectionListingsQueryVariables = Exact<{
+  id: Scalars['ID'];
+  orderDirection: OrderDirection;
+}>;
+
+
+export type GetCollectionListingsQuery = { __typename?: 'Query', collection?: { __typename?: 'Collection', name: string, listings: Array<{ __typename?: 'Listing', expires: any, id: string, pricePerItem: any, quantity: any, user: { __typename?: 'User', id: string }, token: { __typename?: 'Token', metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
+
 
 export const GetUserTokensDocument = gql`
     query getUserTokens($id: ID!) {
@@ -833,6 +845,37 @@ export const GetUserListingsDocument = gql`
   }
 }
     `;
+export const GetCollectionNameDocument = gql`
+    query getCollectionName($id: ID!) {
+  collection(id: $id) {
+    id
+    name
+  }
+}
+    `;
+export const GetCollectionListingsDocument = gql`
+    query getCollectionListings($id: ID!, $orderDirection: OrderDirection!) {
+  collection(id: $id) {
+    name
+    listings(orderBy: pricePerItem, orderDirection: $orderDirection) {
+      user {
+        id
+      }
+      expires
+      id
+      pricePerItem
+      token {
+        metadata {
+          image
+          name
+          description
+        }
+      }
+      quantity
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string) => Promise<T>;
 
@@ -846,6 +889,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getUserListings(variables: GetUserListingsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserListingsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUserListingsQuery>(GetUserListingsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserListings');
+    },
+    getCollectionName(variables: GetCollectionNameQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetCollectionNameQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCollectionNameQuery>(GetCollectionNameDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCollectionName');
+    },
+    getCollectionListings(variables: GetCollectionListingsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetCollectionListingsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCollectionListingsQuery>(GetCollectionListingsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCollectionListings');
     }
   };
 }
