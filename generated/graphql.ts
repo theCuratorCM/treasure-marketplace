@@ -777,7 +777,9 @@ export type GetUserInventoryQueryVariables = Exact<{
 }>;
 
 
-export type GetUserInventoryQuery = { __typename?: 'Query', user?: { __typename?: 'User', listings: Array<{ __typename?: 'Listing', id: string, expires: any, pricePerItem: any, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }>, tokens: Array<{ __typename?: 'UserToken', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
+export type GetUserInventoryQuery = { __typename?: 'Query', user?: { __typename?: 'User', listings: Array<{ __typename?: 'Listing', id: string, expires: any, pricePerItem: any, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }>, sold: Array<{ __typename?: 'Listing', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }>, tokens: Array<{ __typename?: 'UserToken', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
+
+export type TokenFieldsFragment = { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined };
 
 export type GetCollectionNameQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -794,45 +796,48 @@ export type GetCollectionListingsQueryVariables = Exact<{
 
 export type GetCollectionListingsQuery = { __typename?: 'Query', collection?: { __typename?: 'Collection', name: string, listings: Array<{ __typename?: 'Listing', expires: any, id: string, pricePerItem: any, quantity: any, user: { __typename?: 'User', id: string }, token: { __typename?: 'Token', metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
 
-
+export const TokenFieldsFragmentDoc = gql`
+    fragment TokenFields on Token {
+  collection {
+    address
+  }
+  metadata {
+    image
+    name
+    description
+  }
+  tokenId
+}
+    `;
 export const GetUserInventoryDocument = gql`
     query getUserInventory($id: ID!) {
   user(id: $id) {
-    listings {
+    listings(where: {status: Active}) {
       id
       expires
       pricePerItem
       quantity
       token {
-        collection {
-          address
-        }
-        metadata {
-          image
-          name
-          description
-        }
-        tokenId
+        ...TokenFields
+      }
+    }
+    sold: listings(where: {status: Sold}) {
+      id
+      quantity
+      token {
+        ...TokenFields
       }
     }
     tokens {
       id
       quantity
       token {
-        collection {
-          address
-        }
-        metadata {
-          image
-          name
-          description
-        }
-        tokenId
+        ...TokenFields
       }
     }
   }
 }
-    `;
+    ${TokenFieldsFragmentDoc}`;
 export const GetCollectionNameDocument = gql`
     query getCollectionName($id: ID!) {
   collection(id: $id) {
