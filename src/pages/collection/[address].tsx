@@ -343,7 +343,7 @@ const PurchaseItemModal = ({
               <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
                 <p>{totalPrice} $MAGIC</p>
                 <p className="text-gray-500 text-sm mt-1">
-                  $
+                  ≈ $
                   {new Intl.NumberFormat().format(
                     parseFloat((totalPrice * magicPrice).toFixed(2))
                   )}
