@@ -45,6 +45,7 @@ const MapSortToEnum = (sort: string) => {
 const Collection = () => {
   const router = useRouter();
   const { address, sort } = router.query;
+  const { account } = useEthers();
   const [modalProps, setModalProps] = useState<{
     isOpen: boolean;
     targetNft:
@@ -80,6 +81,7 @@ const Collection = () => {
         id: Array.isArray(address)
           ? address[0]
           : address?.toLowerCase() ?? AddressZero,
+        account: account?.toLowerCase() ?? AddressZero,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,
