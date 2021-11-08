@@ -198,7 +198,7 @@ const Collection = () => {
                   </div>
                   <div className="flex mt-1 justify-end">
                     <span className="text-gray-600 text-xs text-[0.6rem]">
-                      <span className="text-gray-500">Qty:</span>{" "}
+                      <span className="text-gray-500">Quantity:</span>{" "}
                       <span className="font-bold text-gray-700">
                         {listing.quantity}
                       </span>
