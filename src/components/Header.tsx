@@ -45,7 +45,7 @@ const Header = () => {
   const [sushiModalOpen, setSushiModalOpen] = useState(false);
   const { activateBrowserWallet, account } = useEthers();
   const Router = useRouter();
-  const { magicBalance, magicPrice } = useMagic();
+  const { magicBalance } = useMagic();
 
   return (
     <div>

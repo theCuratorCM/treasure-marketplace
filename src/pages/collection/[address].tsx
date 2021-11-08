@@ -378,7 +378,6 @@ const PurchaseItemModal = ({
               <Button
                 onClick={approve}
                 isLoading={approveState.status === "Mining"}
-                disabled={approveState.status === "Mining"}
                 loadingText="Approving MAGIC..."
                 variant="secondary"
               >
