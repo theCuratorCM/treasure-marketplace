@@ -56,7 +56,11 @@ export const getCollectionListings = gql`
     collection(id: $id) {
       name
       address
-      listings(orderBy: pricePerItem, orderDirection: $orderDirection) {
+      listings(
+        orderBy: pricePerItem
+        orderDirection: $orderDirection
+        where: { status: Active }
+      ) {
         user {
           id
         }

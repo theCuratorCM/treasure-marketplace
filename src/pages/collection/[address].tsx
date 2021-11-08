@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 import { useQuery } from "react-query";
@@ -19,7 +19,9 @@ import {
 import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
-import { useBuyItem } from "../../lib/hooks";
+import { useApproveMagic, useBuyItem } from "../../lib/hooks";
+import { useEthers, useTokenAllowance } from "@yuyao17/corefork";
+import { Contracts } from "../../const";
 
 const sortOptions = [
   { name: "Price: Low to High", value: "asc" },
@@ -260,6 +262,7 @@ const PurchaseItemModal = ({
   >["listings"][number];
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const { account } = useEthers();
   const router = useRouter();
   const { address } = router.query;
   const { magicBalance, magicPrice } = useMagic();
@@ -273,7 +276,23 @@ const PurchaseItemModal = ({
 
   const canPurchase = magicBalance.gte(BigNumber.from(list.pricePerItem));
 
+  const { send: approve, state: approveState } = useApproveMagic();
+
+  const magicAllowance = useTokenAllowance(
+    Contracts[4].magic,
+    account ?? AddressZero,
+    Contracts[4].marketplace
+  );
+
+  const notAllowed = magicAllowance?.isZero() ?? true;
+
   const { send, state } = useBuyItem();
+
+  useEffect(() => {
+    if (state.status === "Success") {
+      onClose();
+    }
+  }, [state.status, onClose]);
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">
@@ -353,21 +372,33 @@ const PurchaseItemModal = ({
           </dl>
 
           <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
-            <Button
-              disabled={!canPurchase || state.status === "Mining"}
-              isLoading={state.status === "Mining"}
-              loadingText="Confirming order..."
-              onClick={() => {
-                send(
-                  normalizedAddress,
-                  list.user.id,
-                  Number(list.token.tokenId),
-                  quantity
-                );
-              }}
-            >
-              {canPurchase ? "Confirm order" : "You have insufficient funds"}
-            </Button>
+            {notAllowed ? (
+              <Button
+                onClick={approve}
+                isLoading={approveState.status === "Mining"}
+                disabled={approveState.status === "Mining"}
+                loadingText="Approving MAGIC..."
+                variant="secondary"
+              >
+                Approve $MAGIC to purchase this item
+              </Button>
+            ) : (
+              <Button
+                disabled={!canPurchase || state.status === "Mining"}
+                isLoading={state.status === "Mining"}
+                loadingText="Confirming order..."
+                onClick={() => {
+                  send(
+                    normalizedAddress,
+                    list.user.id,
+                    Number(list.token.tokenId),
+                    quantity
+                  );
+                }}
+              >
+                {canPurchase ? "Confirm order" : "You have insufficient funds"}
+              </Button>
+            )}
           </div>
         </div>
       </div>
