@@ -276,7 +276,9 @@ const PurchaseItemModal = ({
   const totalPrice =
     quantity * Number(parseFloat(formatEther(list.pricePerItem)).toFixed(2));
 
-  const canPurchase = magicBalance.gte(BigNumber.from(list.pricePerItem));
+  const canPurchase = magicBalance.gte(
+    BigNumber.from(list.pricePerItem).mul(quantity)
+  );
 
   const { send: approve, state: approveState } = useApproveMagic();
 
