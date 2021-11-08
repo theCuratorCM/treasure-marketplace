@@ -11,6 +11,7 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/outline";
+import { SSRProvider } from "@react-aria/ssr";
 
 import Header from "../components/Header";
 import { Spinner } from "../components/Spinner";
@@ -43,74 +44,78 @@ function MyApp({ Component, pageProps }) {
           rel="stylesheet"
         />
       </Head>
-      <DAppProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen relative overflow-hidden dark:bg-black">
-            {Component.showSamuraiBg && (
-              <>
-                <img
-                  src={"/img/samurai1.png"}
-                  className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
-                />
-                <img
-                  src={"/img/samurai2.png"}
-                  className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
-                />
-              </>
-            )}
-            <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
-            <Header />
-            <Component {...pageProps} />
-          </div>
-          <ReactQueryDevtools />
-        </QueryClientProvider>
-      </DAppProvider>
-      <Toaster position="bottom-left">
-        {(t) => (
-          <Transition
-            show={t.visible}
-            as={React.Fragment}
-            enter="transform ease-out duration-300 transition"
-            enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-            enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
-              <div className="p-4">
-                <div className="flex justify-center items-center">
-                  <div className="flex-shrink-0">
-                    {(() => {
-                      switch (t.type) {
-                        case "success":
-                          return (
-                            <CheckCircleIcon className="h-6 w-6 text-green-500" />
-                          );
-                        case "error":
-                          return (
-                            <ExclamationCircleIcon className="h-6 w-6 text-red-500" />
-                          );
-                        case "loading":
-                          return <Spinner className="h-6 w-6 text-blue-500" />;
-                        default:
-                          return (
-                            <CheckCircleIcon className="h-6 w-6 text-yellow-500" />
-                          );
-                      }
-                    })()}
-                  </div>
-                  <div className="ml-3 w-0 flex-1">
-                    <p className="text-sm text-gray-500">
-                      {resolveValue(t.message, t)}
-                    </p>
+      <SSRProvider>
+        <DAppProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <div className="min-h-screen relative overflow-hidden dark:bg-black">
+              {Component.showSamuraiBg && (
+                <>
+                  <img
+                    src={"/img/samurai1.png"}
+                    className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
+                  />
+                  <img
+                    src={"/img/samurai2.png"}
+                    className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
+                  />
+                </>
+              )}
+              <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
+              <Header />
+              <Component {...pageProps} />
+            </div>
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </DAppProvider>
+        <Toaster position="bottom-left">
+          {(t) => (
+            <Transition
+              show={t.visible}
+              as={React.Fragment}
+              enter="transform ease-out duration-300 transition"
+              enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+              enterTo="translate-y-0 opacity-100 sm:translate-x-0"
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+                <div className="p-4">
+                  <div className="flex justify-center items-center">
+                    <div className="flex-shrink-0">
+                      {(() => {
+                        switch (t.type) {
+                          case "success":
+                            return (
+                              <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                            );
+                          case "error":
+                            return (
+                              <ExclamationCircleIcon className="h-6 w-6 text-red-500" />
+                            );
+                          case "loading":
+                            return (
+                              <Spinner className="h-6 w-6 text-blue-500" />
+                            );
+                          default:
+                            return (
+                              <CheckCircleIcon className="h-6 w-6 text-yellow-500" />
+                            );
+                        }
+                      })()}
+                    </div>
+                    <div className="ml-3 w-0 flex-1">
+                      <p className="text-sm text-gray-500">
+                        {resolveValue(t.message, t)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Transition>
-        )}
-      </Toaster>
+            </Transition>
+          )}
+        </Toaster>
+      </SSRProvider>
     </>
   );
 }

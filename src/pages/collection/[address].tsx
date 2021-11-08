@@ -1,17 +1,15 @@
-import * as React from "react";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
-import classNames from "clsx";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 import { generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { OrderDirection } from "../../../generated/graphql";
 

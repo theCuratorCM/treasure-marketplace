@@ -1,5 +1,3 @@
-const colors = require("tailwindcss/colors");
-
 module.exports = {
   mode: "jit",
   purge: ["./src/**/*.{js,ts,jsx,tsx}"],
@@ -25,7 +23,10 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require("@tailwindcss/forms"),
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
     require("@tailwindcss/aspect-ratio"),
   ],
 };

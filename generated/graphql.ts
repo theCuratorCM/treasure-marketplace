@@ -772,19 +772,12 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type GetUserTokensQueryVariables = Exact<{
+export type GetUserInventoryQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetUserTokensQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, tokens: Array<{ __typename?: 'UserToken', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
-
-export type GetUserListingsQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type GetUserListingsQuery = { __typename?: 'Query', user?: { __typename?: 'User', listings: Array<{ __typename?: 'Listing', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
+export type GetUserInventoryQuery = { __typename?: 'Query', user?: { __typename?: 'User', listings: Array<{ __typename?: 'Listing', id: string, expires: any, pricePerItem: any, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }>, tokens: Array<{ __typename?: 'UserToken', id: string, quantity: any, token: { __typename?: 'Token', tokenId: any, collection: { __typename?: 'Collection', address: any }, metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
 
 export type GetCollectionNameQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -802,11 +795,13 @@ export type GetCollectionListingsQueryVariables = Exact<{
 export type GetCollectionListingsQuery = { __typename?: 'Query', collection?: { __typename?: 'Collection', name: string, listings: Array<{ __typename?: 'Listing', expires: any, id: string, pricePerItem: any, quantity: any, user: { __typename?: 'User', id: string }, token: { __typename?: 'Token', metadata?: { __typename?: 'Metadata', image?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined } | null | undefined } }> } | null | undefined };
 
 
-export const GetUserTokensDocument = gql`
-    query getUserTokens($id: ID!) {
+export const GetUserInventoryDocument = gql`
+    query getUserInventory($id: ID!) {
   user(id: $id) {
-    tokens {
+    listings {
       id
+      expires
+      pricePerItem
       quantity
       token {
         collection {
@@ -820,14 +815,7 @@ export const GetUserTokensDocument = gql`
         tokenId
       }
     }
-    id
-  }
-}
-    `;
-export const GetUserListingsDocument = gql`
-    query getUserListings($id: ID!) {
-  user(id: $id) {
-    listings {
+    tokens {
       id
       quantity
       token {
@@ -884,11 +872,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    getUserTokens(variables: GetUserTokensQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserTokensQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserTokensQuery>(GetUserTokensDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserTokens');
-    },
-    getUserListings(variables: GetUserListingsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserListingsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserListingsQuery>(GetUserListingsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserListings');
+    getUserInventory(variables: GetUserInventoryQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserInventoryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserInventoryQuery>(GetUserInventoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserInventory');
     },
     getCollectionName(variables: GetCollectionNameQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetCollectionNameQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCollectionNameQuery>(GetCollectionNameDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCollectionName');
