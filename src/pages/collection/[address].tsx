@@ -22,6 +22,7 @@ import Button from "../../components/Button";
 import { useApproveMagic, useBuyItem } from "../../lib/hooks";
 import { useEthers, useTokenAllowance } from "@yuyao17/corefork";
 import { Contracts } from "../../const";
+import classNames from "clsx";
 
 function QueryLink(props: any) {
   const { href, children, ...rest } = props;
@@ -168,25 +169,33 @@ const Collection = () => {
               >
                 <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">
-                    {sortOptions.map((option) => (
-                      <Menu.Item key={option.name}>
-                        {() => (
-                          <QueryLink
-                            href={{
-                              pathname: router.pathname,
-                              query: {
-                                ...router.query,
-                                sort: option.value,
-                              },
-                            }}
-                            passHref
-                            className="block px-4 py-2 text-sm font-medium text-gray-900"
-                          >
-                            {option.name}
-                          </QueryLink>
-                        )}
-                      </Menu.Item>
-                    ))}
+                    {sortOptions.map((option) => {
+                      const active = option.value === sortParam;
+                      return (
+                        <Menu.Item key={option.name}>
+                          {() => (
+                            <QueryLink
+                              href={{
+                                pathname: router.pathname,
+                                query: {
+                                  ...router.query,
+                                  sort: option.value,
+                                },
+                              }}
+                              passHref
+                              className={classNames(
+                                "block px-4 py-2 text-sm font-medium text-gray-900",
+                                {
+                                  "text-red-500": active,
+                                }
+                              )}
+                            >
+                              <span>{option.name}</span>
+                            </QueryLink>
+                          )}
+                        </Menu.Item>
+                      );
+                    })}
                   </div>
                 </Menu.Items>
               </Transition>
