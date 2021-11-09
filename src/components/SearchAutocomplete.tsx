@@ -149,7 +149,11 @@ function Popover(props: PopoverProps) {
 
 export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
   const { contains } = useFilter({ sensitivity: "base" });
-  const state = useComboBoxState({ ...props, defaultFilter: contains });
+  const state = useComboBoxState({
+    ...props,
+    defaultFilter: contains,
+    menuTrigger: "focus",
+  });
 
   const inputRef = React.useRef(null);
   const listBoxRef = React.useRef(null);
