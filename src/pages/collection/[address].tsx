@@ -213,7 +213,7 @@ const Collection = () => {
           </div>
         )}
         {listingData && (
-          <section aria-labelledby="products-heading" className="mt-8">
+          <section aria-labelledby="products-heading" className="my-8">
             <h2 id="products-heading" className="sr-only">
               {listingData.collection?.name}
             </h2>

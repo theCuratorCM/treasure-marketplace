@@ -69,7 +69,7 @@ function MyApp({ Component, pageProps }) {
                   </>
                 )}
                 <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
-                <Header />
+                {Component.disableHeader ? null : <Header />}
                 <Component {...pageProps} />
               </div>
               <ReactQueryDevtools />

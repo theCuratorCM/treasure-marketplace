@@ -15,36 +15,38 @@ body {
   background-blend-mode: lighten;
 }
 
-.maskImage {
-  position: relative;
-  -webkit-transform-origin: right center;
-  -ms-transform-origin: right center;
-  transform-origin: right center;
-  -webkit-transform: perspective(120px) rotateY(-4deg) translatez(0)
-    translatex(-80px);
-  -ms-transform: perspective(120px) rotateY(-4deg) translatez(0)
-    translatex(-80px);
-  transform: perspective(120px) rotateY(-4deg) translatez(0) translatex(-80px);
-  z-index: 0;
-  will-change: -webkit-mask-position, -moz-mask-position, mask-position,
-    transform;
-  overflow: hidden;
-  -webkit-mask-image: radial-gradient(
-    circle at 50% 50%,
-    black 10%,
-    rgba(0, 0, 0, 0.1) 50%
-  );
-  mask-image: radial-gradient(
-    circle at 50% 50%,
-    black 10%,
-    rgba(0, 0, 0, 0.1) 50%
-  );
-  -webkit-mask-position: 0% 50%;
-  mask-position: 0% 50%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 200% 200%;
-  mask-size: 200% 200%;
-  right: -80px;
-  padding: 1rem;
+@media (min-width: 768px) {
+  .maskImage {
+    position: relative;
+    -webkit-transform-origin: right center;
+    -ms-transform-origin: right center;
+    transform-origin: right center;
+    -webkit-transform: perspective(120px) rotateY(-4deg) translatez(0)
+      translatex(-80px);
+    -ms-transform: perspective(120px) rotateY(-4deg) translatez(0)
+      translatex(-80px);
+    transform: perspective(120px) rotateY(-4deg) translatez(0) translatex(-80px);
+    z-index: 0;
+    will-change: -webkit-mask-position, -moz-mask-position, mask-position,
+      transform;
+    overflow: hidden;
+    -webkit-mask-image: radial-gradient(
+      circle at 50% 50%,
+      black 10%,
+      rgba(0, 0, 0, 0.1) 50%
+    );
+    mask-image: radial-gradient(
+      circle at 50% 50%,
+      black 10%,
+      rgba(0, 0, 0, 0.1) 50%
+    );
+    -webkit-mask-position: 0% 50%;
+    mask-position: 0% 50%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 200% 200%;
+    mask-size: 200% 200%;
+    right: -80px;
+    padding: 1rem;
+  }
 }
