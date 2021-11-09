@@ -14,7 +14,10 @@ export const collections = [
     name: "Legions Genesis",
     address: "0xAC2F8732A67C15Bf81f8A6181364cE753E915037",
   },
-  // { name: "Smol Brains", address: "#" },
+  {
+    name: "Smol Brains",
+    address: "0xe7ad64be25149d25b3a6ea9556e7d38ec2777b3f",
+  },
   // { name: "Getting Bodied", address: "#" },
   {
     name: "Treasures",

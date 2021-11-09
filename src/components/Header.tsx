@@ -1,5 +1,5 @@
 import { useState, Fragment } from "react";
-import { MenuIcon, CollectionIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { useEthers, shortenAddress } from "@yuyao17/corefork";
