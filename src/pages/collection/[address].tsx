@@ -288,16 +288,14 @@ const Collection = () => {
                         </span>
                       </span>
                     </div>
-                    {account && (
-                      <div className="flex mt-1 justify-end">
-                        <span className="text-gray-600 text-xs text-[0.6rem]">
-                          <span className="text-gray-500">Owner:</span>{" "}
-                          <span className="font-bold text-gray-700">
-                            {yourItem ? "You" : shortenAddress(listing.user.id)}
-                          </span>
+                    <div className="flex mt-1 justify-end">
+                      <span className="text-gray-600 text-xs text-[0.6rem]">
+                        <span className="text-gray-500">Owner:</span>{" "}
+                        <span className="font-bold text-gray-700">
+                          {yourItem ? "You" : shortenAddress(listing.user.id)}
                         </span>
-                      </div>
-                    )}
+                      </span>
+                    </div>
                   </li>
                 );
               })}
