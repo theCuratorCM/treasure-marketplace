@@ -23,6 +23,15 @@ import { useApproveMagic, useBuyItem } from "../../lib/hooks";
 import { useEthers, useTokenAllowance } from "@yuyao17/corefork";
 import { Contracts } from "../../const";
 
+function QueryLink(props: any) {
+  const { href, children, ...rest } = props;
+  return (
+    <Link href={href}>
+      <a {...rest}>{children}</a>
+    </Link>
+  );
+}
+
 const sortOptions = [
   { name: "Price: Low to High", value: "asc" },
   { name: "Price: High to Low", value: "desc" },
@@ -162,7 +171,7 @@ const Collection = () => {
                     {sortOptions.map((option) => (
                       <Menu.Item key={option.name}>
                         {() => (
-                          <Link
+                          <QueryLink
                             href={{
                               pathname: router.pathname,
                               query: {
@@ -171,11 +180,10 @@ const Collection = () => {
                               },
                             }}
                             passHref
+                            className="block px-4 py-2 text-sm font-medium text-gray-900"
                           >
-                            <a className="block px-4 py-2 text-sm font-medium text-gray-900">
-                              {option.name}
-                            </a>
-                          </Link>
+                            {option.name}
+                          </QueryLink>
                         )}
                       </Menu.Item>
                     ))}
