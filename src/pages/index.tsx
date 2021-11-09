@@ -26,12 +26,7 @@ import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
-  <Image
-    src={image.src}
-    className="opacity-90"
-    width={image.width}
-    height={image.height}
-  />
+  <Image src={image.src} width={image.width} height={image.height} />
 );
 
 export default function Home() {
@@ -39,14 +34,19 @@ export default function Home() {
 
   return (
     <main className="flex justify-center items-center w-full min-h-screen landing">
-      <div className="flex relative lg:flex-row flex-col-reverse px-4 lg:px-0">
+      <div className="flex relative lg:flex-row flex-col-reverse px-8 lg:px-0">
         <div
           className="z-10"
           style={{
             flexBasis: "70%",
           }}
         >
-          <img src={logoImg.src} className="dark:filter dark:invert" />
+          <Image
+            src={logoImg.src}
+            width={logoImg.width}
+            height={logoImg.height}
+            className="dark:filter dark:invert"
+          />
           <p className="text-right font-semibold tracking-wider mt-2 text-lg">
             MARKETPLACE
           </p>
@@ -71,7 +71,7 @@ export default function Home() {
 
         <div className="absolute right-0 -top-52 z-0 overflow-hidden">
           <div className="maskImage">
-            <div className="grid grid-cols-6 grid-rows-3 gap-12 px-4 lg:px-0 opacity-70">
+            <div className="grid grid-cols-6 grid-rows-3 gap-6 lg:gap-12 px-12 lg:px-0 opacity-30 lg:opacity-80">
               <ImageWrapper image={TreasureImg1} />
               <ImageWrapper image={TreasureImg2} />
               <ImageWrapper image={TreasureImg3} />

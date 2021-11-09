@@ -188,7 +188,7 @@ export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
   return (
     <div className="inline-flex flex-col relative mt-4">
       <div
-        className={`relative px-2 inline-flex flex-row items-center rounded-md overflow-hidden shadow-sm border w-96 ${
+        className={`relative px-2 inline-flex bg-white flex-row items-center rounded-md overflow-hidden shadow-sm border w-96 ${
           state.isFocused ? "border-red-500" : "border-gray-300"
         }`}
       >

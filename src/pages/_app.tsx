@@ -129,6 +129,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-// 'success' | 'error' | 'loading' | 'blank' | 'custom'
-
 export default MyApp;
