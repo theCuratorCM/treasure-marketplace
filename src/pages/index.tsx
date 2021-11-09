@@ -27,7 +27,10 @@ export default function Home() {
           <div className="maskImage">
             <div className="grid grid-cols-6 grid-rows-3 gap-12">
               {Array.from({ length: 18 }).map((_, i) => (
-                <div className="border-2 shadow-md rounded-md px-3  border-gray-300 bg-white flex flex-col items-center justify-center">
+                <div
+                  key={i}
+                  className="border-2 shadow-md rounded-md px-3  border-gray-300 bg-white flex flex-col items-center justify-center"
+                >
                   <div className="aspect-w-1 aspect-h-1 overflow-hidden flex items-center">
                     <img src={`/img/${i + 1}.png`} />
                   </div>
