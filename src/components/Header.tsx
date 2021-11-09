@@ -11,7 +11,7 @@ import { Item } from "react-stately";
 import { SearchAutocomplete } from "./SearchAutocomplete";
 import { useRouter } from "next/router";
 import { useMagic } from "../context/magicContext";
-import { collections } from "../const";
+import { collections, coreCollections } from "../const";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,6 +82,23 @@ const Header = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="h-16 flex items-center justify-between">
                 <div className="hidden h-full lg:flex">
+                  <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
+                    {collections
+                      .filter((collection) =>
+                        coreCollections.includes(collection.name)
+                      )
+                      .map((collection) => (
+                        <Link
+                          href={`/collection/${collection.address}`}
+                          passHref
+                          key={collection.name}
+                        >
+                          <a className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
+                            {collection.name}
+                          </a>
+                        </Link>
+                      ))}
+                  </div>
                   <div className="px-4 bottom-0 inset-x-0">
                     <SearchAutocomplete
                       label="Search Collection"

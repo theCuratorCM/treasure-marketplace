@@ -7,6 +7,8 @@ export const Contracts = {
   },
 };
 
+export const coreCollections = ["Legions", "Treasures", "Smol Brains"];
+
 export const collections = [
   // TODO: Move to const
   { name: "Legions", address: "0x6Fd12312f70fa5b04d66584600f39aBE31A99708" },
