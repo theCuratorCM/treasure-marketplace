@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "next dev",
     "watch:codegen": "graphql-codegen --watch",
-    "build": "next build",
+    "generate": "graphql-codegen",
+    "build": "yarn generate && next build",
     "lint": "next lint",
     "start": "next start",
     "type-check": "tsc"
