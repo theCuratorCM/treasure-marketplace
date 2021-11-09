@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
+import { ExternalLinkIcon } from "@heroicons/react/outline";
+
 import { useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
@@ -306,7 +308,7 @@ const PurchaseItemModal = ({
   const { account } = useEthers();
   const router = useRouter();
   const { address } = router.query;
-  const { magicBalance, magicPrice } = useMagic();
+  const { magicBalance, magicPrice, setSushiModalOpen } = useMagic();
 
   const normalizedAddress = Array.isArray(address)
     ? address[0]
@@ -428,21 +430,33 @@ const PurchaseItemModal = ({
                 Approve $MAGIC to purchase this item
               </Button>
             ) : (
-              <Button
-                disabled={!canPurchase || state.status === "Mining"}
-                isLoading={state.status === "Mining"}
-                loadingText="Confirming order..."
-                onClick={() => {
-                  send(
-                    normalizedAddress,
-                    list.user.id,
-                    Number(list.token.tokenId),
-                    quantity
-                  );
-                }}
-              >
-                {canPurchase ? "Confirm order" : "You have insufficient funds"}
-              </Button>
+              <>
+                <Button
+                  disabled={!canPurchase || state.status === "Mining"}
+                  isLoading={state.status === "Mining"}
+                  loadingText="Confirming order..."
+                  onClick={() => {
+                    send(
+                      normalizedAddress,
+                      list.user.id,
+                      Number(list.token.tokenId),
+                      quantity
+                    );
+                  }}
+                >
+                  {canPurchase
+                    ? "Confirm order"
+                    : "You have insufficient funds"}
+                </Button>
+                {!canPurchase && (
+                  <button
+                    className="mt-4 text-xs w-full m-auto text-red-500 underline"
+                    onClick={() => setSushiModalOpen(true)}
+                  >
+                    Purchase MAGIC on SushiSwap
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

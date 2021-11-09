@@ -7,11 +7,14 @@ import { BigNumber } from "@ethersproject/bignumber";
 const BalanceContext = React.createContext<null | {
   magicBalance: BigNumber;
   magicPrice: number;
+  sushiModalOpen: boolean;
+  setSushiModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }>(null);
 
 export const MagicProvider = ({ children }) => {
   const { account, chainId } = useEthers();
   const [price, setPrice] = React.useState<number>(0);
+  const [sushiModalOpen, setSushiModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     const fetchMagicPrice = async () => {
@@ -40,7 +43,14 @@ export const MagicProvider = ({ children }) => {
     useTokenBalance(Contracts[chainId || 4]?.magic, account) || Zero;
 
   return (
-    <BalanceContext.Provider value={{ magicBalance, magicPrice: price }}>
+    <BalanceContext.Provider
+      value={{
+        magicBalance,
+        magicPrice: price,
+        sushiModalOpen,
+        setSushiModalOpen,
+      }}
+    >
       {children}
     </BalanceContext.Provider>
   );

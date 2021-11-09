@@ -42,10 +42,9 @@ const collections = [
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sushiModalOpen, setSushiModalOpen] = useState(false);
   const { activateBrowserWallet, account } = useEthers();
   const Router = useRouter();
-  const { magicBalance } = useMagic();
+  const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
 
   return (
     <div>
