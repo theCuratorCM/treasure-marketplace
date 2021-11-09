@@ -46,6 +46,8 @@ const Collection = () => {
   const router = useRouter();
   const { address, sort } = router.query;
   const { account } = useEthers();
+  const [searchToken, setSearchToken] = useState("");
+  const [searchParams, setSearchParams] = useState("");
   const [modalProps, setModalProps] = useState<{
     isOpen: boolean;
     targetNft:
@@ -75,13 +77,16 @@ const Collection = () => {
   );
 
   const { data: listingData, isLoading: listingIsLoading } = useQuery(
-    ["listings", { address, sortParam }],
-    () =>
+    ["listings", { address, sortParam, searchParams }],
+    ({ queryKey }) =>
       client.getCollectionListings({
         id: Array.isArray(address)
           ? address[0]
           : address?.toLowerCase() ?? AddressZero,
         account: account?.toLowerCase() ?? AddressZero,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        tokenName: queryKey[1].searchParams,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,
@@ -123,6 +128,13 @@ const Collection = () => {
                 type="text"
                 className="focus:ring-red-500 focus:border-red-500 focus:ring-2 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400 outline-none py-1"
                 placeholder="Search name..."
+                value={searchToken}
+                onChange={(e) => setSearchToken(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSearchParams(searchToken);
+                  }
+                }}
               />
             </div>
             <Menu as="div" className="relative z-10 inline-block text-left">

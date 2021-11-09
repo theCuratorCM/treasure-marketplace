@@ -56,6 +56,7 @@ export const getCollectionListings = gql`
     $id: ID!
     $account: String!
     $orderDirection: OrderDirection!
+    $tokenName: String
   ) {
     collection(id: $id) {
       name
@@ -63,7 +64,11 @@ export const getCollectionListings = gql`
       listings(
         orderBy: pricePerItem
         orderDirection: $orderDirection
-        where: { user_not: $account, status: Active }
+        where: {
+          user_not: $account
+          status: Active
+          tokenName_contains: $tokenName
+        }
       ) {
         user {
           id
