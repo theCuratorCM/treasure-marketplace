@@ -17,7 +17,13 @@ import Header from "../components/Header";
 import { Spinner } from "../components/Spinner";
 import { MagicProvider } from "../context/magicContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const config = {
   readOnlyChainId: ChainId.Arbitrum,
