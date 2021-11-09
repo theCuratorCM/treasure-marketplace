@@ -163,7 +163,7 @@ const Header = () => {
                       </div>
                     )}
                     <button
-                      className="ml-4 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
+                      className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
                       onClick={() => {
                         if (!account) {
                           activateBrowserWallet((err) => {
@@ -174,14 +174,10 @@ const Header = () => {
                     >
                       {account ? shortenAddress(account) : "Connect"}
                     </button>
-                    <div className="ml-4 flow-root">
+                    <div className="ml-4 flow-root border-l border-gray-200 pl-4 sm:pl-6 text-sm">
                       <Link href="/inventory" passHref>
-                        <a className="group -m-2 px-4 flex items-center">
-                          <CollectionIcon
-                            className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          <span className="sr-only">View Inventory</span>
+                        <a className="hover:text-gray-900 text-gray-500">
+                          Inventory
                         </a>
                       </Link>
                     </div>
