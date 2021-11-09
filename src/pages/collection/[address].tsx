@@ -300,11 +300,14 @@ const PurchaseItemModal = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">
-      <div className="mt-10 lg:mt-0">
-        <div className="mt-4">
+      <div className="sm:mt-10 lg:mt-0">
+        <div className="sm:mt-4">
           <h3 className="sr-only">Items in your cart</h3>
           <ul role="list" className="divide-y divide-gray-200">
-            <li key={list.id} className="flex py-6 px-4 sm:px-6">
+            <li
+              key={list.id}
+              className="flex flex-col sm:flex-row py-6 px-4 sm:px-6"
+            >
               <div className="flex-shrink-0">
                 <Image
                   src={generateIpfsLink(list.token.metadata?.image ?? "")}
@@ -314,7 +317,7 @@ const PurchaseItemModal = ({
                 />
               </div>
 
-              <div className="ml-6 flex-1 flex flex-col">
+              <div className="sm:ml-6 sm:space-y-0 mt-2 sm:mt-0 space-y-2 flex-1 flex flex-col">
                 <div className="flex">
                   <div className="min-w-0 flex-1">
                     <h4 className="text-sm">
@@ -328,7 +331,7 @@ const PurchaseItemModal = ({
                   </div>
                 </div>
 
-                <div className="flex-1 pt-2 flex items-end justify-between">
+                <div className="flex-1 sm:pt-2 flex items-end justify-between">
                   <p className="mt-1 text-xs font-medium text-gray-900">
                     {formatEther(list.pricePerItem)} $MAGIC{" "}
                     <span className="text-[0.5rem] text-gray-500">
