@@ -28,6 +28,7 @@ import { useRouter } from "next/router";
 import Button from "../../components/Button";
 import Image from "next/image";
 import Link from "next/link";
+import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 
 type Nft = {
   address: string;
@@ -527,7 +528,7 @@ const Inventory = () => {
                 <select
                   id="tabs"
                   name="tabs"
-                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                  className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
                   defaultValue="Collected"
                 >
                   <option>Collected</option>
@@ -565,70 +566,80 @@ const Inventory = () => {
                 </div>
               </div>
             </div>
-
             <section className="mt-8 pb-16">
-              <ul
-                role="list"
-                className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
-              >
-                {data.map(({ id, expires, pricePerItem, quantity, token }) => (
-                  <li key={id} className="relative">
-                    <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
-                      <Image
-                        alt={token.metadata?.name ?? ""}
-                        className={classNames(
-                          "object-fill object-center pointer-events-none",
-                          { "group-hover:opacity-80": section !== "sold" }
-                        )}
-                        layout="fill"
-                        src={generateIpfsLink(token.metadata?.image ?? "")}
-                      />
-                      {section !== "sold" ? (
-                        <button
-                          type="button"
-                          className="absolute inset-0 focus:outline-none"
-                          onClick={() =>
-                            setNft({
-                              address: token.collection.address,
-                              collection: token.metadata?.description || "",
-                              name: token.metadata?.name || "",
-                              listing: pricePerItem
-                                ? { expires, pricePerItem, quantity }
-                                : undefined,
-                              total:
-                                totals[
-                                  `${token.collection.address}-${token.tokenId}`
-                                ],
-                              source: generateIpfsLink(
-                                token.metadata?.image || ""
-                              ),
-                              tokenId: token.tokenId,
-                            })
-                          }
-                        >
-                          <span className="sr-only">
-                            View details for {token.metadata?.name}
-                          </span>
-                        </button>
-                      ) : null}
-                    </div>
-                    <div className="flex justify-between mt-2">
-                      <div>
-                        <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
-                          {token.metadata?.name}
-                        </p>
-                        <p className="block text-sm font-medium text-gray-500 pointer-events-none">
-                          {token.metadata?.description}
-                        </p>
-                      </div>
-                      <p className="text-xs font-medium text-gray-500 pointer-events-none">
-                        {quantity}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-                {data.length === 0 && <div>Nothing to see here...</div>}
-              </ul>
+              {inventory.isLoading && <CenterLoadingDots className="h-36" />}
+              {data.length === 0 && !inventory.isLoading && (
+                <div className="flex flex-col justify-center items-center h-36">
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">
+                    No NFTs {section.length === 0 ? "collected" : section} 😞
+                  </h3>
+                </div>
+              )}
+              {data.length > 0 && (
+                <ul
+                  role="list"
+                  className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+                >
+                  {data.map(
+                    ({ id, expires, pricePerItem, quantity, token }) => (
+                      <li key={id} className="relative">
+                        <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                          <Image
+                            alt={token.metadata?.name ?? ""}
+                            className={classNames(
+                              "object-fill object-center pointer-events-none",
+                              { "group-hover:opacity-80": section !== "sold" }
+                            )}
+                            layout="fill"
+                            src={generateIpfsLink(token.metadata?.image ?? "")}
+                          />
+                          {section !== "sold" ? (
+                            <button
+                              type="button"
+                              className="absolute inset-0 focus:outline-none"
+                              onClick={() =>
+                                setNft({
+                                  address: token.collection.address,
+                                  collection: token.metadata?.description || "",
+                                  name: token.metadata?.name || "",
+                                  listing: pricePerItem
+                                    ? { expires, pricePerItem, quantity }
+                                    : undefined,
+                                  total:
+                                    totals[
+                                      `${token.collection.address}-${token.tokenId}`
+                                    ],
+                                  source: generateIpfsLink(
+                                    token.metadata?.image || ""
+                                  ),
+                                  tokenId: token.tokenId,
+                                })
+                              }
+                            >
+                              <span className="sr-only">
+                                View details for {token.metadata?.name}
+                              </span>
+                            </button>
+                          ) : null}
+                        </div>
+                        <div className="flex justify-between mt-2">
+                          <div>
+                            <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
+                              {token.metadata?.name}
+                            </p>
+                            <p className="block text-sm font-medium text-gray-500 pointer-events-none">
+                              {token.metadata?.description}
+                            </p>
+                          </div>
+                          <p className="text-xs font-medium text-gray-500 pointer-events-none">
+                            {quantity}
+                          </p>
+                        </div>
+                      </li>
+                    )
+                  )}
+                </ul>
+              )}
             </section>
           </div>
         </main>
