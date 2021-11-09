@@ -19,8 +19,8 @@ const collections = [
     name: "Legions Genesis",
     address: "0xAC2F8732A67C15Bf81f8A6181364cE753E915037",
   },
-  { name: "Smol Brains", address: "#" },
-  { name: "Getting Bodied", address: "#" },
+  // { name: "Smol Brains", address: "#" },
+  // { name: "Getting Bodied", address: "#" },
   {
     name: "Treasures",
     address: "0x61B468f85B2e50bAA0B1729ffC99eFe9EF0428f0", // TODO: replace with mainnet
@@ -37,7 +37,7 @@ const collections = [
     name: "Seed of Life",
     address: "0x6A67fbf40142E3Db2e6a950A4D48B0EB41107cE8",
   },
-  { name: "Life", address: "#" },
+  // { name: "Life", address: "#" },
 ] as const;
 
 const Header = () => {
