@@ -521,22 +521,7 @@ const Inventory = () => {
             </h1>
 
             <div className="mt-3 sm:mt-2">
-              <div className="sm:hidden">
-                <label htmlFor="tabs" className="sr-only">
-                  Select a tab
-                </label>
-                <select
-                  id="tabs"
-                  name="tabs"
-                  className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
-                  defaultValue="Collected"
-                >
-                  <option>Collected</option>
-                  <option>Listed</option>
-                  <option>Sold</option>
-                </select>
-              </div>
-              <div className="hidden sm:block">
+              <div className="block">
                 <div className="flex items-center border-b border-gray-200">
                   <nav
                     className="flex-1 -mb-px flex space-x-6 xl:space-x-8"
