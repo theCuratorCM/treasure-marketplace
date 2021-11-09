@@ -15,6 +15,7 @@ export const getUserInventory = gql`
       sold: listings(where: { status: Sold }) {
         id
         quantity
+        pricePerItem
         token {
           ...TokenFields
         }

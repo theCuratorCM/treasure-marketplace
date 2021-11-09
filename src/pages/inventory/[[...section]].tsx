@@ -22,13 +22,15 @@ import {
   useUpdateListing,
 } from "../../lib/hooks";
 import { useEthers } from "@yuyao17/corefork";
-import { AddressZero } from "@ethersproject/constants";
+import { AddressZero, Zero } from "@ethersproject/constants";
 import { generateIpfsLink } from "../../utils";
 import { useRouter } from "next/router";
 import Button from "../../components/Button";
 import Image from "next/image";
 import Link from "next/link";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
+import { formatEther } from "ethers/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 
 type Nft = {
   address: string;
@@ -511,6 +513,8 @@ const Inventory = () => {
 
   const onClose = useCallback(() => setNft(null), []);
 
+  console.log(data);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 flex items-stretch overflow-hidden">
@@ -567,8 +571,8 @@ const Inventory = () => {
                 >
                   {data.map(
                     ({ id, expires, pricePerItem, quantity, token }) => (
-                      <li key={id} className="relative">
-                        <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                      <li key={id} className="group">
+                        <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
                           <Image
                             alt={token.metadata?.name ?? ""}
                             className={classNames(
@@ -607,19 +611,56 @@ const Inventory = () => {
                             </button>
                           ) : null}
                         </div>
-                        <div className="flex justify-between mt-2">
-                          <div>
-                            <p className="block text-sm font-medium text-gray-900 truncate pointer-events-none">
-                              {token.metadata?.name}
-                            </p>
-                            <p className="block text-sm font-medium text-gray-500 pointer-events-none">
-                              {token.metadata?.description}
-                            </p>
-                          </div>
-                          <p className="text-xs font-medium text-gray-500 pointer-events-none">
-                            {quantity}
+                        <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+                          <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
+                            {token.metadata?.description}
                           </p>
+                          {pricePerItem && (
+                            <p>
+                              {formatEther(pricePerItem)}{" "}
+                              <span className="text-xs font-light">$MAGIC</span>
+                            </p>
+                          )}
+                          {!expires && !pricePerItem && quantity && (
+                            <span className="text-gray-600 text-xs text-[0.6rem]">
+                              <span className="text-gray-500">Quantity:</span>{" "}
+                              <span className="font-bold text-gray-700">
+                                {quantity}
+                              </span>
+                            </span>
+                          )}
                         </div>
+                        <div className="flex items-baseline justify-between mt-1">
+                          <p className="text-xs text-gray-800 font-semibold truncate">
+                            {token.metadata?.name}
+                          </p>
+                          {expires && (
+                            <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
+                              <span className="text-gray-500">Expires in:</span>{" "}
+                              <span className="font-bold text-gray-700">
+                                {formatDistanceToNow(new Date(Number(expires)))}
+                              </span>
+                            </p>
+                          )}
+                          {!expires && pricePerItem && quantity && (
+                            <span className="text-gray-600 text-xs text-[0.6rem]">
+                              <span className="text-gray-500">Quantity:</span>{" "}
+                              <span className="font-bold text-gray-700">
+                                {quantity}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                        {expires && quantity && (
+                          <div className="flex mt-1 justify-end">
+                            <span className="text-gray-600 text-xs text-[0.6rem]">
+                              <span className="text-gray-500">Quantity:</span>{" "}
+                              <span className="font-bold text-gray-700">
+                                {quantity}
+                              </span>
+                            </span>
+                          </div>
+                        )}
                       </li>
                     )
                   )}
