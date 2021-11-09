@@ -174,6 +174,13 @@ const Collection = () => {
           </div>
         </section>
         {listingIsLoading && <CenterLoadingDots className="h-60" />}
+        {listingData?.collection?.listings.length === 0 && !listingIsLoading && (
+          <div className="flex flex-col justify-center items-center h-36">
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No NFTs listed 😞
+            </h3>
+          </div>
+        )}
         {listingData && (
           <section aria-labelledby="products-heading" className="mt-8">
             <h2 id="products-heading" className="sr-only">
