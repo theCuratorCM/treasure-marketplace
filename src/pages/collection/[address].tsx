@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
-import { ExternalLinkIcon } from "@heroicons/react/outline";
 
 import { useQuery } from "react-query";
 import client from "../../lib/client";
@@ -22,7 +21,11 @@ import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
 import { useApproveMagic, useBuyItem } from "../../lib/hooks";
-import { useEthers, useTokenAllowance } from "@yuyao17/corefork";
+import {
+  shortenAddress,
+  useEthers,
+  useTokenAllowance,
+} from "@yuyao17/corefork";
 import { Contracts } from "../../const";
 import classNames from "clsx";
 
@@ -95,7 +98,6 @@ const Collection = () => {
         id: Array.isArray(address)
           ? address[0]
           : address?.toLowerCase() ?? AddressZero,
-        account: account?.toLowerCase() ?? AddressZero,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         tokenName: queryKey[1].searchParams,
@@ -221,62 +223,84 @@ const Collection = () => {
               role="list"
               className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
             >
-              {listingData.collection?.listings.map((listing) => (
-                <li key={listing.id} className="group">
-                  <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
-                    <Image
-                      src={generateIpfsLink(
-                        listing.token.metadata?.image ?? ""
+              {listingData.collection?.listings.map((listing) => {
+                const yourItem = account?.toLowerCase() === listing.user.id;
+                return (
+                  <li key={listing.id} className="group">
+                    <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                      <Image
+                        src={generateIpfsLink(
+                          listing.token.metadata?.image ?? ""
+                        )}
+                        alt={listing.token.metadata?.name ?? ""}
+                        layout="fill"
+                        className={classNames(
+                          "w-full h-full object-center object-fill",
+                          {
+                            "group-hover:opacity-75": !yourItem,
+                          }
+                        )}
+                      />
+                      {!yourItem && (
+                        <button
+                          type="button"
+                          className="absolute inset-0 focus:outline-none"
+                          onClick={() =>
+                            setModalProps({
+                              isOpen: true,
+                              targetNft: listing,
+                            })
+                          }
+                        >
+                          <span className="sr-only">
+                            View details for {listing.token.metadata?.name}
+                          </span>
+                        </button>
                       )}
-                      alt={listing.token.metadata?.name ?? ""}
-                      layout="fill"
-                      className="w-full h-full object-center object-fill group-hover:opacity-75"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-0 focus:outline-none"
-                      onClick={() =>
-                        setModalProps({
-                          isOpen: true,
-                          targetNft: listing,
-                        })
-                      }
-                    >
-                      <span className="sr-only">
-                        View details for {listing.token.metadata?.name}
+                    </div>
+                    <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+                      <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
+                        {listing.token.metadata?.description}
+                      </p>
+                      <p>
+                        {formatEther(listing.pricePerItem)}{" "}
+                        <span className="text-xs font-light">$MAGIC</span>
+                      </p>
+                    </div>
+                    <div className="flex items-baseline mt-1">
+                      <p className="text-xs text-gray-800 font-semibold truncate">
+                        {listing.token.metadata?.name}
+                      </p>
+                      <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
+                        <span className="text-gray-500">Expires in:</span>{" "}
+                        <span className="font-bold text-gray-700">
+                          {formatDistanceToNow(
+                            new Date(Number(listing.expires))
+                          )}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="flex mt-1 justify-end">
+                      <span className="text-gray-600 text-xs text-[0.6rem]">
+                        <span className="text-gray-500">Quantity:</span>{" "}
+                        <span className="font-bold text-gray-700">
+                          {listing.quantity}
+                        </span>
                       </span>
-                    </button>
-                  </div>
-                  <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                    <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
-                      {listing.token.metadata?.description}
-                    </p>
-                    <p>
-                      {formatEther(listing.pricePerItem)}{" "}
-                      <span className="text-xs font-light">$MAGIC</span>
-                    </p>
-                  </div>
-                  <div className="flex items-baseline mt-1">
-                    <p className="text-xs text-gray-800 font-semibold truncate">
-                      {listing.token.metadata?.name}
-                    </p>
-                    <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
-                      <span className="text-gray-500">Expires in:</span>{" "}
-                      <span className="font-bold text-gray-700">
-                        {formatDistanceToNow(new Date(Number(listing.expires)))}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex mt-1 justify-end">
-                    <span className="text-gray-600 text-xs text-[0.6rem]">
-                      <span className="text-gray-500">Quantity:</span>{" "}
-                      <span className="font-bold text-gray-700">
-                        {listing.quantity}
-                      </span>
-                    </span>
-                  </div>
-                </li>
-              ))}
+                    </div>
+                    {account && (
+                      <div className="flex mt-1 justify-end">
+                        <span className="text-gray-600 text-xs text-[0.6rem]">
+                          <span className="text-gray-500">Owner:</span>{" "}
+                          <span className="font-bold text-gray-700">
+                            {yourItem ? "You" : shortenAddress(listing.user.id)}
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}

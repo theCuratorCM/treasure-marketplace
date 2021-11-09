@@ -55,7 +55,6 @@ export const getCollectionName = gql`
 export const getCollectionListings = gql`
   query getCollectionListings(
     $id: ID!
-    $account: String!
     $orderDirection: OrderDirection!
     $tokenName: String
   ) {
@@ -65,11 +64,7 @@ export const getCollectionListings = gql`
       listings(
         orderBy: pricePerItem
         orderDirection: $orderDirection
-        where: {
-          user_not: $account
-          status: Active
-          tokenName_contains: $tokenName
-        }
+        where: { status: Active, tokenName_contains: $tokenName }
       ) {
         user {
           id
