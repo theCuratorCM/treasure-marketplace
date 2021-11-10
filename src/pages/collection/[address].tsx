@@ -516,7 +516,10 @@ const PurchaseItemModal = ({
                 {!canPurchase && (
                   <button
                     className="mt-4 text-xs w-full m-auto text-red-500 underline"
-                    onClick={() => setSushiModalOpen(true)}
+                    onClick={() => {
+                      onClose();
+                      setSushiModalOpen(true);
+                    }}
                   >
                     Purchase MAGIC on SushiSwap
                   </button>
