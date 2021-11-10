@@ -335,7 +335,7 @@ const Collection = () => {
               <ul
                 role="list"
                 ref={ref}
-                className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+                className="mt-10 grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
               >
                 {Array.from({ length: 4 }).map((_, i) => (
                   <li key={i}>
