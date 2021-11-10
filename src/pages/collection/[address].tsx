@@ -23,6 +23,7 @@ import Button from "../../components/Button";
 import { useApproveMagic, useBuyItem } from "../../lib/hooks";
 import {
   shortenAddress,
+  TransactionStatus,
   useEthers,
   useTokenAllowance,
 } from "@yuyao17/corefork";
@@ -119,6 +120,17 @@ const Collection = () => {
       getNextPageParam: (_, pages) => pages.length * MAX_ITEMS_PER_PAGE,
     }
   );
+
+  const keyParams = React.useMemo(
+    () => ({
+      address,
+      sortParam,
+      searchParams,
+    }),
+    [address, searchParams, sortParam]
+  );
+
+  const { send, state } = useBuyItem(keyParams);
 
   const hasNextPage =
     listingData?.pages[listingData.pages.length - 1]?.collection?.listings
@@ -361,6 +373,8 @@ const Collection = () => {
       {modalProps.isOpen && modalProps.targetNft && (
         <PurchaseItemModal
           isOpen={true}
+          state={state}
+          send={send}
           onClose={() => setModalProps({ isOpen: false, targetNft: null })}
           list={modalProps.targetNft}
         />
@@ -373,6 +387,8 @@ const PurchaseItemModal = ({
   isOpen,
   onClose,
   list,
+  state,
+  send,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -380,6 +396,13 @@ const PurchaseItemModal = ({
     GetCollectionListingsQuery["collection"],
     null | undefined
   >["listings"][number] & { standard: "ERC721" | "ERC1155" };
+  state: TransactionStatus;
+  send: (
+    address: string,
+    ownerAddress: string,
+    tokenId: number,
+    quantity: number
+  ) => void;
 }) => {
   const [quantity, setQuantity] = useState(1);
   const { account } = useEthers();
@@ -407,8 +430,6 @@ const PurchaseItemModal = ({
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;
-
-  const { send, state } = useBuyItem();
 
   useEffect(() => {
     if (state.status === "Success") {

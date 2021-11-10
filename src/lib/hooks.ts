@@ -161,7 +161,11 @@ export function useRemoveListing() {
   }, [remove]);
 }
 
-export function useBuyItem() {
+export function useBuyItem(keys: {
+  address: string | string[] | undefined;
+  sortParam: string | string[];
+  searchParams: string;
+}) {
   const queryClient = useQueryClient();
 
   const { send: sendBuy, state } = useContractFunction(
@@ -177,10 +181,12 @@ export function useBuyItem() {
         return;
       case "Success":
         toast.success("Successfully purchased!");
-        queryClient.invalidateQueries("listings", { refetchInactive: true });
+        queryClient.invalidateQueries(["listings", keys], {
+          refetchInactive: true,
+        });
         break;
     }
-  }, [queryClient, state.errorMessage, state.status]);
+  }, [queryClient, state.errorMessage, keys, state.status]);
 
   return useMemo(() => {
     const send = (
