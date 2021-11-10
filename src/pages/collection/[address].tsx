@@ -7,7 +7,7 @@ import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
-import { generateIpfsLink } from "../../utils";
+import { formatNumber, generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -290,7 +290,9 @@ const Collection = () => {
                             {nameData.collection?.name}
                           </p>
                           <p>
-                            {formatEther(listing.pricePerItem)}{" "}
+                            {formatNumber(
+                              parseFloat(formatEther(listing.pricePerItem))
+                            )}{" "}
                             <span className="text-xs font-light">$MAGIC</span>
                           </p>
                         </div>
@@ -440,7 +442,8 @@ const PurchaseItemModal = ({
 
                 <div className="flex-1 sm:pt-2 flex items-end justify-between">
                   <p className="mt-1 text-xs font-medium text-gray-900">
-                    {formatEther(list.pricePerItem)} $MAGIC{" "}
+                    {formatNumber(parseFloat(formatEther(list.pricePerItem)))}{" "}
+                    $MAGIC{" "}
                     <span className="text-[0.5rem] text-gray-500">
                       Per Item
                     </span>
@@ -474,12 +477,9 @@ const PurchaseItemModal = ({
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base font-medium">Total</dt>
               <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
-                <p>{totalPrice} $MAGIC</p>
+                <p>{formatNumber(totalPrice)} $MAGIC</p>
                 <p className="text-gray-500 text-sm mt-1">
-                  ≈ $
-                  {new Intl.NumberFormat().format(
-                    parseFloat((totalPrice * magicPrice).toFixed(2))
-                  )}
+                  ≈ ${formatNumber(totalPrice * magicPrice)}
                 </p>
               </dd>
             </div>

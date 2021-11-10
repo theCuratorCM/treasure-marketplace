@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { useEthers, shortenAddress } from "@yuyao17/corefork";
 import { formatEther } from "ethers/lib/utils";
-import { truncateDecimal } from "../utils";
+import { formatNumber } from "../utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { Modal } from "./Modal";
 import { Item } from "react-stately";
@@ -138,7 +138,7 @@ const Header = () => {
                     {account && (
                       <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100 flex justify-center items-center space-x-2">
                         <span className="text-red-500">
-                          {truncateDecimal(formatEther(magicBalance))}
+                          {formatNumber(parseFloat(formatEther(magicBalance)))}
                         </span>{" "}
                         <span className="text-red-800">MAGIC</span>
                         <HoverCard.Root openDelay={100} closeDelay={100}>

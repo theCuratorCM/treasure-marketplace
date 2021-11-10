@@ -23,7 +23,7 @@ import {
 } from "../../lib/hooks";
 import { useEthers } from "@yuyao17/corefork";
 import { AddressZero, Zero } from "@ethersproject/constants";
-import { generateIpfsLink } from "../../utils";
+import { formatNumber, generateIpfsLink } from "../../utils";
 import { useRouter } from "next/router";
 import Button from "../../components/Button";
 import Image from "next/image";
@@ -622,7 +622,9 @@ const Inventory = () => {
                           </p>
                           {pricePerItem && (
                             <p>
-                              {formatEther(pricePerItem)}{" "}
+                              {formatNumber(
+                                parseFloat(formatEther(pricePerItem))
+                              )}{" "}
                               <span className="text-xs font-light">$MAGIC</span>
                             </p>
                           )}
