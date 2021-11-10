@@ -31,6 +31,7 @@ import Link from "next/link";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 import { formatEther } from "ethers/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { CREATOR_SHARE, DAO_SHARE, USER_SHARE } from "../../const";
 
 type Nft = {
   address: string;
@@ -215,6 +216,51 @@ const Drawer = ({
                               >
                                 MAGIC
                               </span>
+                            </div>
+                          </div>
+                          <div
+                            className={classNames(
+                              "space-y-1 mt-2 text-[0.5rem]",
+                              {
+                                "opacity-75": isFormDisabled,
+                              }
+                            )}
+                          >
+                            <div className="flex justify-between px-2">
+                              <p className="text-gray-400">
+                                DAO ({DAO_SHARE * 100 + "%"})
+                              </p>
+                              <p>
+                                ≈{" "}
+                                {formatNumber(
+                                  parseFloat(price || "0") * DAO_SHARE
+                                )}{" "}
+                                MAGIC
+                              </p>
+                            </div>
+                            <div className="flex justify-between px-2">
+                              <p className="text-gray-400">
+                                Creator ({CREATOR_SHARE * 100 + "%"})
+                              </p>
+                              <p>
+                                ≈{" "}
+                                {formatNumber(
+                                  parseFloat(price || "0") * CREATOR_SHARE
+                                )}{" "}
+                                MAGIC
+                              </p>
+                            </div>
+                            <div className="flex justify-between px-2">
+                              <p className="text-gray-400">
+                                Your share ({USER_SHARE * 100 + "%"})
+                              </p>
+                              <p>
+                                ≈{" "}
+                                {formatNumber(
+                                  parseFloat(price || "0") * USER_SHARE
+                                )}{" "}
+                                MAGIC
+                              </p>
                             </div>
                           </div>
                         </div>
