@@ -57,11 +57,15 @@ export const getCollectionListings = gql`
     $id: ID!
     $orderDirection: OrderDirection!
     $tokenName: String
+    $skipBy: Int!
+    $first: Int!
   ) {
     collection(id: $id) {
       name
       address
       listings(
+        first: $first
+        skip: $skipBy
         orderBy: pricePerItem
         orderDirection: $orderDirection
         where: { status: Active, tokenName_contains: $tokenName }
