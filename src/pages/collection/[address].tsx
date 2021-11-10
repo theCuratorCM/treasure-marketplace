@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
@@ -28,6 +28,9 @@ import {
 } from "@yuyao17/corefork";
 import { Contracts } from "../../const";
 import classNames from "clsx";
+import { useInView } from "react-intersection-observer";
+
+const MAX_ITEMS_PER_PAGE = 42;
 
 function QueryLink(props: any) {
   const { href, children, ...rest } = props;
@@ -91,9 +94,13 @@ const Collection = () => {
     }
   );
 
-  const { data: listingData, isLoading: listingIsLoading } = useQuery(
+  const {
+    data: listingData,
+    isLoading: isListingLoading,
+    fetchNextPage,
+  } = useInfiniteQuery(
     ["listings", { address, sortParam, searchParams }],
-    ({ queryKey }) =>
+    ({ queryKey, pageParam = 0 }) =>
       client.getCollectionListings({
         id: Array.isArray(address)
           ? address[0]
@@ -101,14 +108,31 @@ const Collection = () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         tokenName: queryKey[1].searchParams,
+        skipBy: pageParam,
+        first: MAX_ITEMS_PER_PAGE,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,
       }),
     {
       enabled: !!address,
+      getNextPageParam: (_, pages) => pages.length * MAX_ITEMS_PER_PAGE,
     }
   );
+
+  const hasNextPage =
+    listingData?.pages[listingData.pages.length - 1]?.collection?.listings
+      .length === MAX_ITEMS_PER_PAGE;
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  React.useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, inView]);
 
   return (
     <main>
@@ -206,100 +230,121 @@ const Collection = () => {
             </Menu>
           </div>
         </section>
-        {listingIsLoading && <CenterLoadingDots className="h-60" />}
-        {listingData?.collection?.listings.length === 0 && !listingIsLoading && (
-          <div className="flex flex-col justify-center items-center h-36">
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No NFTs listed 😞
-            </h3>
-          </div>
-        )}
-        {listingData && (
+        <button onClick={() => fetchNextPage()}>Fetch next</button>
+        {isListingLoading && <CenterLoadingDots className="h-60" />}
+        {listingData?.pages[0]?.collection?.listings.length === 0 &&
+          !isListingLoading && (
+            <div className="flex flex-col justify-center items-center h-36">
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No NFTs listed 😞
+              </h3>
+            </div>
+          )}
+        {listingData && nameData && (
           <section aria-labelledby="products-heading" className="my-8">
             <h2 id="products-heading" className="sr-only">
-              {listingData.collection?.name}
+              {nameData.collection?.name}
             </h2>
             <ul
               role="list"
               className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
             >
-              {listingData.collection?.listings.map((listing) => {
-                const yourItem = account?.toLowerCase() === listing.user.id;
-                return (
-                  <li key={listing.id} className="group">
-                    <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
-                      <Image
-                        src={generateIpfsLink(
-                          listing.token.metadata?.image ?? ""
-                        )}
-                        alt={listing.token.metadata?.name ?? ""}
-                        layout="fill"
-                        className={classNames(
-                          "w-full h-full object-center object-fill",
-                          {
-                            "group-hover:opacity-75": !yourItem,
-                          }
-                        )}
-                      />
-                      {!yourItem && (
-                        <button
-                          type="button"
-                          className="absolute inset-0 focus:outline-none"
-                          onClick={() =>
-                            setModalProps({
-                              isOpen: true,
-                              targetNft: listing,
-                            })
-                          }
-                        >
-                          <span className="sr-only">
-                            View details for {listing.token.metadata?.name}
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                    <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                      <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
-                        {listingData.collection?.name}
-                      </p>
-                      <p>
-                        {formatEther(listing.pricePerItem)}{" "}
-                        <span className="text-xs font-light">$MAGIC</span>
-                      </p>
-                    </div>
-                    <div className="flex items-baseline mt-1">
-                      <p className="text-xs text-gray-800 font-semibold truncate">
-                        {listing.token.metadata?.name}
-                      </p>
-                      <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
-                        <span className="text-gray-500">Expires in:</span>{" "}
-                        <span className="font-bold text-gray-700">
-                          {formatDistanceToNow(
-                            new Date(Number(listing.expires))
+              {listingData.pages.map((group, i) => (
+                <React.Fragment key={i}>
+                  {group.collection?.listings.map((listing) => {
+                    const yourItem = account?.toLowerCase() === listing.user.id;
+                    return (
+                      <li key={listing.id} className="group">
+                        <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                          <Image
+                            src={generateIpfsLink(
+                              listing.token.metadata?.image ?? ""
+                            )}
+                            alt={listing.token.metadata?.name ?? ""}
+                            layout="fill"
+                            className={classNames(
+                              "w-full h-full object-center object-fill",
+                              {
+                                "group-hover:opacity-75": !yourItem,
+                              }
+                            )}
+                          />
+                          {!yourItem && (
+                            <button
+                              type="button"
+                              className="absolute inset-0 focus:outline-none"
+                              onClick={() =>
+                                setModalProps({
+                                  isOpen: true,
+                                  targetNft: listing,
+                                })
+                              }
+                            >
+                              <span className="sr-only">
+                                View details for {listing.token.metadata?.name}
+                              </span>
+                            </button>
                           )}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="flex mt-1 justify-end">
-                      <span className="text-gray-600 text-xs text-[0.6rem]">
-                        <span className="text-gray-500">Quantity:</span>{" "}
-                        <span className="font-bold text-gray-700">
-                          {listing.quantity}
-                        </span>
-                      </span>
-                    </div>
-                    <div className="flex mt-1 justify-end">
-                      <span className="text-gray-600 text-xs text-[0.6rem]">
-                        <span className="text-gray-500">Owner:</span>{" "}
-                        <span className="font-bold text-gray-700">
-                          {yourItem ? "You" : shortenAddress(listing.user.id)}
-                        </span>
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+                          <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
+                            {nameData.collection?.name}
+                          </p>
+                          <p>
+                            {formatEther(listing.pricePerItem)}{" "}
+                            <span className="text-xs font-light">$MAGIC</span>
+                          </p>
+                        </div>
+                        <div className="flex items-baseline mt-1">
+                          <p className="text-xs text-gray-800 font-semibold truncate">
+                            {listing.token.metadata?.name}
+                          </p>
+                          <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
+                            <span className="text-gray-500">Expires in:</span>{" "}
+                            <span className="font-bold text-gray-700">
+                              {formatDistanceToNow(
+                                new Date(Number(listing.expires))
+                              )}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="flex mt-1 justify-end">
+                          <span className="text-gray-600 text-xs text-[0.6rem]">
+                            <span className="text-gray-500">Quantity:</span>{" "}
+                            <span className="font-bold text-gray-700">
+                              {listing.quantity}
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex mt-1 justify-end">
+                          <span className="text-gray-600 text-xs text-[0.6rem]">
+                            <span className="text-gray-500">Owner:</span>{" "}
+                            <span className="font-bold text-gray-700">
+                              {yourItem
+                                ? "You"
+                                : shortenAddress(listing.user.id)}
+                            </span>
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
             </ul>
+            {hasNextPage && (
+              <ul
+                role="list"
+                ref={ref}
+                className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-4 xl:gap-x-8"
+              >
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <li key={i}>
+                    <div className="animate-pulse w-full bg-gray-300 h-64 rounded-md m-auto" />
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
       </div>
