@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 
-import { useInfiniteQuery, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
@@ -65,7 +65,6 @@ const Collection = () => {
   const router = useRouter();
   const { address, sort } = router.query;
   const { account } = useEthers();
-  const queryClient = useQueryClient();
   const [searchToken, setSearchToken] = useState("");
   const [searchParams, setSearchParams] = useState("");
   const [modalProps, setModalProps] = useState<{
