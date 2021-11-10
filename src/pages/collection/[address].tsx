@@ -383,7 +383,7 @@ const PurchaseItemModal = ({
     : address ?? AddressZero;
 
   const totalPrice =
-    quantity * Number(parseFloat(formatEther(list.pricePerItem)).toFixed(2));
+    quantity * Number(parseFloat(formatEther(list.pricePerItem)));
 
   const canPurchase = magicBalance.gte(
     BigNumber.from(list.pricePerItem).mul(quantity)
@@ -442,8 +442,7 @@ const PurchaseItemModal = ({
 
                 <div className="flex-1 sm:pt-2 flex items-end justify-between">
                   <p className="mt-1 text-xs font-medium text-gray-900">
-                    {formatNumber(parseFloat(formatEther(list.pricePerItem)))}{" "}
-                    $MAGIC{" "}
+                    {formatEther(list.pricePerItem)} $MAGIC{" "}
                     <span className="text-[0.5rem] text-gray-500">
                       Per Item
                     </span>
@@ -477,7 +476,7 @@ const PurchaseItemModal = ({
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base font-medium">Total</dt>
               <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
-                <p>{formatNumber(totalPrice)} $MAGIC</p>
+                <p>{totalPrice} $MAGIC</p>
                 <p className="text-gray-500 text-sm mt-1">
                   ≈ ${formatNumber(totalPrice * magicPrice)}
                 </p>
