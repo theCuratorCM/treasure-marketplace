@@ -40,15 +40,36 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>Treasure Marketplace</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
+        <meta name="title" content="Treasure Marketplace" />
+        <meta
+          name="description"
+          content="Arbitrum native NFT marketplace, created by TreasureDAO"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
-          rel="stylesheet"
+        <meta property="og:type" content="website" />
+        {/* TODO: change this to prod URL */}
+        <meta property="og:url" content="https://metatags.io/" />
+        <meta property="og:title" content="Treasure Marketplace" />
+        <meta
+          property="og:description"
+          content="Arbitrum native NFT marketplace, created by TreasureDAO"
+        />
+        <meta
+          property="og:image"
+          // TODO: change this to prod URL
+          content="http://localhost:3000/img/seoBanner.png"
+        />
+        <meta property="twitter:card" content="summary_large_image" />
+        {/* TODO: change this to prod URL */}
+        <meta property="twitter:url" content="https://metatags.io/" />
+        <meta property="twitter:title" content="Treasure Marketplace" />
+        <meta
+          property="twitter:description"
+          content="Arbitrum native NFT marketplace, created by TreasureDAO"
+        />
+        <meta
+          property="twitter:image"
+          // TODO: change this to prod URL
+          content="http://localhost:3000/img/seoBanner.png"
         />
       </Head>
       <SSRProvider>

@@ -518,8 +518,6 @@ const Inventory = () => {
 
   const onClose = useCallback(() => setNft(null), []);
 
-  console.log(data);
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 flex items-stretch overflow-hidden">
