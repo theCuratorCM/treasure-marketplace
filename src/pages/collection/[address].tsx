@@ -7,7 +7,7 @@ import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
-import { generateIpfsLink } from "../../utils";
+import { formatNumber, generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -290,7 +290,9 @@ const Collection = () => {
                             {nameData.collection?.name}
                           </p>
                           <p>
-                            {formatEther(listing.pricePerItem)}{" "}
+                            {formatNumber(
+                              parseFloat(formatEther(listing.pricePerItem))
+                            )}{" "}
                             <span className="text-xs font-light">$MAGIC</span>
                           </p>
                         </div>
@@ -381,7 +383,7 @@ const PurchaseItemModal = ({
     : address ?? AddressZero;
 
   const totalPrice =
-    quantity * Number(parseFloat(formatEther(list.pricePerItem)).toFixed(2));
+    quantity * Number(parseFloat(formatEther(list.pricePerItem)));
 
   const canPurchase = magicBalance.gte(
     BigNumber.from(list.pricePerItem).mul(quantity)
@@ -476,10 +478,7 @@ const PurchaseItemModal = ({
               <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
                 <p>{totalPrice} $MAGIC</p>
                 <p className="text-gray-500 text-sm mt-1">
-                  ≈ $
-                  {new Intl.NumberFormat().format(
-                    parseFloat((totalPrice * magicPrice).toFixed(2))
-                  )}
+                  ≈ ${formatNumber(totalPrice * magicPrice)}
                 </p>
               </dd>
             </div>
