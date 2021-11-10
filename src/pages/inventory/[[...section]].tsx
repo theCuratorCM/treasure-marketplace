@@ -167,11 +167,7 @@ const Drawer = ({
                       <div>
                         <div className="block w-full aspect-w-1 aspect-h-1 sm:aspect-w-5 sm:aspect-h-5 rounded-lg overflow-hidden">
                           <Image
-                            src={
-                              nft.source.includes("ipfs")
-                                ? generateIpfsLink(nft.source)
-                                : nft.source
-                            }
+                            src={nft.source}
                             alt={nft.name}
                             layout="fill"
                             className="object-fill object-center"
