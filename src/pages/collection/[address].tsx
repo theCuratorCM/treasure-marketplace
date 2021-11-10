@@ -230,7 +230,6 @@ const Collection = () => {
             </Menu>
           </div>
         </section>
-        <button onClick={() => fetchNextPage()}>Fetch next</button>
         {isListingLoading && <CenterLoadingDots className="h-60" />}
         {listingData?.pages[0]?.collection?.listings.length === 0 &&
           !isListingLoading && (
