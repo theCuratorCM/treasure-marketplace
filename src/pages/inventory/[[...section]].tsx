@@ -199,11 +199,12 @@ const Drawer = ({
                               className="form-input focus:ring-red-500 focus:border-red-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 disabled:pointer-events-none transition-placeholder transition-text ease-linear duration-300"
                               placeholder="0.00"
                               maxLength={10}
+                              min="0"
                               aria-describedby="price-currency"
                               onChange={(event) => {
                                 const { value, maxLength } = event.target;
                                 const price = value.slice(0, maxLength);
-                                setPrice(price);
+                                setPrice(String(Math.abs(parseFloat(price))));
                               }}
                               value={price}
                               disabled={isFormDisabled}
