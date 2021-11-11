@@ -49,7 +49,7 @@ type Nft = {
 };
 
 type DrawerProps = {
-  canCancelListing: boolean;
+  actions: Array<"create" | "remove" | "update">;
   needsContractApproval: boolean;
   nft: Nft;
   onClose: () => void;
@@ -68,8 +68,11 @@ const tabs = [
   { name: "Sold", href: "/inventory/sold" },
 ];
 
+const startCase = (text: string) =>
+  text.slice(0, 1).toUpperCase().concat(text.slice(1));
+
 const Drawer = ({
-  canCancelListing,
+  actions,
   needsContractApproval,
   nft,
   onClose,
@@ -147,8 +150,8 @@ const Drawer = ({
                   <div className="px-4 sm:px-6">
                     <div className="flex items-start justify-between">
                       <Dialog.Title className="text-lg font-medium text-gray-900 dark:text-gray-200">
-                        {canCancelListing ? "Manage" : "List"} {nft.name}{" "}
-                        {canCancelListing && "Listing"}
+                        {actions.length > 1 ? "Manage" : startCase(actions[0])}{" "}
+                        {nft.name} Listing
                       </Dialog.Title>
                       <div className="ml-3 h-7 flex items-center">
                         <button
@@ -439,69 +442,93 @@ const Drawer = ({
                         >
                           Approve Collection to List
                         </Button>
-                      ) : canCancelListing ? (
-                        <div>
-                          <Button
-                            disabled={isFormDisabled}
-                            isLoading={updateListing.state.status === "Mining"}
-                            loadingText="Updating..."
-                            onClick={() =>
-                              updateListing.send(
-                                nft.name,
-                                nft.address,
-                                Number(nft.tokenId),
-                                Number(quantity),
-                                ethers.utils.parseEther(price),
-                                selectedDate.value.getTime()
-                              )
-                            }
-                          >
-                            Update {nft.name} Listing
-                          </Button>
-                          <div className="relative my-4">
-                            <div className="absolute inset-0 flex items-center">
-                              <div className="w-full border-t border-gray-300 dark:border-gray-300" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                              <span className="px-2 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-300">
-                                OR
-                              </span>
-                            </div>
-                          </div>
-                          <Button
-                            disabled={isFormDisabled}
-                            isLoading={removeListing.state.status === "Mining"}
-                            loadingText="Removing..."
-                            onClick={() =>
-                              removeListing.send(
-                                nft.name,
-                                nft.address,
-                                Number(nft.tokenId)
-                              )
-                            }
-                            variant="secondary"
-                          >
-                            Remove {nft.name} Listing
-                          </Button>
-                        </div>
                       ) : (
-                        <Button
-                          disabled={price.trim() === "" || isFormDisabled}
-                          isLoading={createListing.state.status === "Mining"}
-                          loadingText="Listing..."
-                          onClick={() =>
-                            createListing.send(
-                              nft.name,
-                              nft.address,
-                              Number(nft.tokenId),
-                              Number(quantity),
-                              ethers.utils.parseEther(price),
-                              selectedDate.value.getTime()
-                            )
-                          }
-                        >
-                          List {nft.name}
-                        </Button>
+                        <div>
+                          {actions.map((action) => {
+                            switch (action) {
+                              case "create":
+                                return (
+                                  <Button
+                                    disabled={
+                                      price.trim() === "" || isFormDisabled
+                                    }
+                                    isLoading={
+                                      createListing.state.status === "Mining"
+                                    }
+                                    loadingText="Listing..."
+                                    onClick={() =>
+                                      createListing.send(
+                                        nft.name,
+                                        nft.address,
+                                        Number(nft.tokenId),
+                                        Number(quantity),
+                                        ethers.utils.parseEther(price),
+                                        selectedDate.value.getTime()
+                                      )
+                                    }
+                                  >
+                                    Create {nft.name} Listing
+                                  </Button>
+                                );
+                              case "remove":
+                                return (
+                                  <>
+                                    <div className="relative my-4">
+                                      <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-300 dark:border-gray-300" />
+                                      </div>
+                                      <div className="relative flex justify-center text-sm">
+                                        <span className="px-2 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-300">
+                                          OR
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      disabled={isFormDisabled}
+                                      isLoading={
+                                        removeListing.state.status === "Mining"
+                                      }
+                                      loadingText="Removing..."
+                                      onClick={() =>
+                                        removeListing.send(
+                                          nft.name,
+                                          nft.address,
+                                          Number(nft.tokenId)
+                                        )
+                                      }
+                                      variant="secondary"
+                                    >
+                                      Remove {nft.name} Listing
+                                    </Button>
+                                  </>
+                                );
+                              case "update":
+                                return (
+                                  <Button
+                                    disabled={isFormDisabled}
+                                    isLoading={
+                                      updateListing.state.status === "Mining"
+                                    }
+                                    loadingText="Updating..."
+                                    onClick={() =>
+                                      updateListing.send(
+                                        nft.name,
+                                        nft.address,
+                                        Number(nft.tokenId),
+                                        Number(quantity),
+                                        ethers.utils.parseEther(price),
+                                        selectedDate.value.getTime()
+                                      )
+                                    }
+                                  >
+                                    Update {nft.name} Listing
+                                  </Button>
+                                );
+                              default:
+                                return null;
+                            }
+                          })}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -528,7 +555,8 @@ const Inventory = () => {
     { enabled: !!account }
   );
 
-  const [data, totals] = useMemo(() => {
+  const [data, totals, updates] = useMemo(() => {
+    const empty: Record<string, NonNullable<Nft["listing"]>> = {};
     const {
       listings = [],
       sold = [],
@@ -546,14 +574,34 @@ const Inventory = () => {
       },
       {}
     );
+    const updates = tokens.reduce<Record<string, NonNullable<Nft["listing"]>>>(
+      (acc, value) => {
+        const { collection, tokenId } = value.token;
+        const key = `${collection.address}-${tokenId}`;
+        const listing = listings.find(
+          ({ token }) =>
+            token.collection.address === collection.address &&
+            token.tokenId === tokenId
+        );
+
+        if (listing) {
+          const { expires, pricePerItem, quantity } = listing;
+
+          acc[key] = { expires, pricePerItem, quantity };
+        }
+
+        return acc;
+      },
+      {}
+    );
 
     switch (section) {
       case "listed":
-        return [listings, totals] as const;
+        return [listings, totals, empty] as const;
       case "sold":
-        return [sold, totals] as const;
+        return [sold, totals, empty] as const;
       default:
-        return [tokens, totals] as const;
+        return [tokens, totals, updates] as const;
     }
   }, [inventory.data?.user, section]);
 
@@ -648,7 +696,7 @@ const Inventory = () => {
                                   name: token.metadata?.name || "",
                                   listing: pricePerItem
                                     ? { expires, pricePerItem, quantity }
-                                    : undefined,
+                                    : updates[`${token.collection.address}-${token.tokenId}`],
                                   source: token.metadata?.image.includes("ipfs")
                                     ? generateIpfsLink(token.metadata.image)
                                     : token.metadata?.image ?? "",
@@ -746,7 +794,13 @@ const Inventory = () => {
 
         {nft ? (
           <Drawer
-            canCancelListing={Boolean(router.query.section?.[0])}
+            actions={
+              router.query.section?.[0]
+                ? ["update", "remove"]
+                : nft.listing
+                ? ["update"]
+                : ["create"]
+            }
             needsContractApproval={!Boolean(approvals[nft.address])}
             nft={nft}
             onClose={onClose}
