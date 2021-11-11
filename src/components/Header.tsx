@@ -143,7 +143,7 @@ const Header = () => {
                               parseFloat(formatEther(magicBalance))
                             )}
                           </span>{" "}
-                          <span className="text-red-800">MAGIC</span>
+                          <span className="text-red-800">$MAGIC</span>
                           <HoverCard.Root openDelay={100} closeDelay={100}>
                             <HoverCard.Trigger asChild>
                               <svg

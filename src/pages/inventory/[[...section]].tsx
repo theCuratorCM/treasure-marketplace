@@ -216,7 +216,7 @@ const Drawer = ({
                                 className="text-gray-500 sm:text-sm"
                                 id="price-currency"
                               >
-                                MAGIC
+                                $MAGIC
                               </span>
                             </div>
                           </div>
@@ -237,7 +237,7 @@ const Drawer = ({
                                 {formatNumber(
                                   parseFloat(price || "0") * DAO_SHARE
                                 )}{" "}
-                                MAGIC
+                                $MAGIC
                               </p>
                             </div>
                             <div className="flex justify-between px-2">
@@ -249,7 +249,7 @@ const Drawer = ({
                                 {formatNumber(
                                   parseFloat(price || "0") * CREATOR_SHARE
                                 )}{" "}
-                                MAGIC
+                                $MAGIC
                               </p>
                             </div>
                             <div className="flex justify-between px-2">
@@ -261,7 +261,7 @@ const Drawer = ({
                                 {formatNumber(
                                   parseFloat(price || "0") * USER_SHARE
                                 )}{" "}
-                                MAGIC
+                                $MAGIC
                               </p>
                             </div>
                           </div>

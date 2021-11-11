@@ -187,7 +187,7 @@ const Collection = () => {
                 <dl className="-mx-8 -mt-8 flex flex-wrap divide-x-2">
                   <div className="flex flex-col px-8 pt-8">
                     <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
-                      Floor Price (MAGIC)
+                      Floor Price ($MAGIC)
                     </dt>
                     <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
                       {formatNumber(
@@ -510,7 +510,7 @@ const DetailedFloorPriceModal = ({
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                       >
-                        Floor Price (MAGIC)
+                        Floor Price ($MAGIC)
                       </th>
                     </tr>
                   </thead>
@@ -682,7 +682,7 @@ const PurchaseItemModal = ({
               <Button
                 onClick={approve}
                 isLoading={approveState.status === "Mining"}
-                loadingText="Approving MAGIC..."
+                loadingText="Approving $MAGIC..."
                 variant="secondary"
               >
                 Approve $MAGIC to purchase this item
