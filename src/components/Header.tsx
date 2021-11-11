@@ -75,136 +75,140 @@ const Header = () => {
           </Transition.Child>
         </Dialog>
       </Transition.Root>
-
-      <header className="relative">
-        <nav aria-label="Top">
-          <div className="bg-white shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="h-16 flex items-center justify-between">
-                <div className="hidden h-full lg:flex">
-                  <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                    {collections
-                      .filter((collection) =>
-                        coreCollections.includes(collection.name)
-                      )
-                      .map((collection) => (
-                        <Link
-                          href={`/collection/${collection.address}`}
-                          passHref
-                          key={collection.name}
-                        >
-                          <a className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
-                            {collection.name}
-                          </a>
-                        </Link>
-                      ))}
-                  </div>
-                  <div className="px-4 bottom-0 inset-x-0">
-                    <SearchAutocomplete
-                      label="Search Collection"
-                      allowsCustomValue
-                      onSelectionChange={(name) => {
-                        const targetCollection = collections.find(
-                          (collection) => collection.name === name
-                        );
-
-                        if (targetCollection) {
-                          Router.push(
-                            `/collection/${targetCollection.address}`
-                          );
-                        }
-                      }}
-                    >
-                      {collections.map((collection) => (
-                        <Item key={collection.name}>{collection.name}</Item>
-                      ))}
-                    </SearchAutocomplete>
-                  </div>
-                </div>
-
-                <div className="lg:flex-1 flex items-center lg:hidden">
-                  <button
-                    type="button"
-                    className="-ml-2 bg-white p-2 rounded-md text-gray-400"
-                    onClick={() => setMobileMenuOpen(true)}
-                  >
-                    <span className="sr-only">Open menu</span>
-                    <MenuIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-
-                <div className="flex-1 flex items-center justify-end">
-                  <div className="flex items-center">
-                    {account && (
-                      <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100 flex justify-center items-center space-x-2">
-                        <span className="text-red-500">
-                          {formatNumber(parseFloat(formatEther(magicBalance)))}
-                        </span>{" "}
-                        <span className="text-red-800">MAGIC</span>
-                        <HoverCard.Root openDelay={100} closeDelay={100}>
-                          <HoverCard.Trigger asChild>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-red-800"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </HoverCard.Trigger>
-                          <HoverCard.Content
-                            align="center"
-                            side="bottom"
-                            sideOffset={2}
+      <div className="fixed w-full shadow z-10">
+        <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
+        <header className="relative">
+          <nav aria-label="Top">
+            <div className="bg-white shadow-sm">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="h-16 flex items-center justify-between">
+                  <div className="hidden h-full lg:flex">
+                    <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
+                      {collections
+                        .filter((collection) =>
+                          coreCollections.includes(collection.name)
+                        )
+                        .map((collection) => (
+                          <Link
+                            href={`/collection/${collection.address}`}
+                            passHref
+                            key={collection.name}
                           >
-                            <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              <div className="py-1">
-                                <div>
-                                  <button
-                                    className="text-gray-700 block px-4 py-2 text-sm"
-                                    onClick={() => setSushiModalOpen(true)}
-                                  >
-                                    Purchase MAGIC
-                                  </button>
+                            <a className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
+                              {collection.name}
+                            </a>
+                          </Link>
+                        ))}
+                    </div>
+                    <div className="px-4 bottom-0 inset-x-0">
+                      <SearchAutocomplete
+                        label="Search Collection"
+                        allowsCustomValue
+                        onSelectionChange={(name) => {
+                          const targetCollection = collections.find(
+                            (collection) => collection.name === name
+                          );
+
+                          if (targetCollection) {
+                            Router.push(
+                              `/collection/${targetCollection.address}`
+                            );
+                          }
+                        }}
+                      >
+                        {collections.map((collection) => (
+                          <Item key={collection.name}>{collection.name}</Item>
+                        ))}
+                      </SearchAutocomplete>
+                    </div>
+                  </div>
+
+                  <div className="lg:flex-1 flex items-center lg:hidden">
+                    <button
+                      type="button"
+                      className="-ml-2 bg-white p-2 rounded-md text-gray-400"
+                      onClick={() => setMobileMenuOpen(true)}
+                    >
+                      <span className="sr-only">Open menu</span>
+                      <MenuIcon className="h-6 w-6" aria-hidden="true" />
+                    </button>
+                  </div>
+
+                  <div className="flex-1 flex items-center justify-end">
+                    <div className="flex items-center">
+                      {account && (
+                        <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100 flex justify-center items-center space-x-2">
+                          <span className="text-red-500">
+                            {formatNumber(
+                              parseFloat(formatEther(magicBalance))
+                            )}
+                          </span>{" "}
+                          <span className="text-red-800">MAGIC</span>
+                          <HoverCard.Root openDelay={100} closeDelay={100}>
+                            <HoverCard.Trigger asChild>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-red-800"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </HoverCard.Trigger>
+                            <HoverCard.Content
+                              align="center"
+                              side="bottom"
+                              sideOffset={2}
+                            >
+                              <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="py-1">
+                                  <div>
+                                    <button
+                                      className="text-gray-700 block px-4 py-2 text-sm"
+                                      onClick={() => setSushiModalOpen(true)}
+                                    >
+                                      Purchase MAGIC
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </HoverCard.Content>
-                        </HoverCard.Root>
+                            </HoverCard.Content>
+                          </HoverCard.Root>
+                        </div>
+                      )}
+                      <button
+                        className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
+                        onClick={() => {
+                          if (!account) {
+                            activateBrowserWallet((err) => {
+                              console.log(err);
+                            });
+                          }
+                        }}
+                      >
+                        {account ? shortenAddress(account) : "Connect"}
+                      </button>
+                      <div className="ml-4 flow-root border-l border-gray-200 pl-4 sm:pl-6 text-sm">
+                        <Link href="/inventory" passHref>
+                          <a className="hover:text-gray-900 text-gray-500">
+                            Inventory
+                          </a>
+                        </Link>
                       </div>
-                    )}
-                    <button
-                      className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
-                      onClick={() => {
-                        if (!account) {
-                          activateBrowserWallet((err) => {
-                            console.log(err);
-                          });
-                        }
-                      }}
-                    >
-                      {account ? shortenAddress(account) : "Connect"}
-                    </button>
-                    <div className="ml-4 flow-root border-l border-gray-200 pl-4 sm:pl-6 text-sm">
-                      <Link href="/inventory" passHref>
-                        <a className="hover:text-gray-900 text-gray-500">
-                          Inventory
-                        </a>
-                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </nav>
-      </header>
+          </nav>
+        </header>
+      </div>
       <Modal
         title="Convert between ETH and MAGIC"
         onClose={() => setSushiModalOpen(false)}
