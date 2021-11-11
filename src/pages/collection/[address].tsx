@@ -180,26 +180,26 @@ const Collection = () => {
         <div className="py-24 flex flex-col items-center">
           {collectionData?.collection && statData?.collection ? (
             <>
-              <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
                 {collectionData.collection.name}
               </h1>
               <div className="mt-12 overflow-hidden flex flex-col">
                 <dl className="-mx-8 -mt-8 flex flex-wrap divide-x-2">
                   <div className="flex flex-col px-8 pt-8">
-                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
+                    <dt className="order-2 text-xs sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
                       Floor Price ($MAGIC)
                     </dt>
-                    <dd className="order-1 text-xl font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
+                    <dd className="order-1 text-base font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
                       {formatNumber(
                         parseFloat(formatEther(statData.collection.floorPrice))
                       )}
                     </dd>
                   </div>
                   <div className="flex flex-col px-8 pt-8">
-                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
+                    <dt className="order-2 text-xs sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
                       Total Listings
                     </dt>
-                    <dd className="order-1 text-xl font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
+                    <dd className="order-1 text-base font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
                       {statData.collection.totalListings}
                     </dd>
                   </div>
