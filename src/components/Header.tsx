@@ -85,42 +85,6 @@ const Header = () => {
                         {formatNumber(parseFloat(formatEther(magicBalance)))}
                       </span>{" "}
                       <span className="text-white block ml-2">$MAGIC</span>
-                      {/* <HoverCard.Root openDelay={100} closeDelay={100}>
-                        <HoverCard.Trigger asChild>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 text-white inline-block ml-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </HoverCard.Trigger>
-                        <HoverCard.Content
-                          align="center"
-                          side="bottom"
-                          sideOffset={2}
-                        >
-                          <div className="mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            <div className="py-1">
-                              <div>
-                                <button
-                                  className="text-gray-700 block px-4 py-2 text-sm dark:text-gray-200"
-                                  onClick={() => setSushiModalOpen(true)}
-                                >
-                                  Purchase MAGIC
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </HoverCard.Content>
-                      </HoverCard.Root> */}
                     </div>
                     <div className="flex items-center justify-center px-2 sm:px-3 py-2 rounded-lg dark:bg-gray-800 bg-red-600 text-white text-xs sm:text-sm">
                       {shortenAddress(account)}
