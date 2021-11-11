@@ -5,7 +5,7 @@ import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 
 import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
-import { AddressZero } from "@ethersproject/constants";
+import { AddressZero, Zero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 import { formatNumber, generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Modal } from "../../components/Modal";
 import {
   GetCollectionListingsQuery,
+  GetCollectionStatsQuery,
   OrderDirection,
 } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
@@ -30,6 +31,8 @@ import {
 import { Contracts } from "../../const";
 import classNames from "clsx";
 import { useInView } from "react-intersection-observer";
+import { SearchAutocomplete } from "../../components/SearchAutocomplete";
+import { Item } from "react-stately";
 
 const MAX_ITEMS_PER_PAGE = 42;
 
@@ -67,6 +70,8 @@ const Collection = () => {
   const { account } = useEthers();
   const [searchToken, setSearchToken] = useState("");
   const [searchParams, setSearchParams] = useState("");
+  const [isDetailedFloorPriceModalOpen, setDetailedFloorPriceModalOpen] =
+    useState(false);
   const [modalProps, setModalProps] = useState<{
     isOpen: boolean;
     targetNft:
@@ -81,14 +86,26 @@ const Collection = () => {
   });
 
   const sortParam = sort ?? OrderDirection.Asc;
+  const formattedAddress = Array.isArray(address)
+    ? address[0]
+    : address?.toLowerCase() ?? AddressZero;
 
   const { data: collectionData } = useQuery(
     ["collection", address],
     () =>
       client.getCollectionInfo({
-        id: Array.isArray(address)
-          ? address[0]
-          : address?.toLowerCase() ?? AddressZero,
+        id: formattedAddress,
+      }),
+    {
+      enabled: !!address,
+    }
+  );
+
+  const { data: statData } = useQuery(
+    ["stats", address],
+    () =>
+      client.getCollectionStats({
+        id: formattedAddress,
       }),
     {
       enabled: !!address,
@@ -121,6 +138,11 @@ const Collection = () => {
     }
   );
 
+  // const onClose = React.useCallback(
+  //   () => setModalProps({ isOpen: false, targetNft: null }),
+  //   []
+  // );
+
   const keyParams = React.useMemo(
     () => ({
       address,
@@ -131,6 +153,12 @@ const Collection = () => {
   );
 
   const { send, state } = useBuyItem(keyParams);
+
+  React.useEffect(() => {
+    if (state.status === "Success") {
+      setModalProps({ isOpen: false, targetNft: null });
+    }
+  }, [state.status]);
 
   const hasNextPage =
     listingData?.pages[listingData.pages.length - 1]?.collection?.listings
@@ -150,12 +178,12 @@ const Collection = () => {
     <main>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 pt-24">
         <div className="py-24 flex flex-col items-center">
-          {collectionData?.collection ? (
+          {collectionData?.collection && statData?.collection ? (
             <>
               <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
                 {collectionData.collection.name}
               </h1>
-              <div className="mt-12 overflow-hidden flex justify-center">
+              <div className="mt-12 overflow-hidden flex flex-col">
                 <dl className="-mx-8 -mt-8 flex flex-wrap divide-x-2">
                   <div className="flex flex-col px-8 pt-8">
                     <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
@@ -163,9 +191,7 @@ const Collection = () => {
                     </dt>
                     <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
                       {formatNumber(
-                        parseFloat(
-                          formatEther(collectionData.collection.floorPrice)
-                        )
+                        parseFloat(formatEther(statData.collection.floorPrice))
                       )}
                     </dd>
                   </div>
@@ -174,10 +200,19 @@ const Collection = () => {
                       Total Listings
                     </dt>
                     <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
-                      {collectionData.collection.totalListings}
+                      {statData.collection.totalListings}
                     </dd>
                   </div>
                 </dl>
+                {collectionData.collection.standard === "ERC1155" &&
+                  statData.collection.totalListings > 0 && (
+                    <button
+                      className="text-[0.5rem] block underline place-self-start mt-2"
+                      onClick={() => setDetailedFloorPriceModalOpen(true)}
+                    >
+                      Detailed floor price &gt;
+                    </button>
+                  )}
               </div>
             </>
           ) : (
@@ -405,7 +440,109 @@ const Collection = () => {
           list={modalProps.targetNft}
         />
       )}
+      {statData?.collection && (
+        <DetailedFloorPriceModal
+          isOpen={isDetailedFloorPriceModalOpen}
+          onClose={() => setDetailedFloorPriceModalOpen(false)}
+          listings={statData.collection.listings}
+        />
+      )}
     </main>
+  );
+};
+
+const DetailedFloorPriceModal = ({
+  isOpen,
+  onClose,
+  listings,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  listings: Exclude<
+    GetCollectionStatsQuery["collection"],
+    null | undefined
+  >["listings"];
+}) => {
+  const listingsWithoutDuplicates = listings.reduce((acc, curr) => {
+    if (curr.token.name && !acc[curr.token.name]) {
+      acc[curr.token.name] = formatNumber(
+        parseFloat(formatEther(curr.token.floorPrice || Zero))
+      );
+    }
+
+    return acc;
+  }, {});
+  const [lists, setList] = useState(listingsWithoutDuplicates);
+
+  return (
+    <Modal onClose={onClose} isOpen={isOpen} title="Detailed floor prices">
+      <div className="mt-4">
+        <SearchAutocomplete
+          placeholder="Search Token..."
+          onSelectionChange={(key) => {
+            if (!key) {
+              setList(listingsWithoutDuplicates);
+              return;
+            }
+            const targetCollection = { [key]: lists[key] };
+
+            setList(targetCollection);
+          }}
+        >
+          {Object.keys(listingsWithoutDuplicates).map((key) => (
+            <Item key={key}>{key}</Item>
+          ))}
+        </SearchAutocomplete>
+        <div className="flex flex-col mt-2">
+          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+              <div className="overflow-auto dark:divide-gray-400 rounded-md max-h-96">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50 dark:bg-gray-500 sticky top-0">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Token
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
+                        Floor Price (MAGIC)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.keys(lists).map((list, listIdx) => {
+                      const floorPrice = lists[list];
+                      return (
+                        <tr
+                          key={list}
+                          className={
+                            listIdx % 2 === 0
+                              ? "bg-white dark:bg-gray-200"
+                              : "bg-gray-50 dark:bg-gray-300"
+                          }
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-700">
+                            {list}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-700">
+                            {floorPrice}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
   );
 };
 
@@ -456,12 +593,6 @@ const PurchaseItemModal = ({
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;
-
-  useEffect(() => {
-    if (state.status === "Success") {
-      onClose();
-    }
-  }, [state.status, onClose]);
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">

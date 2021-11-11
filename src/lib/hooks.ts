@@ -184,6 +184,9 @@ export function useBuyItem(keys: {
         queryClient.invalidateQueries(["listings", keys], {
           refetchInactive: true,
         });
+        queryClient.invalidateQueries(["stats", keys.address], {
+          refetchInactive: true,
+        });
         break;
     }
   }, [queryClient, state.errorMessage, keys, state.status]);

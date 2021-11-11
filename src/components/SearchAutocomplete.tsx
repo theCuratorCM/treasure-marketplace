@@ -147,7 +147,11 @@ function Popover(props: PopoverProps) {
   );
 }
 
-export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
+interface Props<T> extends ComboBoxProps<T> {
+  placeholder?: string;
+}
+
+export function SearchAutocomplete<T extends object>(props: Props<T>) {
   const { contains } = useFilter({ sensitivity: "base" });
   const state = useComboBoxState({
     ...props,
@@ -186,9 +190,9 @@ export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
   const { buttonProps } = useButton(clearButtonProps, clearButtonRef);
 
   return (
-    <div className="inline-flex flex-col relative mt-4">
+    <div className="inline-flex flex-col relative w-full">
       <div
-        className={`relative px-2 inline-flex bg-white flex-row items-center rounded-md overflow-hidden shadow-sm border w-80 ${
+        className={`relative px-2 inline-flex bg-white flex-row items-center rounded-md overflow-hidden shadow-sm border ${
           state.isFocused ? "border-red-500" : "border-gray-300"
         }`}
       >
@@ -196,7 +200,7 @@ export function SearchAutocomplete<T extends object>(props: ComboBoxProps<T>) {
         <input
           {...inputProps}
           ref={inputRef}
-          placeholder="Search Collection..."
+          placeholder={props.placeholder ?? "Search Collection..."}
           className="outline-none px-3 py-1 appearance-none w-full"
         />
         <button

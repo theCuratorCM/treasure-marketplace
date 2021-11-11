@@ -51,8 +51,21 @@ export const getCollectionInfo = gql`
       id
       name
       standard
+    }
+  }
+`;
+
+export const getCollectionStats = gql`
+  query getCollectionStats($id: ID!) {
+    collection(id: $id) {
       floorPrice
       totalListings
+      listings(where: { status: Active }) {
+        token {
+          floorPrice
+          name
+        }
+      }
     }
   }
 `;
