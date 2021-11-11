@@ -5,7 +5,7 @@ import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
 
 import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
-import { AddressZero } from "@ethersproject/constants";
+import { AddressZero, Zero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 import { formatNumber, generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
@@ -14,8 +14,8 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Modal } from "../../components/Modal";
 import {
-  GetCollectionInfoQuery,
   GetCollectionListingsQuery,
+  GetCollectionStatsQuery,
   OrderDirection,
 } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
@@ -86,14 +86,26 @@ const Collection = () => {
   });
 
   const sortParam = sort ?? OrderDirection.Asc;
+  const formattedAddress = Array.isArray(address)
+    ? address[0]
+    : address?.toLowerCase() ?? AddressZero;
 
   const { data: collectionData } = useQuery(
     ["collection", address],
     () =>
       client.getCollectionInfo({
-        id: Array.isArray(address)
-          ? address[0]
-          : address?.toLowerCase() ?? AddressZero,
+        id: formattedAddress,
+      }),
+    {
+      enabled: !!address,
+    }
+  );
+
+  const { data: statData } = useQuery(
+    ["stats", address],
+    () =>
+      client.getCollectionStats({
+        id: formattedAddress,
       }),
     {
       enabled: !!address,
@@ -126,6 +138,11 @@ const Collection = () => {
     }
   );
 
+  // const onClose = React.useCallback(
+  //   () => setModalProps({ isOpen: false, targetNft: null }),
+  //   []
+  // );
+
   const keyParams = React.useMemo(
     () => ({
       address,
@@ -136,6 +153,12 @@ const Collection = () => {
   );
 
   const { send, state } = useBuyItem(keyParams);
+
+  React.useEffect(() => {
+    if (state.status === "Success") {
+      setModalProps({ isOpen: false, targetNft: null });
+    }
+  }, [state.status]);
 
   const hasNextPage =
     listingData?.pages[listingData.pages.length - 1]?.collection?.listings
@@ -155,7 +178,7 @@ const Collection = () => {
     <main>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 pt-24">
         <div className="py-24 flex flex-col items-center">
-          {collectionData?.collection ? (
+          {collectionData?.collection && statData?.collection ? (
             <>
               <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
                 {collectionData.collection.name}
@@ -168,9 +191,7 @@ const Collection = () => {
                     </dt>
                     <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
                       {formatNumber(
-                        parseFloat(
-                          formatEther(collectionData.collection.floorPrice)
-                        )
+                        parseFloat(formatEther(statData.collection.floorPrice))
                       )}
                     </dd>
                   </div>
@@ -179,18 +200,19 @@ const Collection = () => {
                       Total Listings
                     </dt>
                     <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
-                      {collectionData.collection.totalListings}
+                      {statData.collection.totalListings}
                     </dd>
                   </div>
                 </dl>
-                {collectionData.collection.standard === "ERC1155" && (
-                  <button
-                    className="text-[0.5rem] block underline place-self-start mt-2"
-                    onClick={() => setDetailedFloorPriceModalOpen(true)}
-                  >
-                    Detailed floor price &gt;
-                  </button>
-                )}
+                {collectionData.collection.standard === "ERC1155" &&
+                  statData.collection.totalListings > 0 && (
+                    <button
+                      className="text-[0.5rem] block underline place-self-start mt-2"
+                      onClick={() => setDetailedFloorPriceModalOpen(true)}
+                    >
+                      Detailed floor price &gt;
+                    </button>
+                  )}
               </div>
             </>
           ) : (
@@ -418,11 +440,11 @@ const Collection = () => {
           list={modalProps.targetNft}
         />
       )}
-      {collectionData?.collection && (
+      {statData?.collection && (
         <DetailedFloorPriceModal
           isOpen={isDetailedFloorPriceModalOpen}
           onClose={() => setDetailedFloorPriceModalOpen(false)}
-          listings={collectionData.collection.listings}
+          listings={statData.collection.listings}
         />
       )}
     </main>
@@ -437,14 +459,14 @@ const DetailedFloorPriceModal = ({
   isOpen: boolean;
   onClose: () => void;
   listings: Exclude<
-    GetCollectionInfoQuery["collection"],
+    GetCollectionStatsQuery["collection"],
     null | undefined
   >["listings"];
 }) => {
   const listingsWithoutDuplicates = listings.reduce((acc, curr) => {
     if (curr.token.name && !acc[curr.token.name]) {
       acc[curr.token.name] = formatNumber(
-        parseFloat(formatEther(curr.token.floorPrice))
+        parseFloat(formatEther(curr.token.floorPrice || Zero))
       );
     }
 
@@ -571,12 +593,6 @@ const PurchaseItemModal = ({
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;
-
-  useEffect(() => {
-    if (state.status === "Success") {
-      onClose();
-    }
-  }, [state.status, onClose]);
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">

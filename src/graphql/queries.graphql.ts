@@ -51,6 +51,13 @@ export const getCollectionInfo = gql`
       id
       name
       standard
+    }
+  }
+`;
+
+export const getCollectionStats = gql`
+  query getCollectionStats($id: ID!) {
+    collection(id: $id) {
       floorPrice
       totalListings
       listings(where: { status: Active }) {
@@ -89,7 +96,6 @@ export const getCollectionListings = gql`
         pricePerItem
         token {
           tokenId
-          floorPrice
           metadata {
             image
             name
