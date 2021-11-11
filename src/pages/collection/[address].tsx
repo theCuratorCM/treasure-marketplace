@@ -149,11 +149,37 @@ const Collection = () => {
   return (
     <main>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 pt-24">
-        <div className="py-24 text-center">
-          {collectionData?.collection?.name ? (
-            <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
-              {collectionData.collection.name}
-            </h1>
+        <div className="py-24 flex flex-col items-center">
+          {collectionData?.collection ? (
+            <>
+              <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
+                {collectionData.collection.name}
+              </h1>
+              <div className="mt-12 overflow-hidden flex justify-center">
+                <dl className="-mx-8 -mt-8 flex flex-wrap divide-x-2">
+                  <div className="flex flex-col px-8 pt-8">
+                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
+                      Floor Price (MAGIC)
+                    </dt>
+                    <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
+                      {formatNumber(
+                        parseFloat(
+                          formatEther(collectionData.collection.floorPrice)
+                        )
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col px-8 pt-8">
+                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
+                      Total Listings
+                    </dt>
+                    <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
+                      {collectionData.collection.totalListings}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </>
           ) : (
             <div className="animate-pulse w-56 bg-gray-300 h-12 rounded-md m-auto" />
           )}
