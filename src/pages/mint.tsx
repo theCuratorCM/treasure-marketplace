@@ -285,7 +285,7 @@ function useClaimMagic() {
 
   return useMemo(() => {
     const send = () => {
-      mint.send(account, ethers.utils.parseEther("1000"));
+      mint.send(account, ethers.utils.parseEther("1000000"));
     };
 
     return { ...mint, send };
@@ -712,7 +712,7 @@ const Mint = () => {
                 loadingText="Claiming..."
                 onClick={() => claimMagic.send()}
               >
-                Claim 1000 MAGIC
+                Claim 1000000 MAGIC
               </Button>
             </div>
 
