@@ -1,6 +1,6 @@
 module.exports = {
   images: {
-    domains: ["gateway.pinata.cloud"],
+    domains: ["treasure-marketplace.mypinata.cloud"],
   },
   async redirects() {
     return [
