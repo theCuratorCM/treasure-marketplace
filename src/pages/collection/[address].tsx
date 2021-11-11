@@ -148,7 +148,7 @@ const Collection = () => {
 
   return (
     <main>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 pt-24">
         <div className="py-24 text-center">
           {collectionData?.collection?.name ? (
             <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
