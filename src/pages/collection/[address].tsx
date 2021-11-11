@@ -268,7 +268,7 @@ const Collection = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">
                     {sortOptions.map((option) => {
                       const active = option.value === sortParam;
@@ -284,9 +284,9 @@ const Collection = () => {
                             }}
                             passHref
                             className={classNames(
-                              "block px-4 py-2 text-sm font-medium text-gray-900",
+                              "block px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-500",
                               {
-                                "text-red-500": active,
+                                "text-red-500 dark:text-gray-100": active,
                               }
                             )}
                           >

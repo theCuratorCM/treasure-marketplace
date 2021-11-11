@@ -187,11 +187,11 @@ const Header = () => {
                                 side="bottom"
                                 sideOffset={2}
                               >
-                                <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
                                   <div className="py-1">
                                     <div>
                                       <button
-                                        className="text-gray-700 block px-4 py-2 text-sm"
+                                        className="text-gray-700 block px-4 py-2 text-sm dark:text-gray-200"
                                         onClick={() => setSushiModalOpen(true)}
                                       >
                                         Purchase MAGIC
