@@ -53,6 +53,12 @@ export const getCollectionInfo = gql`
       standard
       floorPrice
       totalListings
+      listings(where: { status: Active }) {
+        token {
+          floorPrice
+          name
+        }
+      }
     }
   }
 `;
@@ -83,6 +89,7 @@ export const getCollectionListings = gql`
         pricePerItem
         token {
           tokenId
+          floorPrice
           metadata {
             image
             name

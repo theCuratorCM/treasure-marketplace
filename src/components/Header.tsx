@@ -82,7 +82,7 @@ const Header = () => {
             <div className="bg-white shadow-sm">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="h-16 flex items-center justify-between">
-                  <div className="hidden h-full lg:flex">
+                  <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
                       {collections
                         .filter((collection) =>
@@ -100,7 +100,7 @@ const Header = () => {
                           </Link>
                         ))}
                     </div>
-                    <div className="px-4 bottom-0 inset-x-0">
+                    <div className="bottom-0 inset-x-0">
                       <SearchAutocomplete
                         label="Search Collection"
                         allowsCustomValue
