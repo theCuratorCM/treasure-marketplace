@@ -668,7 +668,7 @@ const Inventory = () => {
                           ) : null}
                         </div>
                         <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                          <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-xs">
+                          <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
                             {token.metadata?.description}
                           </p>
                           {pricePerItem && (
