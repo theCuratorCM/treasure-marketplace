@@ -100,23 +100,7 @@ function MyApp({ Component, pageProps }) {
           <DAppProvider config={config}>
             <MagicProvider>
               <QueryClientProvider client={queryClient}>
-                <div className="min-h-screen relative flex flex-col overflow-hidden dark:bg-gray-900">
-                  {Component.showSamuraiBg && (
-                    <>
-                      <img
-                        src={"/img/samurai1.png"}
-                        className="absolute top-16 -left-48 sm:top-20 sm:-left-12 opacity-20 dark:filter dark:invert"
-                      />
-                      <img
-                        src={"/img/samurai2.png"}
-                        className="absolute opacity-20 top-1/2 -right-36 sm:-right-12 dark:filter dark:invert"
-                      />
-                    </>
-                  )}
-                  {Component.disableHeader ? null : <Header />}
-                  <Component {...pageProps} />
-                  <Footer />
-                </div>
+                <Main Component={Component} pageProps={pageProps} />
                 <ReactQueryDevtools />
               </QueryClientProvider>
             </MagicProvider>
@@ -174,5 +158,22 @@ function MyApp({ Component, pageProps }) {
     </>
   );
 }
+
+const Main = ({ pageProps, Component }) => {
+  const [mounted, setMounted] = React.useState(false);
+
+  // When mounted on client, now we can show the UI
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="min-h-screen relative flex flex-col overflow-hidden dark:bg-gray-900">
+      {Component.disableHeader ? null : <Header />}
+      <Component {...pageProps} />
+      <Footer />
+    </div>
+  );
+};
 
 export default MyApp;

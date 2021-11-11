@@ -840,6 +840,4 @@ const Mint = () => {
   );
 };
 
-Mint.showSamuraiBg = false;
-
 export default Mint;

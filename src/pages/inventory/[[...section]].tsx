@@ -757,6 +757,4 @@ const Inventory = () => {
   );
 };
 
-Inventory.showSamuraiBg = false;
-
 export default Inventory;
