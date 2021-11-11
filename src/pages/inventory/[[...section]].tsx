@@ -129,7 +129,7 @@ const Drawer = ({
         onClose={toggle}
       >
         <div className="absolute inset-0 overflow-hidden">
-          <Dialog.Overlay className="absolute inset-0 bg-gray-300 opacity-60" />
+          <Dialog.Overlay className="absolute inset-0 bg-gray-300 dark:bg-gray-600 opacity-60" />
 
           <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
             <Transition.Child
@@ -143,17 +143,17 @@ const Drawer = ({
               afterLeave={onClose}
             >
               <div className="w-screen max-w-md">
-                <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
+                <div className="h-full flex flex-col py-6 bg-white dark:bg-gray-900 shadow-xl overflow-y-scroll">
                   <div className="px-4 sm:px-6">
                     <div className="flex items-start justify-between">
-                      <Dialog.Title className="text-lg font-medium text-gray-900">
+                      <Dialog.Title className="text-lg font-medium text-gray-900 dark:text-gray-200">
                         {canCancelListing ? "Manage" : "List"} {nft.name}{" "}
                         {canCancelListing && "Listing"}
                       </Dialog.Title>
                       <div className="ml-3 h-7 flex items-center">
                         <button
                           type="button"
-                          className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                          className="bg-white dark:bg-transparent rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                           onClick={toggle}
                         >
                           <span className="sr-only">Close panel</span>
@@ -175,11 +175,11 @@ const Drawer = ({
                         </div>
                         <div className="mt-4 flex items-start justify-between">
                           <div>
-                            <h2 className="text-lg font-medium text-gray-900">
+                            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-200">
                               <span className="sr-only">Details for </span>
                               {nft.name}
                             </h2>
-                            <p className="text-sm font-medium text-gray-500">
+                            <p className="text-sm font-medium text-gray-500 uppercase">
                               {nft.collection}
                             </p>
                           </div>
@@ -189,7 +189,7 @@ const Drawer = ({
                         <div>
                           <label
                             htmlFor="price"
-                            className="block text-sm font-medium text-gray-700"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                           >
                             Price Per Item
                           </label>
@@ -198,7 +198,7 @@ const Drawer = ({
                               type="number"
                               name="price"
                               id="price"
-                              className="form-input focus:ring-red-500 focus:border-red-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 disabled:pointer-events-none transition-placeholder transition-text ease-linear duration-300"
+                              className="form-input focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 block w-full pr-16 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 dark:placeholder-gray-400 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 transition-placeholder transition-text ease-linear duration-300 disabled:cursor-not-allowed"
                               placeholder="0.00"
                               maxLength={10}
                               min="0"
@@ -213,7 +213,7 @@ const Drawer = ({
                             />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                               <span
-                                className="text-gray-500 sm:text-sm"
+                                className="text-gray-500 dark:text-gray-400 sm:text-sm"
                                 id="price-currency"
                               >
                                 $MAGIC
@@ -272,17 +272,17 @@ const Drawer = ({
                             onChange={setSelectedDate}
                             disabled={isFormDisabled}
                           >
-                            <Listbox.Label className="block text-sm font-medium text-gray-700">
+                            <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Expire Date
                             </Listbox.Label>
                             <div className="mt-1 relative">
-                              <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm disabled:text-gray-300 disabled:pointer-events-none transition-text ease-linear duration-300">
+                              <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
                                 <span className="block truncate">
                                   {selectedDate.label}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                   <SelectorIcon
-                                    className="h-5 w-5 text-gray-400"
+                                    className="h-5 w-5 text-gray-500 dark:text-gray-400"
                                     aria-hidden="true"
                                   />
                                 </span>
@@ -294,15 +294,15 @@ const Drawer = ({
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                               >
-                                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                   {dates.map((date) => (
                                     <Listbox.Option
                                       key={date.id}
                                       className={({ active }) =>
                                         classNames(
                                           active
-                                            ? "text-white bg-red-600"
-                                            : "text-gray-900",
+                                            ? "text-white bg-red-600 dark:bg-gray-800"
+                                            : "text-gray-900 dark:text-gray-200",
                                           "cursor-default select-none relative py-2 pl-3 pr-9"
                                         )
                                       }
@@ -326,7 +326,7 @@ const Drawer = ({
                                               className={classNames(
                                                 active
                                                   ? "text-white"
-                                                  : "text-red-600",
+                                                  : "text-red-600 dark:text-gray-200",
                                                 "absolute inset-y-0 right-0 flex items-center pr-4"
                                               )}
                                             >
@@ -352,17 +352,17 @@ const Drawer = ({
                               onChange={setQuantity}
                               disabled={isFormDisabled}
                             >
-                              <Listbox.Label className="block text-sm font-medium text-gray-700">
+                              <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Quantity
                               </Listbox.Label>
                               <div className="mt-1 relative">
-                                <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm disabled:text-gray-300 disabled:pointer-events-none transition-text ease-linear duration-300">
+                                <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
                                   <span className="block truncate">
                                     {quantity}
                                   </span>
                                   <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon
-                                      className="h-5 w-5 text-gray-400"
+                                      className="h-5 w-5 text-gray-500 dark:text-gray-400"
                                       aria-hidden="true"
                                     />
                                   </span>
@@ -374,7 +374,7 @@ const Drawer = ({
                                   leaveFrom="opacity-100"
                                   leaveTo="opacity-0"
                                 >
-                                  <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                  <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                     {Array.from({
                                       length: Number(nft.total) || 0,
                                     }).map((_, idx) => (
@@ -383,8 +383,8 @@ const Drawer = ({
                                         className={({ active }) =>
                                           classNames(
                                             active
-                                              ? "text-white bg-red-600"
-                                              : "text-gray-900",
+                                              ? "text-white bg-red-600 dark:bg-gray-800"
+                                              : "text-gray-900 dark:text-gray-200",
                                             "cursor-default select-none relative py-2 pl-3 pr-9"
                                           )
                                         }
@@ -408,7 +408,7 @@ const Drawer = ({
                                                 className={classNames(
                                                   active
                                                     ? "text-white"
-                                                    : "text-red-600",
+                                                    : "text-red-600 dark:text-gray-200",
                                                   "absolute inset-y-0 right-0 flex items-center pr-4"
                                                 )}
                                               >
@@ -458,10 +458,15 @@ const Drawer = ({
                           >
                             Update {nft.name} Listing
                           </Button>
-                          <div className="text-center relative border-b-2 h-10 mb-5 -mt-5">
-                            <span className="absolute text-gray-600 top-6 bg-white px-4 pt-1 -ml-4">
-                              OR
-                            </span>
+                          <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-gray-300 dark:border-gray-300" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                              <span className="px-2 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-300">
+                                OR
+                              </span>
+                            </div>
                           </div>
                           <Button
                             disabled={isFormDisabled}
@@ -566,13 +571,13 @@ const Inventory = () => {
       <div className="flex-1 flex items-stretch overflow-hidden">
         <main className="flex-1 overflow-y-auto">
           <div className="pt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="flex-1 text-2xl font-bold text-gray-900">
+            <h1 className="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-200">
               Inventory
             </h1>
 
             <div className="mt-3 sm:mt-2">
               <div className="block">
-                <div className="flex items-center border-b border-gray-200">
+                <div className="flex items-center border-b border-gray-200 dark:border-gray-500">
                   <nav
                     className="flex-1 -mb-px flex space-x-6 xl:space-x-8"
                     aria-label="Tabs"
@@ -587,8 +592,8 @@ const Inventory = () => {
                             aria-current={isCurrentTab ? "page" : undefined}
                             className={classNames(
                               isCurrentTab
-                                ? "border-red-500 text-red-600"
-                                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
+                                ? "border-red-500 text-red-600 dark:border-gray-300 dark:text-gray-300"
+                                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:border-gray-500",
                               "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                             )}
                           >
@@ -605,7 +610,7 @@ const Inventory = () => {
               {inventory.isLoading && <CenterLoadingDots className="h-36" />}
               {data.length === 0 && !inventory.isLoading && (
                 <div className="flex flex-col justify-center items-center h-36">
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">
                     No NFTs {section.length === 0 ? "collected" : section} 😞
                   </h3>
                 </div>
@@ -663,11 +668,11 @@ const Inventory = () => {
                           ) : null}
                         </div>
                         <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                          <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
+                          <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-xs">
                             {token.metadata?.description}
                           </p>
                           {pricePerItem && (
-                            <p>
+                            <p className="dark:text-gray-100">
                               {formatNumber(
                                 parseFloat(formatEther(pricePerItem))
                               )}{" "}
@@ -679,21 +684,25 @@ const Inventory = () => {
                             quantity &&
                             token.collection.standard === "ERC1155" && (
                               <span className="text-gray-600 text-xs text-[0.6rem]">
-                                <span className="text-gray-500">Quantity:</span>{" "}
-                                <span className="font-bold text-gray-700">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Quantity:
+                                </span>{" "}
+                                <span className="font-bold text-gray-700 dark:text-gray-300">
                                   {quantity}
                                 </span>
                               </span>
                             )}
                         </div>
                         <div className="flex items-baseline justify-between mt-1">
-                          <p className="text-xs text-gray-800 font-semibold truncate">
+                          <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
                             {token.metadata?.name}
                           </p>
                           {expires && (
                             <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
-                              <span className="text-gray-500">Expires in:</span>{" "}
-                              <span className="font-bold text-gray-700">
+                              <span className="text-gray-500 dark:text-gray-400">
+                                Expires in:
+                              </span>{" "}
+                              <span className="font-bold text-gray-700 dark:text-gray-300">
                                 {formatDistanceToNow(new Date(Number(expires)))}
                               </span>
                             </p>
@@ -703,8 +712,10 @@ const Inventory = () => {
                             quantity &&
                             token.collection.standard === "ERC1155" && (
                               <span className="text-gray-600 text-xs text-[0.6rem]">
-                                <span className="text-gray-500">Quantity:</span>{" "}
-                                <span className="font-bold text-gray-700">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Quantity:
+                                </span>{" "}
+                                <span className="font-bold text-gray-700 dark:text-gray-300">
                                   {quantity}
                                 </span>
                               </span>
@@ -715,8 +726,10 @@ const Inventory = () => {
                           token.collection.standard === "ERC1155" && (
                             <div className="flex mt-1 justify-end">
                               <span className="text-gray-600 text-xs text-[0.6rem]">
-                                <span className="text-gray-500">Quantity:</span>{" "}
-                                <span className="font-bold text-gray-700">
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  Quantity:
+                                </span>{" "}
+                                <span className="font-bold text-gray-700 dark:text-gray-300">
                                   {quantity}
                                 </span>
                               </span>

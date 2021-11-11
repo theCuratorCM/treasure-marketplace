@@ -108,7 +108,7 @@ function Option({ item, state }: OptionProps) {
     <li
       {...optionProps}
       ref={ref}
-      className="m-1 rounded-md py-2 px-2 text-sm outline-none cursor-default flex items-center justify-between text-gray-700"
+      className="m-1 rounded-md py-2 px-2 text-sm outline-none cursor-default flex items-center justify-between text-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
     >
       {item.rendered}
     </li>
@@ -138,7 +138,7 @@ function Popover(props: PopoverProps) {
       <div
         {...overlayProps}
         ref={popoverRef}
-        className="absolute z-10 top-full w-full shadow-lg border border-gray-300 bg-white rounded-md mt-2"
+        className="absolute z-10 top-full w-full shadow-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md mt-2"
       >
         {children}
         <DismissButton onDismiss={onClose} />
@@ -192,8 +192,10 @@ export function SearchAutocomplete<T extends object>(props: Props<T>) {
   return (
     <div className="inline-flex flex-col relative w-full">
       <div
-        className={`relative px-2 inline-flex bg-white flex-row items-center rounded-md overflow-hidden shadow-sm border ${
-          state.isFocused ? "border-red-500" : "border-gray-300"
+        className={`relative px-2 inline-flex bg-white dark:bg-black flex-row items-center rounded-md overflow-hidden shadow-sm border ${
+          state.isFocused
+            ? "border-gray-500 dark:border-gray-200"
+            : "border-gray-300 dark:border-gray-500"
         }`}
       >
         <SearchIcon aria-hidden="true" className="w-5 h-5 text-gray-500" />
@@ -201,7 +203,7 @@ export function SearchAutocomplete<T extends object>(props: Props<T>) {
           {...inputProps}
           ref={inputRef}
           placeholder={props.placeholder ?? "Search Collection..."}
-          className="outline-none px-3 py-1 appearance-none w-full"
+          className="outline-none px-3 py-1 appearance-none w-full dark:bg-black dark:placeholder-gray-400 dark:text-gray-200"
         />
         <button
           {...buttonProps}

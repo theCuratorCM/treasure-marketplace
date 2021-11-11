@@ -180,26 +180,26 @@ const Collection = () => {
         <div className="py-24 flex flex-col items-center">
           {collectionData?.collection && statData?.collection ? (
             <>
-              <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
+              <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
                 {collectionData.collection.name}
               </h1>
               <div className="mt-12 overflow-hidden flex flex-col">
                 <dl className="-mx-8 -mt-8 flex flex-wrap divide-x-2">
                   <div className="flex flex-col px-8 pt-8">
-                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
+                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
                       Floor Price ($MAGIC)
                     </dt>
-                    <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
+                    <dd className="order-1 text-xl font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
                       {formatNumber(
                         parseFloat(formatEther(statData.collection.floorPrice))
                       )}
                     </dd>
                   </div>
                   <div className="flex flex-col px-8 pt-8">
-                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 mt-2">
+                    <dt className="order-2 text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
                       Total Listings
                     </dt>
-                    <dd className="order-1 text-xl font-extrabold text-red-600 sm:text-3xl">
+                    <dd className="order-1 text-xl font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
                       {statData.collection.totalListings}
                     </dd>
                   </div>
@@ -207,7 +207,7 @@ const Collection = () => {
                 {collectionData.collection.standard === "ERC1155" &&
                   statData.collection.totalListings > 0 && (
                     <button
-                      className="text-[0.5rem] block underline place-self-start mt-2"
+                      className="text-[0.5rem] block underline place-self-start mt-2 dark:text-gray-300"
                       onClick={() => setDetailedFloorPriceModalOpen(true)}
                     >
                       Detailed floor price &gt;
@@ -221,7 +221,7 @@ const Collection = () => {
         </div>
         <section
           aria-labelledby="filter-heading"
-          className="border-t border-gray-200 pt-6"
+          className="border-t border-gray-200 dark:border-gray-500 pt-6"
         >
           <h2 id="filter-heading" className="sr-only">
             Product filters
@@ -237,7 +237,7 @@ const Collection = () => {
               </div>
               <input
                 type="text"
-                className="focus:ring-red-500 focus:border-red-500 focus:ring-2 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400 outline-none py-1"
+                className="focus:ring-red-500 focus:border-red-500 focus:ring-2 dark:ring-0 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400 outline-none py-1 dark:bg-black dark:placeholder-gray-400 dark:text-gray-200 dark:border-gray-600 dark:border dark:focus:border-gray-300"
                 placeholder="Search name..."
                 value={searchToken}
                 onChange={(e) => setSearchToken(e.target.value)}
@@ -250,10 +250,10 @@ const Collection = () => {
             </div>
             <Menu as="div" className="relative z-20 inline-block text-left">
               <div>
-                <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-200">
                   Sort
                   <ChevronDownIcon
-                    className="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                    className="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-100"
                     aria-hidden="true"
                   />
                 </Menu.Button>
@@ -307,7 +307,7 @@ const Collection = () => {
         {listingData?.pages[0]?.collection?.listings.length === 0 &&
           !isListingLoading && (
             <div className="flex flex-col justify-center items-center h-36">
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">
                 No NFTs listed 😞
               </h3>
             </div>
@@ -366,10 +366,10 @@ const Collection = () => {
                           )}
                         </div>
                         <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                          <p className="text-gray-500 font-thin tracking-wide uppercase text-xs">
+                          <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-xs">
                             {collectionData.collection?.name}
                           </p>
-                          <p>
+                          <p className="dark:text-gray-100">
                             {formatNumber(
                               parseFloat(formatEther(listing.pricePerItem))
                             )}{" "}
@@ -377,12 +377,14 @@ const Collection = () => {
                           </p>
                         </div>
                         <div className="flex items-baseline mt-1">
-                          <p className="text-xs text-gray-800 font-semibold truncate">
+                          <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
                             {listing.token.metadata?.name}
                           </p>
                           <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
-                            <span className="text-gray-500">Expires in:</span>{" "}
-                            <span className="font-bold text-gray-700">
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Expires in:
+                            </span>{" "}
+                            <span className="font-bold text-gray-700 dark:text-gray-300">
                               {formatDistanceToNow(
                                 new Date(Number(listing.expires))
                               )}
@@ -392,8 +394,10 @@ const Collection = () => {
                         {collectionData.collection?.standard === "ERC1155" && (
                           <div className="flex mt-1 justify-end">
                             <span className="text-gray-600 text-xs text-[0.6rem]">
-                              <span className="text-gray-500">Quantity:</span>{" "}
-                              <span className="font-bold text-gray-700">
+                              <span className="text-gray-500 dark:text-gray-400">
+                                Quantity:
+                              </span>{" "}
+                              <span className="font-bold text-gray-700 dark:text-gray-300">
                                 {listing.quantity}
                               </span>
                             </span>
@@ -401,8 +405,10 @@ const Collection = () => {
                         )}
                         <div className="flex mt-1 justify-end">
                           <span className="text-gray-600 text-xs text-[0.6rem]">
-                            <span className="text-gray-500">Owner:</span>{" "}
-                            <span className="font-bold text-gray-700">
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Owner:
+                            </span>{" "}
+                            <span className="font-bold text-gray-700 dark:text-gray-300">
                               {yourItem
                                 ? "You"
                                 : shortenAddress(listing.user.id)}
@@ -440,9 +446,9 @@ const Collection = () => {
           list={modalProps.targetNft}
         />
       )}
-      {statData?.collection && (
+      {statData?.collection && isDetailedFloorPriceModalOpen && (
         <DetailedFloorPriceModal
-          isOpen={isDetailedFloorPriceModalOpen}
+          isOpen={true}
           onClose={() => setDetailedFloorPriceModalOpen(false)}
           listings={statData.collection.listings}
         />
@@ -621,10 +627,10 @@ const PurchaseItemModal = ({
                 <div className="flex">
                   <div className="min-w-0 flex-1">
                     <h4 className="text-sm">
-                      <p className="text-sm text-gray-500 uppercase">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 uppercase">
                         {list.token.metadata?.description}
                       </p>
-                      <p className="mt-1 font-medium text-gray-700 hover:text-gray-800">
+                      <p className="mt-1 font-medium text-gray-800 dark:text-gray-50 hover:text-gray-800">
                         {list.token.metadata?.name ?? ""}
                       </p>
                     </h4>
@@ -633,9 +639,9 @@ const PurchaseItemModal = ({
 
                 {list.standard === "ERC1155" && (
                   <div className="flex-1 sm:pt-2 flex items-end justify-between">
-                    <p className="mt-1 text-xs font-medium text-gray-900">
+                    <p className="mt-1 text-xs font-medium text-gray-900 dark:text-gray-100">
                       {formatEther(list.pricePerItem)} $MAGIC{" "}
-                      <span className="text-[0.5rem] text-gray-500">
+                      <span className="text-[0.5rem] text-gray-500 dark:text-gray-400">
                         Per Item
                       </span>
                     </p>
@@ -649,7 +655,7 @@ const PurchaseItemModal = ({
                         name="quantity"
                         value={quantity}
                         onChange={(e) => setQuantity(Number(e.target.value))}
-                        className="form-select rounded-md border border-gray-300 text-base font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                        className="form-select rounded-md border dark:text-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 dark:focus:ring-gray-300 dark:focus:border-gray-300 text-base font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
                       >
                         {Array.from({
                           length: Number(list.quantity) || 0,
@@ -668,7 +674,7 @@ const PurchaseItemModal = ({
           <dl className="py-6 px-4 space-y-6 sm:px-6">
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base font-medium">Total</dt>
-              <dd className="text-base font-medium text-gray-900 flex flex-col items-end">
+              <dd className="text-base font-medium text-gray-900 dark:text-gray-100 flex flex-col items-end">
                 <p>{totalPrice} $MAGIC</p>
                 <p className="text-gray-500 text-sm mt-1">
                   ≈ ${formatNumber(totalPrice * magicPrice)}

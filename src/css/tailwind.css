@@ -7,6 +7,11 @@ body {
   font-family: "Roboto Mono", monospace;
 }
 
+.footer {
+  flex: 0 0 50px;
+  margin-top: auto;
+}
+
 .landing {
   background-image: url("/img/badboidtreasure.png");
   background-repeat: no-repeat;

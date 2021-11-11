@@ -12,11 +12,13 @@ import { SearchAutocomplete } from "./SearchAutocomplete";
 import { useRouter } from "next/router";
 import { useMagic } from "../context/magicContext";
 import { collections, coreCollections } from "../const";
+import classNames from "clsx";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { activateBrowserWallet, account } = useEthers();
   const Router = useRouter();
+  const { address } = Router.query;
   const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
 
   return (
@@ -79,7 +81,7 @@ const Header = () => {
         <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
         <header className="relative">
           <nav aria-label="Top">
-            <div className="bg-white shadow-sm">
+            <div className="bg-white dark:bg-black shadow-sm">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
@@ -88,17 +90,28 @@ const Header = () => {
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
-                        .map((collection) => (
-                          <Link
-                            href={`/collection/${collection.address}`}
-                            passHref
-                            key={collection.name}
-                          >
-                            <a className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
-                              {collection.name}
-                            </a>
-                          </Link>
-                        ))}
+                        .map((collection) => {
+                          const active = collection.address === address;
+                          return (
+                            <Link
+                              href={`/collection/${collection.address}`}
+                              passHref
+                              key={collection.name}
+                            >
+                              <a
+                                className={classNames(
+                                  "flex items-center text-sm font-medium dark:hover:text-gray-200 hover:text-gray-800",
+                                  {
+                                    "dark:text-gray-200 text-red-700": active,
+                                    "dark:text-gray-500 text-gray-700": !active,
+                                  }
+                                )}
+                              >
+                                {collection.name}
+                              </a>
+                            </Link>
+                          );
+                        })}
                     </div>
                     <div className="bottom-0 inset-x-0">
                       <SearchAutocomplete
@@ -136,67 +149,74 @@ const Header = () => {
 
                   <div className="flex-1 flex items-center justify-end">
                     <div className="flex items-center">
-                      {account && (
-                        <div className="px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs md:text-sm bg-red-100 flex justify-center items-center space-x-2">
-                          <span className="text-red-500">
-                            {formatNumber(
-                              parseFloat(formatEther(magicBalance))
-                            )}
-                          </span>{" "}
-                          <span className="text-red-800">$MAGIC</span>
-                          <HoverCard.Root openDelay={100} closeDelay={100}>
-                            <HoverCard.Trigger asChild>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4 text-red-800"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                      {account ? (
+                        <div className="w-auto flex items-center rounded-lg dark:bg-gray-500 bg-red-500 p-0.5 whitespace-nowrap font-bold select-none pointer-events-auto mx-2">
+                          <div className="px-2 sm:px-3 py-1 sm:py-2 text-bold flex items-center text-xs sm:text-sm">
+                            <span className="text-white block">
+                              {formatNumber(
+                                parseFloat(formatEther(magicBalance))
+                              )}
+                            </span>{" "}
+                            <span className="text-white block ml-2">
+                              $MAGIC
+                            </span>
+                            <HoverCard.Root openDelay={100} closeDelay={100}>
+                              <HoverCard.Trigger asChild>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-4 w-4 text-white inline-block ml-2"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                              </HoverCard.Trigger>
+                              <HoverCard.Content
+                                align="center"
+                                side="bottom"
+                                sideOffset={2}
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                            </HoverCard.Trigger>
-                            <HoverCard.Content
-                              align="center"
-                              side="bottom"
-                              sideOffset={2}
-                            >
-                              <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                <div className="py-1">
-                                  <div>
-                                    <button
-                                      className="text-gray-700 block px-4 py-2 text-sm"
-                                      onClick={() => setSushiModalOpen(true)}
-                                    >
-                                      Purchase MAGIC
-                                    </button>
+                                <div className="mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                  <div className="py-1">
+                                    <div>
+                                      <button
+                                        className="text-gray-700 block px-4 py-2 text-sm"
+                                        onClick={() => setSushiModalOpen(true)}
+                                      >
+                                        Purchase MAGIC
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </HoverCard.Content>
-                          </HoverCard.Root>
+                              </HoverCard.Content>
+                            </HoverCard.Root>
+                          </div>
+                          <div className="flex items-center px-2 sm:px-3 py-2 rounded-lg dark:bg-gray-800 bg-red-600 text-white text-xs sm:text-sm">
+                            {shortenAddress(account)}
+                          </div>
                         </div>
-                      )}
-                      <button
-                        className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
-                        onClick={() => {
-                          if (!account) {
+                      ) : (
+                        <button
+                          className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-red-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-white dark:text-gray-300 bg-red-500 dark:bg-gray-800 hover:bg-red-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
+                          onClick={() => {
                             activateBrowserWallet((err) => {
                               console.log(err);
                             });
-                          }
-                        }}
-                      >
-                        {account ? shortenAddress(account) : "Connect"}
-                      </button>
+                          }}
+                        >
+                          Connect Wallet
+                        </button>
+                      )}
+
                       <div className="ml-4 flow-root border-l border-gray-200 pl-4 sm:pl-6 text-sm">
                         <Link href="/inventory" passHref>
-                          <a className="hover:text-gray-900 text-gray-500">
+                          <a className="hover:text-gray-900 text-gray-500 dark:hover:text-gray-200">
                             Inventory
                           </a>
                         </Link>
