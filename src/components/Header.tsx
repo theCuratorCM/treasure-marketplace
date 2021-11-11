@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
@@ -20,6 +20,11 @@ const Header = () => {
   const Router = useRouter();
   const { address } = Router.query;
   const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
+
+  useEffect(() => {
+    // Close dialog on sidebar click
+    setMobileMenuOpen(false);
+  }, [address]);
 
   return (
     <div>
@@ -50,7 +55,7 @@ const Header = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative max-w-xs w-full bg-white shadow-xl pb-12 flex flex-col overflow-y-auto">
+            <div className="relative max-w-xs w-full bg-white dark:bg-gray-900 shadow-xl pb-12 flex flex-col overflow-y-auto">
               <div className="px-4 pt-5 pb-2 flex">
                 <button
                   type="button"
@@ -66,7 +71,7 @@ const Header = () => {
                 {collections.map((page) => (
                   <div key={page.name} className="flow-root">
                     <Link href={`/collection/${page.address}`} passHref>
-                      <a className="-m-2 p-2 block font-medium text-gray-900">
+                      <a className="-m-2 p-2 block font-medium text-gray-900 dark:text-gray-200">
                         {page.name}
                       </a>
                     </Link>
@@ -139,7 +144,7 @@ const Header = () => {
                   <div className="lg:flex-1 flex items-center lg:hidden">
                     <button
                       type="button"
-                      className="-ml-2 bg-white p-2 rounded-md text-gray-400"
+                      className="-ml-2 bg-white dark:bg-transparent p-2 rounded-md text-gray-400"
                       onClick={() => setMobileMenuOpen(true)}
                     >
                       <span className="sr-only">Open menu</span>

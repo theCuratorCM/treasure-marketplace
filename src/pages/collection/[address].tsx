@@ -274,26 +274,24 @@ const Collection = () => {
                       const active = option.value === sortParam;
                       return (
                         <Menu.Item key={option.name}>
-                          {() => (
-                            <QueryLink
-                              href={{
-                                pathname: router.pathname,
-                                query: {
-                                  ...router.query,
-                                  sort: option.value,
-                                },
-                              }}
-                              passHref
-                              className={classNames(
-                                "block px-4 py-2 text-sm font-medium text-gray-900",
-                                {
-                                  "text-red-500": active,
-                                }
-                              )}
-                            >
-                              <span>{option.name}</span>
-                            </QueryLink>
-                          )}
+                          <QueryLink
+                            href={{
+                              pathname: router.pathname,
+                              query: {
+                                ...router.query,
+                                sort: option.value,
+                              },
+                            }}
+                            passHref
+                            className={classNames(
+                              "block px-4 py-2 text-sm font-medium text-gray-900",
+                              {
+                                "text-red-500": active,
+                              }
+                            )}
+                          >
+                            <span>{option.name}</span>
+                          </QueryLink>
                         </Menu.Item>
                       );
                     })}
