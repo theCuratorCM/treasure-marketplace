@@ -248,7 +248,7 @@ const Collection = () => {
                 }}
               />
             </div>
-            <Menu as="div" className="relative z-10 inline-block text-left">
+            <Menu as="div" className="relative z-20 inline-block text-left">
               <div>
                 <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                   Sort
