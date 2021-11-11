@@ -51,6 +51,8 @@ export const getCollectionInfo = gql`
       id
       name
       standard
+      floorPrice
+      totalListings
     }
   }
 `;
