@@ -24,6 +24,7 @@ import SmolImg3 from "../../public/img/smolbrains2.png";
 import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
+import { useTheme } from "next-themes";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
   <Image src={image.src} width={image.width} height={image.height} />
@@ -31,70 +32,78 @@ const ImageWrapper = ({ image }: { image: StaticImageData }) => (
 
 export default function Home() {
   const Router = useRouter();
+  const { theme } = useTheme();
 
   return (
-    <main className="flex justify-center items-center w-full min-h-screen landing">
-      <div className="flex relative lg:flex-row flex-col-reverse px-8 lg:px-0">
-        <div
-          className="z-10"
-          style={{
-            flexBasis: "70%",
-          }}
-        >
-          <Image
-            src={logoImg.src}
-            width={logoImg.width}
-            height={logoImg.height}
-            className="dark:filter dark:invert"
-          />
-          <p className="text-right font-semibold tracking-wider mt-2 text-lg">
-            MARKETPLACE
-          </p>
-          <SearchAutocomplete
-            label="Search Collection"
-            allowsCustomValue
-            onSelectionChange={(name) => {
-              const targetCollection = collections.find(
-                (collection) => collection.name === name
-              );
-
-              if (targetCollection) {
-                Router.push(`/collection/${targetCollection.address}`);
-              }
+    <div className="relative">
+      <main className="flex justify-center items-center w-full min-h-screen landing">
+        <div className="flex relative lg:flex-row flex-col-reverse px-8 lg:px-0">
+          <div
+            className="z-10 pl-8 xl:pl-0"
+            style={{
+              flexBasis: "70%",
             }}
           >
-            {collections.map((collection) => (
-              <Item key={collection.name}>{collection.name}</Item>
-            ))}
-          </SearchAutocomplete>
-        </div>
+            <Image
+              src={logoImg.src}
+              width={logoImg.width}
+              height={logoImg.height}
+              className="dark:filter dark:invert"
+            />
+            <p className="text-right font-semibold tracking-wider mt-2 text-lg">
+              MARKETPLACE
+            </p>
+            <div className="mt-4">
+              <SearchAutocomplete
+                label="Search Collection"
+                allowsCustomValue
+                onSelectionChange={(name) => {
+                  const targetCollection = collections.find(
+                    (collection) => collection.name === name
+                  );
 
-        <div className="absolute right-0 -top-52 z-0 overflow-hidden">
-          <div className="maskImage">
-            <div className="grid grid-cols-6 grid-rows-3 gap-6 lg:gap-12 px-12 lg:px-0 opacity-30 lg:opacity-80">
-              <ImageWrapper image={TreasureImg1} />
-              <ImageWrapper image={TreasureImg2} />
-              <ImageWrapper image={TreasureImg3} />
-              <ImageWrapper image={TreasureImg4} />
-              <ImageWrapper image={TreasureImg5} />
-              <ImageWrapper image={TreasureImg6} />
-              <ImageWrapper image={LegionsImg1} />
-              <ImageWrapper image={LegionsImg2} />
-              <ImageWrapper image={LegionsImg3} />
-              <ImageWrapper image={LegionsImg4} />
-              <ImageWrapper image={LegionsImg5} />
-              <ImageWrapper image={LegionsImg6} />
-              <ImageWrapper image={SmolImg1} />
-              <ImageWrapper image={SmolImg2} />
-              <ImageWrapper image={SmolImg3} />
-              <ImageWrapper image={SmolImg4} />
-              <ImageWrapper image={SmolImg5} />
-              <ImageWrapper image={SmolImg6} />
+                  if (targetCollection) {
+                    Router.push(`/collection/${targetCollection.address}`);
+                  }
+                }}
+              >
+                {collections.map((collection) => (
+                  <Item key={collection.name}>{collection.name}</Item>
+                ))}
+              </SearchAutocomplete>
+            </div>
+          </div>
+
+          <div className="absolute right-0 -top-52 z-0 overflow-hidden">
+            <div className="maskImage">
+              <div className="grid grid-cols-6 grid-rows-3 gap-6 lg:gap-12 px-12 lg:px-0 opacity-30 lg:opacity-80">
+                <ImageWrapper image={TreasureImg1} />
+                <ImageWrapper image={TreasureImg2} />
+                <ImageWrapper image={TreasureImg3} />
+                <ImageWrapper image={TreasureImg4} />
+                <ImageWrapper image={TreasureImg5} />
+                <ImageWrapper image={TreasureImg6} />
+                <ImageWrapper image={LegionsImg1} />
+                <ImageWrapper image={LegionsImg2} />
+                <ImageWrapper image={LegionsImg3} />
+                <ImageWrapper image={LegionsImg4} />
+                <ImageWrapper image={LegionsImg5} />
+                <ImageWrapper image={LegionsImg6} />
+                <ImageWrapper image={SmolImg1} />
+                <ImageWrapper image={SmolImg2} />
+                <ImageWrapper image={SmolImg3} />
+                <ImageWrapper image={SmolImg4} />
+                <ImageWrapper image={SmolImg5} />
+                <ImageWrapper image={SmolImg6} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+      {theme === "dark" && (
+        <div className="absolute inset-0 bg-black opacity-80" />
+      )}
+    </div>
   );
 }
 
