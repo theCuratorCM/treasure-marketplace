@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEthers, useTokenBalance } from "@yuyao17/corefork";
+import { ChainId, useEthers, useTokenBalance } from "@yuyao17/corefork";
 import { Contracts } from "../const";
 import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -12,7 +12,7 @@ const BalanceContext = React.createContext<null | {
 }>(null);
 
 export const MagicProvider = ({ children }) => {
-  const { account, chainId } = useEthers();
+  const { account, chainId = ChainId.Rinkeby } = useEthers();
   const [price, setPrice] = React.useState<number>(0);
   const [sushiModalOpen, setSushiModalOpen] = React.useState(false);
 
@@ -40,7 +40,7 @@ export const MagicProvider = ({ children }) => {
   }, []);
 
   const magicBalance =
-    useTokenBalance(Contracts[chainId || 4]?.magic, account) || Zero;
+    useTokenBalance(Contracts[chainId].magic, account) || Zero;
 
   return (
     <BalanceContext.Provider

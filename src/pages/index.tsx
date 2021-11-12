@@ -24,6 +24,7 @@ import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
 import { useTheme } from "next-themes";
+import { ChainId, useEthers } from "@yuyao17/corefork";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
   <Image src={image.src} width={image.width} height={image.height} />
@@ -32,6 +33,7 @@ const ImageWrapper = ({ image }: { image: StaticImageData }) => (
 export default function Home() {
   const Router = useRouter();
   const { theme } = useTheme();
+  const { chainId = ChainId.Arbitrum } = useEthers();
 
   return (
     <div className="relative">
@@ -57,7 +59,7 @@ export default function Home() {
                 label="Search Collection"
                 allowsCustomValue
                 onSelectionChange={(name) => {
-                  const targetCollection = collections.find(
+                  const targetCollection = collections[chainId].find(
                     (collection) => collection.name === name
                   );
 
@@ -66,7 +68,7 @@ export default function Home() {
                   }
                 }}
               >
-                {collections.map((collection) => (
+                {collections[chainId].map((collection) => (
                   <Item key={collection.name}>{collection.name}</Item>
                 ))}
               </SearchAutocomplete>

@@ -2,7 +2,7 @@ import { useState, Fragment, useEffect } from "react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useEthers, shortenAddress } from "@yuyao17/corefork";
+import { useEthers, shortenAddress, ChainId } from "@yuyao17/corefork";
 import { formatEther } from "ethers/lib/utils";
 import { formatNumber } from "../utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -16,7 +16,11 @@ import classNames from "clsx";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { activateBrowserWallet, account } = useEthers();
+  const {
+    activateBrowserWallet,
+    account,
+    chainId = ChainId.Arbitrum,
+  } = useEthers();
   const Router = useRouter();
   const { address } = Router.query;
   const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
@@ -67,7 +71,7 @@ const Header = () => {
                 </button>
               </div>
               <div className="py-6 px-4 space-y-6 flex-1">
-                {collections.map((page) => (
+                {collections[chainId].map((page) => (
                   <div key={page.name} className="flow-root">
                     <Link href={`/collection/${page.address}`} passHref>
                       <a className="-m-2 p-2 block font-medium text-gray-900 dark:text-gray-200">
@@ -114,7 +118,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {collections
+                      {collections[chainId]
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -146,7 +150,7 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = collections.find(
+                          const targetCollection = collections[chainId].find(
                             (collection) => collection.name === name
                           );
 
@@ -157,7 +161,7 @@ const Header = () => {
                           }
                         }}
                       >
-                        {collections.map((collection) => (
+                        {collections[chainId].map((collection) => (
                           <Item key={collection.name}>{collection.name}</Item>
                         ))}
                       </SearchAutocomplete>
