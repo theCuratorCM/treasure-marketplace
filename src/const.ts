@@ -11,7 +11,7 @@ export const Contracts = {
   },
 };
 
-export const coreCollections = ["Legions", "Treasures", "Smol Brains"];
+export const coreCollections = ["Legions", "Treasures"]; // TODO: Add smol brains later
 
 export const collections = [
   // TODO: Move to const
