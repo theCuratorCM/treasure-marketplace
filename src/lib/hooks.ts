@@ -19,6 +19,8 @@ export function useApproveContract(
   contract: string,
   standard: "ERC721" | "ERC1155"
 ) {
+  const { chainId = ChainId.Arbitrum } = useEthers();
+
   const approve = useContractFunction(
     new Contract(contract, standard === "ERC721" ? abis.erc721 : abis.erc1155),
     "setApprovalForAll"
@@ -35,23 +37,22 @@ export function useApproveContract(
   }, [approve.state, contract]);
 
   return useMemo(() => {
-    const send = () =>
-      approve.send(Contracts[ChainId.Arbitrum].marketplace, true);
+    const send = () => approve.send(Contracts[chainId]?.marketplace, true);
 
     return { ...approve, send };
-  }, [approve]);
+  }, [approve, chainId]);
 }
 
 export function useContractApprovals(
   collections: Array<{ address: string; standard: "ERC721" | "ERC1155" }>
 ) {
-  const { account } = useEthers();
+  const { account, chainId = ChainId.Arbitrum } = useEthers();
   const approvals = useContractCalls(
     collections.map(({ address, standard }) => ({
       abi: new Interface(standard === "ERC721" ? abis.erc721 : abis.erc1155),
       address,
       method: "isApprovedForAll",
-      args: [account, Contracts[ChainId.Arbitrum].marketplace],
+      args: [account, Contracts[chainId]?.marketplace],
     })) ?? []
   );
 
@@ -72,9 +73,10 @@ export function useContractApprovals(
 export function useCreateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
   const queryClient = useQueryClient();
+  const { chainId = ChainId.Arbitrum } = useEthers();
 
   const sell = useContractFunction(
-    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
+    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
     "createListing"
   );
 
@@ -123,9 +125,10 @@ export function useCreateListing() {
 export function useRemoveListing() {
   const [name, setName] = useState("");
   const queryClient = useQueryClient();
+  const { chainId = ChainId.Arbitrum } = useEthers();
 
   const remove = useContractFunction(
-    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
+    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
     "cancelListing"
   );
 
@@ -168,9 +171,10 @@ export function useBuyItem(keys: {
   searchParams: string;
 }) {
   const queryClient = useQueryClient();
+  const { chainId = ChainId.Arbitrum } = useEthers();
 
   const { send: sendBuy, state } = useContractFunction(
-    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
+    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
     "buyItem"
   );
 
@@ -208,10 +212,11 @@ export function useBuyItem(keys: {
 
 export function useUpdateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
+  const { chainId = ChainId.Arbitrum } = useEthers();
   const queryClient = useQueryClient();
 
   const update = useContractFunction(
-    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
+    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
     "updateListing"
   );
 
