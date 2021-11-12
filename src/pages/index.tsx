@@ -99,7 +99,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      <div className="hidden dark:block absolute inset-0 bg-black opacity-80" />
     </div>
   );
 }
