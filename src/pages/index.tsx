@@ -41,7 +41,7 @@ export default function Home() {
       <main className="flex justify-center items-center w-full min-h-screen landing">
         <div className="flex relative lg:flex-row flex-col-reverse px-8 lg:px-0">
           <div
-            className="z-10 pl-8 xl:pl-0"
+            className="z-10 pl-0 lg:pl-8 xl:pl-0"
             style={{
               flexBasis: "70%",
             }}
