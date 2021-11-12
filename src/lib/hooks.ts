@@ -186,8 +186,7 @@ export function useBuyItem(keys: {
 }) {
   const queryClient = useQueryClient();
   const chainId = useChainId();
-  console.log({ chainId });
-  console.log(Contracts[chainId]);
+
   const { send: sendBuy, state } = useContractFunction(
     new Contract(Contracts[chainId].marketplace, abis.marketplace),
     "buyItem"
