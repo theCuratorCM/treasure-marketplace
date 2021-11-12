@@ -19,14 +19,17 @@ import { useMagic } from "../context/magicContext";
 import { collections, coreCollections } from "../const";
 import classNames from "clsx";
 import toast from "react-hot-toast";
+import { useChainId } from "../lib/hooks";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
     activateBrowserWallet,
     account,
-    chainId = ChainId.Arbitrum,
+    chainId: currentChainId,
   } = useEthers();
+  const chainId = useChainId();
+
   const Router = useRouter();
   const { address } = Router.query;
   const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
@@ -36,8 +39,7 @@ const Header = () => {
     setMobileMenuOpen(false);
   }, [address]);
 
-  const targetCollections =
-    collections[chainId] ?? collections[ChainId.Arbitrum];
+  const targetCollections = collections[chainId];
 
   const switchToArbitrum = async () => {
     if ((window as any).ethereum) {
@@ -161,7 +163,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {targetCollections
+                      {(targetCollections as any)
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -193,9 +195,9 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = targetCollections.find(
-                            (collection) => collection.name === name
-                          );
+                          const targetCollection = (
+                            targetCollections as any
+                          ).find((collection) => collection.name === name);
 
                           if (targetCollection) {
                             Router.push(
@@ -303,7 +305,7 @@ const Header = () => {
             </div>
           </nav>
         </header>
-        {chainId !== ChainId.Arbitrum && (
+        {currentChainId && currentChainId !== ChainId.Arbitrum && (
           <div className="bg-yellow-600">
             <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
               <div className="flex sm:items-center lg:justify-between flex-col space-y-2 sm:space-y-0 sm:flex-row">
@@ -319,8 +321,8 @@ const Header = () => {
                       Please switch to Arbitrum.
                     </span>
                     <span className="hidden lg:block">
-                      You are currently on the {getChainName(chainId)} Network.
-                      Please switch to Arbitrum.
+                      You are currently on the {getChainName(currentChainId)}{" "}
+                      Network. Please switch to Arbitrum.
                     </span>
                   </p>
                 </div>

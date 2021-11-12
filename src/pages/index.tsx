@@ -24,6 +24,7 @@ import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
 import { ChainId, useEthers } from "@yuyao17/corefork";
+import { useChainId } from "../lib/hooks";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
   <Image src={image.src} width={image.width} height={image.height} />
@@ -31,11 +32,9 @@ const ImageWrapper = ({ image }: { image: StaticImageData }) => (
 
 export default function Home() {
   const Router = useRouter();
-  const { chainId = ChainId.Arbitrum } = useEthers();
+  const chainId = useChainId();
 
-  // crashes if you don't have a valid chainId (all chains except mainnet and arbi)
-  const targetCollections =
-    collections[chainId] ?? collections[ChainId.Arbitrum];
+  const targetCollections = collections[chainId];
 
   return (
     <div className="relative">
@@ -61,7 +60,7 @@ export default function Home() {
                 label="Search Collection"
                 allowsCustomValue
                 onSelectionChange={(name) => {
-                  const targetCollection = targetCollections.find(
+                  const targetCollection = (targetCollections as any).find(
                     (collection) => collection.name === name
                   );
 

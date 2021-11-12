@@ -15,11 +15,23 @@ import { useQueryClient } from "react-query";
 import { MaxUint256 } from "@ethersproject/constants";
 import plur from "plur";
 
+export function useChainId() {
+  const { chainId } = useEthers();
+
+  switch (chainId) {
+    case ChainId.Arbitrum:
+    case ChainId.Rinkeby:
+      return chainId;
+    default:
+      return ChainId.Arbitrum;
+  }
+}
+
 export function useApproveContract(
   contract: string,
   standard: "ERC721" | "ERC1155"
 ) {
-  const { chainId = ChainId.Arbitrum } = useEthers();
+  const chainId = useChainId();
 
   const approve = useContractFunction(
     new Contract(contract, standard === "ERC721" ? abis.erc721 : abis.erc1155),
@@ -37,7 +49,7 @@ export function useApproveContract(
   }, [approve.state, contract]);
 
   return useMemo(() => {
-    const send = () => approve.send(Contracts[chainId]?.marketplace, true);
+    const send = () => approve.send(Contracts[chainId].marketplace, true);
 
     return { ...approve, send };
   }, [approve, chainId]);
@@ -46,13 +58,15 @@ export function useApproveContract(
 export function useContractApprovals(
   collections: Array<{ address: string; standard: "ERC721" | "ERC1155" }>
 ) {
-  const { account, chainId = ChainId.Arbitrum } = useEthers();
+  const { account } = useEthers();
+  const chainId = useChainId();
+
   const approvals = useContractCalls(
     collections.map(({ address, standard }) => ({
       abi: new Interface(standard === "ERC721" ? abis.erc721 : abis.erc1155),
       address,
       method: "isApprovedForAll",
-      args: [account, Contracts[chainId]?.marketplace],
+      args: [account, Contracts[chainId].marketplace],
     })) ?? []
   );
 
@@ -73,10 +87,10 @@ export function useContractApprovals(
 export function useCreateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
   const queryClient = useQueryClient();
-  const { chainId = ChainId.Arbitrum } = useEthers();
+  const chainId = useChainId();
 
   const sell = useContractFunction(
-    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
+    new Contract(Contracts[chainId].marketplace, abis.marketplace),
     "createListing"
   );
 
@@ -125,10 +139,10 @@ export function useCreateListing() {
 export function useRemoveListing() {
   const [name, setName] = useState("");
   const queryClient = useQueryClient();
-  const { chainId = ChainId.Arbitrum } = useEthers();
+  const chainId = useChainId();
 
   const remove = useContractFunction(
-    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
+    new Contract(Contracts[chainId].marketplace, abis.marketplace),
     "cancelListing"
   );
 
@@ -171,10 +185,11 @@ export function useBuyItem(keys: {
   searchParams: string;
 }) {
   const queryClient = useQueryClient();
-  const { chainId = ChainId.Arbitrum } = useEthers();
-
+  const chainId = useChainId();
+  console.log({ chainId });
+  console.log(Contracts[chainId]);
   const { send: sendBuy, state } = useContractFunction(
-    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
+    new Contract(Contracts[chainId].marketplace, abis.marketplace),
     "buyItem"
   );
 
@@ -212,11 +227,11 @@ export function useBuyItem(keys: {
 
 export function useUpdateListing() {
   const [{ name, quantity }, setInfo] = useState({ name: "", quantity: 0 });
-  const { chainId = ChainId.Arbitrum } = useEthers();
+  const chainId = useChainId();
   const queryClient = useQueryClient();
 
   const update = useContractFunction(
-    new Contract(Contracts[chainId]?.marketplace, abis.marketplace),
+    new Contract(Contracts[chainId].marketplace, abis.marketplace),
     "updateListing"
   );
 
@@ -267,12 +282,12 @@ export function useUpdateListing() {
 }
 
 export const useApproveMagic = () => {
-  const { chainId = ChainId.Arbitrum } = useEthers();
-  const contract = new Contract(Contracts[chainId]?.magic, ERC20Interface);
+  const chainId = useChainId();
+  const contract = new Contract(Contracts[chainId].magic, ERC20Interface);
   const { send, state } = useContractFunction(contract, "approve");
 
   return {
-    send: () => send(Contracts[chainId]?.marketplace, MaxUint256.toString()),
+    send: () => send(Contracts[chainId].marketplace, MaxUint256.toString()),
     state,
   };
 };

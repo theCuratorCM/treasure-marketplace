@@ -21,11 +21,10 @@ import {
 import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
-import { useApproveMagic, useBuyItem } from "../../lib/hooks";
+import { useApproveMagic, useBuyItem, useChainId } from "../../lib/hooks";
 import {
   shortenAddress,
   TransactionStatus,
-  ChainId,
   useEthers,
   useTokenAllowance,
 } from "@yuyao17/corefork";
@@ -573,7 +572,9 @@ const PurchaseItemModal = ({
   ) => void;
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const { account, chainId = ChainId.Arbitrum } = useEthers();
+  const { account } = useEthers();
+  const chainId = useChainId();
+
   const router = useRouter();
   const { address } = router.query;
   const { magicBalance, magicPrice, setSushiModalOpen } = useMagic();
@@ -592,9 +593,9 @@ const PurchaseItemModal = ({
   const { send: approve, state: approveState } = useApproveMagic();
 
   const magicAllowance = useTokenAllowance(
-    Contracts[chainId]?.magic,
+    Contracts[chainId].magic,
     account ?? AddressZero,
-    Contracts[chainId]?.marketplace
+    Contracts[chainId].marketplace
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;
