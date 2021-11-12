@@ -172,6 +172,8 @@ const Collection = () => {
     threshold: 0,
   });
 
+  console.log(process.env.NEXT_PUBLIC_VERCEL_ENV);
+
   useEffect(() => {
     if (inView) {
       fetchNextPage();
