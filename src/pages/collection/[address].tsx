@@ -25,6 +25,7 @@ import { useApproveMagic, useBuyItem } from "../../lib/hooks";
 import {
   shortenAddress,
   TransactionStatus,
+  ChainId,
   useEthers,
   useTokenAllowance,
 } from "@yuyao17/corefork";
@@ -572,7 +573,7 @@ const PurchaseItemModal = ({
   ) => void;
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const { account } = useEthers();
+  const { account, chainId = ChainId.Arbitrum } = useEthers();
   const router = useRouter();
   const { address } = router.query;
   const { magicBalance, magicPrice, setSushiModalOpen } = useMagic();
@@ -591,9 +592,9 @@ const PurchaseItemModal = ({
   const { send: approve, state: approveState } = useApproveMagic();
 
   const magicAllowance = useTokenAllowance(
-    Contracts[4].magic,
+    Contracts[chainId].magic,
     account ?? AddressZero,
-    Contracts[4].marketplace
+    Contracts[chainId].marketplace
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;
