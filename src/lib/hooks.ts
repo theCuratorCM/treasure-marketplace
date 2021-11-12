@@ -35,7 +35,7 @@ export function useApproveContract(
 
   return useMemo(() => {
     const send = () =>
-      approve.send(Contracts[ChainId.Rinkeby].marketplace, true);
+      approve.send(Contracts[ChainId.Arbitrum].marketplace, true);
 
     return { ...approve, send };
   }, [approve]);
@@ -50,7 +50,7 @@ export function useContractApprovals(
       abi: new Interface(standard === "ERC721" ? abis.erc721 : abis.erc1155),
       address,
       method: "isApprovedForAll",
-      args: [account, Contracts[ChainId.Rinkeby].marketplace],
+      args: [account, Contracts[ChainId.Arbitrum].marketplace],
     })) ?? []
   );
 
@@ -73,7 +73,7 @@ export function useCreateListing() {
   const queryClient = useQueryClient();
 
   const sell = useContractFunction(
-    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
     "createListing"
   );
 
@@ -124,7 +124,7 @@ export function useRemoveListing() {
   const queryClient = useQueryClient();
 
   const remove = useContractFunction(
-    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
     "cancelListing"
   );
 
@@ -169,7 +169,7 @@ export function useBuyItem(keys: {
   const queryClient = useQueryClient();
 
   const { send: sendBuy, state } = useContractFunction(
-    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
     "buyItem"
   );
 
@@ -210,7 +210,7 @@ export function useUpdateListing() {
   const queryClient = useQueryClient();
 
   const update = useContractFunction(
-    new Contract(Contracts[ChainId.Rinkeby].marketplace, abis.marketplace),
+    new Contract(Contracts[ChainId.Arbitrum].marketplace, abis.marketplace),
     "updateListing"
   );
 
