@@ -60,7 +60,7 @@ export default function Home() {
                 label="Search Collection"
                 allowsCustomValue
                 onSelectionChange={(name) => {
-                  const targetCollection = (targetCollections as any).find(
+                  const targetCollection = targetCollections.find(
                     (collection) => collection.name === name
                   );
 
