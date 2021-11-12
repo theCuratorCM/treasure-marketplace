@@ -23,7 +23,6 @@ import SmolImg3 from "../../public/img/smolbrains2.png";
 import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
-import { useTheme } from "next-themes";
 import { ChainId, useEthers } from "@yuyao17/corefork";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
@@ -32,7 +31,6 @@ const ImageWrapper = ({ image }: { image: StaticImageData }) => (
 
 export default function Home() {
   const Router = useRouter();
-  const { theme } = useTheme();
   const { chainId = ChainId.Arbitrum } = useEthers();
 
   return (
@@ -101,9 +99,7 @@ export default function Home() {
           </div>
         </div>
       </main>
-      {theme === "dark" && (
-        <div className="absolute inset-0 bg-black opacity-80" />
-      )}
+      <div className="hidden dark:block absolute inset-0 bg-black opacity-80" />
     </div>
   );
 }
