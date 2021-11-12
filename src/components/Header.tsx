@@ -305,39 +305,41 @@ const Header = () => {
             </div>
           </nav>
         </header>
-        {currentChainId && currentChainId !== ChainId.Arbitrum && (
-          <div className="bg-yellow-600">
-            <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-              <div className="flex sm:items-center lg:justify-between flex-col space-y-2 sm:space-y-0 sm:flex-row">
-                <div className="flex-1 flex items-center">
-                  <span className="flex p-2 rounded-lg bg-yellow-800">
-                    <SpeakerphoneIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <p className="ml-3 font-medium text-white truncate">
-                    <span className="lg:hidden">
-                      Please switch to Arbitrum.
+        {currentChainId &&
+          currentChainId !== ChainId.Arbitrum &&
+          process.env.NEXT_PUBLIC_VERCEL_ENV === "production" && (
+            <div className="bg-yellow-600">
+              <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+                <div className="flex sm:items-center lg:justify-between flex-col space-y-2 sm:space-y-0 sm:flex-row">
+                  <div className="flex-1 flex items-center">
+                    <span className="flex p-2 rounded-lg bg-yellow-800">
+                      <SpeakerphoneIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
                     </span>
-                    <span className="hidden lg:block">
-                      You are currently on the {getChainName(currentChainId)}{" "}
-                      Network. Please switch to Arbitrum.
-                    </span>
-                  </p>
-                </div>
-                <div className="flex-shrink-0 w-full sm:mt-0 sm:w-auto">
-                  <button
-                    onClick={switchToArbitrum}
-                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-yellow-600 bg-white hover:bg-yellow-50"
-                  >
-                    Switch Networks
-                  </button>
+                    <p className="ml-3 font-medium text-white truncate">
+                      <span className="lg:hidden">
+                        Please switch to Arbitrum.
+                      </span>
+                      <span className="hidden lg:block">
+                        You are currently on the {getChainName(currentChainId)}{" "}
+                        Network. Please switch to Arbitrum.
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 w-full sm:mt-0 sm:w-auto">
+                    <button
+                      onClick={switchToArbitrum}
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-yellow-600 bg-white hover:bg-yellow-50"
+                    >
+                      Switch Networks
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
       <Modal
         title="Convert between ETH and MAGIC"
