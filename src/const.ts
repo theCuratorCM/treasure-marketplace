@@ -15,31 +15,31 @@ export const coreCollections = ["Legions", "Treasures", "Smol Brains"];
 
 export const collections = [
   // TODO: Move to const
-  { name: "Legions", address: "0x6Fd12312f70fa5b04d66584600f39aBE31A99708" },
+  { name: "Legions", address: "0x658365026D06F00965B5bb570727100E821e6508" },
   {
     name: "Legions Genesis",
-    address: "0xAC2F8732A67C15Bf81f8A6181364cE753E915037",
+    address: "0xE83c0200E93Cb1496054e387BDdaE590C07f0194",
   },
-  {
-    name: "Smol Brains",
-    address: "0xd72e14b8bcc89742b3f366ea80d175c3c4205b1d",
-  },
+  // {
+  //   name: "Smol Brains",
+  //   address: "0xd72e14b8bcc89742b3f366ea80d175c3c4205b1d",
+  // },
   // { name: "Getting Bodied", address: "#" },
   {
     name: "Treasures",
-    address: "0x61B468f85B2e50bAA0B1729ffC99eFe9EF0428f0", // TODO: replace with mainnet
+    address: "0xEBba467eCB6b21239178033189CeAE27CA12EaDf", // TODO: replace with mainnet
   },
   {
     name: "Keys",
-    address: "0x25EE208B4F8636B5cEaAfdee051bf0BFE514f5f6", // TODO: replace with mainnet
+    address: "0xf0a35bA261ECE4FC12870e5B7b9E7790202EF9B5", // TODO: replace with mainnet
   },
   {
     name: "Extra Life",
-    address: "0x5e6ae51147d1eC18EdCCAe516A59fb0A26a0b48F",
+    address: "0x21e1969884D477afD2Afd4Ad668864a0EebD644c",
   },
   {
     name: "Seed of Life",
-    address: "0x6A67fbf40142E3Db2e6a950A4D48B0EB41107cE8",
+    address: "0x3956C81A51FeAed98d7A678d53F44b9166c8ed66",
   },
   // { name: "Life", address: "#" },
 ] as const;
