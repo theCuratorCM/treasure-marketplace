@@ -72,7 +72,7 @@ export const collections = {
     },
     // { name: "Life", address: "#" },
   ],
-} as const;
+};
 
 export const DAO_SHARE = 0.025;
 export const CREATOR_SHARE = 0.025;

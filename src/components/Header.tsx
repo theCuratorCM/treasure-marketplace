@@ -163,7 +163,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {(targetCollections as any)
+                      {targetCollections
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -195,9 +195,9 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = (
-                            targetCollections as any
-                          ).find((collection) => collection.name === name);
+                          const targetCollection = targetCollections.find(
+                            (collection) => collection.name === name
+                          );
 
                           if (targetCollection) {
                             Router.push(
