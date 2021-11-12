@@ -592,9 +592,9 @@ const PurchaseItemModal = ({
   const { send: approve, state: approveState } = useApproveMagic();
 
   const magicAllowance = useTokenAllowance(
-    Contracts[chainId].magic,
+    Contracts[chainId]?.magic,
     account ?? AddressZero,
-    Contracts[chainId].marketplace
+    Contracts[chainId]?.marketplace
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;

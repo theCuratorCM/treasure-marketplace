@@ -33,6 +33,10 @@ export default function Home() {
   const Router = useRouter();
   const { chainId = ChainId.Arbitrum } = useEthers();
 
+  // crashes if you don't have a valid chainId (all chains except mainnet and arbi)
+  const targetCollections =
+    collections[chainId] ?? collections[ChainId.Arbitrum];
+
   return (
     <div className="relative">
       <main className="flex justify-center items-center w-full min-h-screen landing">
@@ -57,7 +61,7 @@ export default function Home() {
                 label="Search Collection"
                 allowsCustomValue
                 onSelectionChange={(name) => {
-                  const targetCollection = collections[chainId].find(
+                  const targetCollection = targetCollections.find(
                     (collection) => collection.name === name
                   );
 
@@ -66,7 +70,7 @@ export default function Home() {
                   }
                 }}
               >
-                {collections[chainId].map((collection) => (
+                {targetCollections.map((collection) => (
                   <Item key={collection.name}>{collection.name}</Item>
                 ))}
               </SearchAutocomplete>

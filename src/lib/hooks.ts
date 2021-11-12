@@ -263,11 +263,11 @@ export function useUpdateListing() {
 
 export const useApproveMagic = () => {
   const { chainId = ChainId.Arbitrum } = useEthers();
-  const contract = new Contract(Contracts[chainId].magic, ERC20Interface);
+  const contract = new Contract(Contracts[chainId]?.magic, ERC20Interface);
   const { send, state } = useContractFunction(contract, "approve");
 
   return {
-    send: () => send(Contracts[chainId].marketplace, MaxUint256.toString()),
+    send: () => send(Contracts[chainId]?.marketplace, MaxUint256.toString()),
     state,
   };
 };

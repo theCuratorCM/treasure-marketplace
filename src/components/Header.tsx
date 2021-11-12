@@ -1,8 +1,13 @@
 import { useState, Fragment, useEffect } from "react";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, XIcon, SpeakerphoneIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useEthers, shortenAddress, ChainId } from "@yuyao17/corefork";
+import {
+  useEthers,
+  shortenAddress,
+  ChainId,
+  getChainName,
+} from "@yuyao17/corefork";
 import { formatEther } from "ethers/lib/utils";
 import { formatNumber } from "../utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -13,6 +18,7 @@ import { useRouter } from "next/router";
 import { useMagic } from "../context/magicContext";
 import { collections, coreCollections } from "../const";
 import classNames from "clsx";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,6 +35,43 @@ const Header = () => {
     // Close dialog on sidebar click
     setMobileMenuOpen(false);
   }, [address]);
+
+  const targetCollections =
+    collections[chainId] ?? collections[ChainId.Arbitrum];
+
+  const switchToArbitrum = async () => {
+    if ((window as any).ethereum) {
+      try {
+        await (window as any).ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0xa4b1" }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          try {
+            await (window as any).ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0xa4b1",
+                  rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+                  chainName: "Arbitrum One",
+                  blockExplorerUrls: ["https://arbiscan.io"],
+                  nativeCurrency: {
+                    name: "AETH",
+                    symbol: "AETH",
+                    decimals: 18,
+                  },
+                },
+              ],
+            });
+          } catch (addError) {
+            toast.error("Something went wrong while switching networks.");
+          }
+        }
+      }
+    }
+  };
 
   return (
     <div>
@@ -71,7 +114,7 @@ const Header = () => {
                 </button>
               </div>
               <div className="py-6 px-4 space-y-6 flex-1">
-                {collections[chainId].map((page) => (
+                {targetCollections.map((page) => (
                   <div key={page.name} className="flow-root">
                     <Link href={`/collection/${page.address}`} passHref>
                       <a className="-m-2 p-2 block font-medium text-gray-900 dark:text-gray-200">
@@ -118,7 +161,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {collections[chainId]
+                      {targetCollections
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -150,7 +193,7 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = collections[chainId].find(
+                          const targetCollection = targetCollections.find(
                             (collection) => collection.name === name
                           );
 
@@ -161,7 +204,7 @@ const Header = () => {
                           }
                         }}
                       >
-                        {collections[chainId].map((collection) => (
+                        {targetCollections.map((collection) => (
                           <Item key={collection.name}>{collection.name}</Item>
                         ))}
                       </SearchAutocomplete>
@@ -260,6 +303,48 @@ const Header = () => {
             </div>
           </nav>
         </header>
+        {chainId !== ChainId.Arbitrum && (
+          <div className="bg-yellow-600">
+            <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between flex-wrap">
+                <div className="w-0 flex-1 flex items-center">
+                  <span className="flex p-2 rounded-lg bg-yellow-800">
+                    <SpeakerphoneIcon
+                      className="h-6 w-6 text-white"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <p className="ml-3 font-medium text-white truncate">
+                    <span className="lg:hidden">
+                      Please switch to Arbitrum.
+                    </span>
+                    <span className="hidden lg:inline">
+                      You are currently on the {getChainName(chainId)} Network.
+                      Please switch to Arbitrum.
+                    </span>
+                  </p>
+                </div>
+                <div className="order-3 mt-2 flex-shrink-0 w-full sm:order-2 sm:mt-0 sm:w-auto">
+                  <button
+                    onClick={switchToArbitrum}
+                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-yellow-600 bg-white hover:bg-yellow-50"
+                  >
+                    Switch Networks
+                  </button>
+                </div>
+                <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
+                  <button
+                    type="button"
+                    className="-mr-1 flex p-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
+                  >
+                    <span className="sr-only">Dismiss</span>
+                    <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <Modal
         title="Convert between ETH and MAGIC"

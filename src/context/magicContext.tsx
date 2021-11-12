@@ -39,8 +39,9 @@ export const MagicProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // crashes if you don't have a valid chainId (all chains except mainnet and arbi)
   const magicBalance =
-    useTokenBalance(Contracts[chainId].magic, account) || Zero;
+    useTokenBalance(Contracts[chainId]?.magic, account) || Zero;
 
   return (
     <BalanceContext.Provider
