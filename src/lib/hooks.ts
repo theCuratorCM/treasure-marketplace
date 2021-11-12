@@ -1,18 +1,19 @@
 import * as abis from "./abis";
-import { ChainId, ERC20Interface } from "@yuyao17/corefork";
+import {
+  ChainId,
+  ERC20Interface,
+  useContractCalls,
+  useContractFunction,
+  useEthers,
+} from "@yuyao17/corefork";
 import { Contract } from "ethers";
 import { Contracts } from "../const";
 import { Interface } from "@ethersproject/abi";
 import { toast } from "react-hot-toast";
 import { useEffect, useMemo, useState } from "react";
-import {
-  useContractCalls,
-  useContractFunction,
-  useEthers,
-} from "@yuyao17/corefork";
 import { useQueryClient } from "react-query";
-import plur from "plur";
 import { MaxUint256 } from "@ethersproject/constants";
+import plur from "plur";
 
 export function useApproveContract(
   contract: string,
@@ -261,11 +262,12 @@ export function useUpdateListing() {
 }
 
 export const useApproveMagic = () => {
-  const contract = new Contract(Contracts[4].magic, ERC20Interface);
+  const { chainId = ChainId.Arbitrum } = useEthers();
+  const contract = new Contract(Contracts[chainId].magic, ERC20Interface);
   const { send, state } = useContractFunction(contract, "approve");
 
   return {
-    send: () => send(Contracts[4].marketplace, MaxUint256.toString()),
+    send: () => send(Contracts[chainId].marketplace, MaxUint256.toString()),
     state,
   };
 };
