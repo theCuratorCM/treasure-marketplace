@@ -42,16 +42,16 @@ const Header = () => {
   const targetCollections = collections[chainId];
 
   const switchToArbitrum = async () => {
-    if ((window as any).ethereum) {
+    if (window.ethereum) {
       try {
-        await (window as any).ethereum.request({
+        await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0xa4b1" }],
         });
       } catch (switchError) {
         if (switchError.code === 4902) {
           try {
-            await (window as any).ethereum.request({
+            await window.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [
                 {
