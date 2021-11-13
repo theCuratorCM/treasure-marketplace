@@ -202,7 +202,7 @@ const Activity = () => {
                             <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
                               {listing.token.metadata?.description}
                             </p>
-                            <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
+                            <p className="text-xs text-gray-800 dark:text-gray-700 font-semibold truncate">
                               {listing.token.name}
                             </p>
                           </div>
