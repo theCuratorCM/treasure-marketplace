@@ -74,6 +74,5 @@ export const collections = {
   ],
 };
 
-export const DAO_SHARE = 0.025;
-export const CREATOR_SHARE = 0.025;
-export const USER_SHARE = 1 - DAO_SHARE - CREATOR_SHARE;
+export const FEE = 0.05;
+export const USER_SHARE = 1 - FEE;
