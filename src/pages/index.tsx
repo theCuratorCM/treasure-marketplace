@@ -23,8 +23,8 @@ import SmolImg3 from "../../public/img/smolbrains2.png";
 import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
-import { ChainId, useEthers } from "@yuyao17/corefork";
 import { useChainId } from "../lib/hooks";
+import Link from "next/link";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
   <Image src={image.src} width={image.width} height={image.height} />
@@ -55,24 +55,31 @@ export default function Home() {
             <p className="text-right font-semibold tracking-wider mt-2 text-lg">
               MARKETPLACE
             </p>
-            <div className="mt-4">
-              <SearchAutocomplete
-                label="Search Collection"
-                allowsCustomValue
-                onSelectionChange={(name) => {
-                  const targetCollection = targetCollections.find(
-                    (collection) => collection.name === name
-                  );
+            <div className="mt-4 flex items-center space-x-6 divide-x-[1px]">
+              <Link href="/inventory" passHref>
+                <a className="hover:text-gray-900 text-gray-300 dark:hover:text-gray-200">
+                  Inventory
+                </a>
+              </Link>
+              <div className="w-full pl-6">
+                <SearchAutocomplete
+                  label="Search Collection"
+                  allowsCustomValue
+                  onSelectionChange={(name) => {
+                    const targetCollection = targetCollections.find(
+                      (collection) => collection.name === name
+                    );
 
-                  if (targetCollection) {
-                    Router.push(`/collection/${targetCollection.address}`);
-                  }
-                }}
-              >
-                {targetCollections.map((collection) => (
-                  <Item key={collection.name}>{collection.name}</Item>
-                ))}
-              </SearchAutocomplete>
+                    if (targetCollection) {
+                      Router.push(`/collection/${targetCollection.address}`);
+                    }
+                  }}
+                >
+                  {targetCollections.map((collection) => (
+                    <Item key={collection.name}>{collection.name}</Item>
+                  ))}
+                </SearchAutocomplete>
+              </div>
             </div>
           </div>
 
