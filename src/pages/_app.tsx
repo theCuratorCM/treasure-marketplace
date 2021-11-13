@@ -1,6 +1,6 @@
 import "../css/tailwind.css";
 
-import * as React from "react";
+import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { ChainId, DAppProvider } from "@yuyao17/corefork";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -22,6 +22,7 @@ import Footer from "../components/Footer";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      refetchInterval: 2500,
       refetchOnWindowFocus: false,
     },
   },
@@ -48,8 +49,7 @@ function MyApp({ Component, pageProps }) {
           content="Arbitrum native NFT marketplace, created by TreasureDAO"
         />
         <meta property="og:type" content="website" />
-        {/* TODO: change this to prod URL */}
-        <meta property="og:url" content="https://metatags.io/" />
+        <meta property="og:url" content="http://marketplace.treasure.lol/" />
         <meta property="og:title" content="Treasure Marketplace" />
         <meta
           property="og:description"
@@ -57,12 +57,13 @@ function MyApp({ Component, pageProps }) {
         />
         <meta
           property="og:image"
-          // TODO: change this to prod URL
-          content="http://localhost:3000/img/seoBanner.png"
+          content="http://marketplace.treasure.lol/img/seoBanner.png"
         />
         <meta property="twitter:card" content="summary_large_image" />
-        {/* TODO: change this to prod URL */}
-        <meta property="twitter:url" content="https://metatags.io/" />
+        <meta
+          property="twitter:url"
+          content="http://marketplace.treasure.lol/"
+        />
         <meta property="twitter:title" content="Treasure Marketplace" />
         <meta
           property="twitter:description"
@@ -70,8 +71,7 @@ function MyApp({ Component, pageProps }) {
         />
         <meta
           property="twitter:image"
-          // TODO: change this to prod URL
-          content="http://localhost:3000/img/seoBanner.png"
+          content="http://marketplace.treasure.lol/img/seoBanner.png"
         />
         <link
           rel="apple-touch-icon"
@@ -109,7 +109,7 @@ function MyApp({ Component, pageProps }) {
             {(t) => (
               <Transition
                 show={t.visible}
-                as={React.Fragment}
+                as={Fragment}
                 enter="transform ease-out duration-300 transition"
                 enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
                 enterTo="translate-y-0 opacity-100 sm:translate-x-0"
@@ -160,10 +160,10 @@ function MyApp({ Component, pageProps }) {
 }
 
 const Main = ({ pageProps, Component }) => {
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // When mounted on client, now we can show the UI
-  React.useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
 

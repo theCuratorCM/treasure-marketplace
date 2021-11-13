@@ -23,6 +23,8 @@ import SmolImg3 from "../../public/img/smolbrains2.png";
 import SmolImg4 from "../../public/img/smolbrains3.png";
 import SmolImg5 from "../../public/img/smolbrains4.png";
 import SmolImg6 from "../../public/img/smolbrains5.png";
+import { useChainId } from "../lib/hooks";
+import Link from "next/link";
 
 const ImageWrapper = ({ image }: { image: StaticImageData }) => (
   <Image src={image.src} width={image.width} height={image.height} />
@@ -30,13 +32,16 @@ const ImageWrapper = ({ image }: { image: StaticImageData }) => (
 
 export default function Home() {
   const Router = useRouter();
+  const chainId = useChainId();
+
+  const targetCollections = collections[chainId];
 
   return (
     <div className="relative">
       <main className="flex justify-center items-center w-full min-h-screen landing">
         <div className="flex relative lg:flex-row flex-col-reverse px-8 lg:px-0">
           <div
-            className="z-10 pl-8 xl:pl-0"
+            className="z-10 pl-0 lg:pl-8 xl:pl-0"
             style={{
               flexBasis: "70%",
             }}
@@ -50,24 +55,31 @@ export default function Home() {
             <p className="text-right font-semibold tracking-wider mt-2 text-lg">
               MARKETPLACE
             </p>
-            <div className="mt-4">
-              <SearchAutocomplete
-                label="Search Collection"
-                allowsCustomValue
-                onSelectionChange={(name) => {
-                  const targetCollection = collections.find(
-                    (collection) => collection.name === name
-                  );
+            <div className="mt-4 flex items-center space-x-6 divide-x-[1px]">
+              <Link href="/inventory" passHref>
+                <a className="hover:text-gray-900 text-gray-500 dark:hover:text-gray-200">
+                  Inventory
+                </a>
+              </Link>
+              <div className="w-full pl-6">
+                <SearchAutocomplete
+                  label="Search Collection"
+                  allowsCustomValue
+                  onSelectionChange={(name) => {
+                    const targetCollection = targetCollections.find(
+                      (collection) => collection.name === name
+                    );
 
-                  if (targetCollection) {
-                    Router.push(`/collection/${targetCollection.address}`);
-                  }
-                }}
-              >
-                {collections.map((collection) => (
-                  <Item key={collection.name}>{collection.name}</Item>
-                ))}
-              </SearchAutocomplete>
+                    if (targetCollection) {
+                      Router.push(`/collection/${targetCollection.address}`);
+                    }
+                  }}
+                >
+                  {targetCollections.map((collection) => (
+                    <Item key={collection.name}>{collection.name}</Item>
+                  ))}
+                </SearchAutocomplete>
+              </div>
             </div>
           </div>
 
@@ -97,7 +109,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      <div className="hidden dark:block absolute inset-0 bg-black opacity-80" />
     </div>
   );
 }

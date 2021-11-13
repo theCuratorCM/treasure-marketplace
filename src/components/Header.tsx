@@ -1,8 +1,13 @@
 import { useState, Fragment, useEffect } from "react";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, XIcon, SpeakerphoneIcon } from "@heroicons/react/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
-import { useEthers, shortenAddress } from "@yuyao17/corefork";
+import {
+  useEthers,
+  shortenAddress,
+  ChainId,
+  getChainName,
+} from "@yuyao17/corefork";
 import { formatEther } from "ethers/lib/utils";
 import { formatNumber } from "../utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -13,10 +18,34 @@ import { useRouter } from "next/router";
 import { useMagic } from "../context/magicContext";
 import { collections, coreCollections } from "../const";
 import classNames from "clsx";
+import toast from "react-hot-toast";
+import { useChainId } from "../lib/hooks";
+import MetaMaskSvg from "../../public/img/metamask.svg";
+import WalletConnectSvg from "../../public/img/walletconnect.svg";
+import Image from "next/image";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+
+const walletconnect = new WalletConnectConnector({
+  rpc: {
+    [ChainId.Arbitrum]:
+      "https://arb-mainnet.g.alchemy.com/v2/gBb4c8M46YRZdoX3xrwbvaOk9CJQk82s",
+    [ChainId.Rinkeby]:
+      "https://rinkeby.infura.io/v3/62687d1a985d4508b2b7a24827551934",
+  },
+  qrcode: true,
+});
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { activateBrowserWallet, account } = useEthers();
+  const {
+    activateBrowserWallet,
+    account,
+    activate,
+    chainId: currentChainId,
+  } = useEthers();
+  const chainId = useChainId();
+  const [isOpenWalletModal, setIsOpenWalletModal] = useState(false);
+
   const Router = useRouter();
   const { address } = Router.query;
   const { magicBalance, sushiModalOpen, setSushiModalOpen } = useMagic();
@@ -25,6 +54,44 @@ const Header = () => {
     // Close dialog on sidebar click
     setMobileMenuOpen(false);
   }, [address]);
+
+  const onClose = () => setIsOpenWalletModal(false);
+
+  const targetCollections = collections[chainId];
+
+  const switchToArbitrum = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0xa4b1" }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0xa4b1",
+                  rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+                  chainName: "Arbitrum One",
+                  blockExplorerUrls: ["https://arbiscan.io"],
+                  nativeCurrency: {
+                    name: "AETH",
+                    symbol: "AETH",
+                    decimals: 18,
+                  },
+                },
+              ],
+            });
+          } catch (addError) {
+            toast.error("Something went wrong while switching networks.");
+          }
+        }
+      }
+    }
+  };
 
   return (
     <div>
@@ -67,7 +134,7 @@ const Header = () => {
                 </button>
               </div>
               <div className="py-6 px-4 space-y-6 flex-1">
-                {collections.map((page) => (
+                {targetCollections.map((page) => (
                   <div key={page.name} className="flow-root">
                     <Link href={`/collection/${page.address}`} passHref>
                       <a className="-m-2 p-2 block font-medium text-gray-900 dark:text-gray-200">
@@ -114,7 +181,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {collections
+                      {targetCollections
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -146,7 +213,7 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = collections.find(
+                          const targetCollection = targetCollections.find(
                             (collection) => collection.name === name
                           );
 
@@ -157,7 +224,7 @@ const Header = () => {
                           }
                         }}
                       >
-                        {collections.map((collection) => (
+                        {targetCollections.map((collection) => (
                           <Item key={collection.name}>{collection.name}</Item>
                         ))}
                       </SearchAutocomplete>
@@ -232,11 +299,7 @@ const Header = () => {
                       ) : (
                         <button
                           className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-red-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-white dark:text-gray-300 bg-red-500 dark:bg-gray-800 hover:bg-red-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
-                          onClick={() => {
-                            activateBrowserWallet((err) => {
-                              console.log(err);
-                            });
-                          }}
+                          onClick={() => setIsOpenWalletModal(true)}
                         >
                           Connect Wallet
                         </button>
@@ -256,6 +319,41 @@ const Header = () => {
             </div>
           </nav>
         </header>
+        {currentChainId &&
+          currentChainId !== ChainId.Arbitrum &&
+          process.env.NEXT_PUBLIC_VERCEL_ENV === "production" && (
+            <div className="bg-yellow-600">
+              <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+                <div className="flex sm:items-center lg:justify-between flex-col space-y-2 sm:space-y-0 sm:flex-row">
+                  <div className="flex-1 flex items-center">
+                    <span className="flex p-2 rounded-lg bg-yellow-800">
+                      <SpeakerphoneIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <p className="ml-3 font-medium text-white truncate">
+                      <span className="lg:hidden">
+                        Please switch to Arbitrum.
+                      </span>
+                      <span className="hidden lg:block">
+                        You are currently on the {getChainName(currentChainId)}{" "}
+                        Network. Please switch to Arbitrum.
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0 w-full sm:mt-0 sm:w-auto">
+                    <button
+                      onClick={switchToArbitrum}
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-yellow-600 bg-white hover:bg-yellow-50"
+                    >
+                      Switch Networks
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
       </div>
       <Modal
         title="Convert between ETH and MAGIC"
@@ -276,6 +374,53 @@ const Header = () => {
               zIndex: 1,
             }}
           />
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isOpenWalletModal}
+        onClose={onClose}
+        className="md:max-w-3xl sm:max-w-xl"
+        hideCloseIcon
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2">
+          <button
+            className="flex items-center justify-center flex-col hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
+            onClick={() => {
+              activateBrowserWallet((err) => {
+                console.log(err);
+              });
+              onClose();
+            }}
+          >
+            <p className="md:text-xl sm:text-lg mb-2">MetaMask</p>
+            <p className="text-gray-400 font-bold sm:text-sm text-xs mb-8">
+              Connect to your MetaMask Wallet
+            </p>
+            <Image
+              src={MetaMaskSvg.src}
+              alt="MetaMask"
+              height={48}
+              width={48}
+            />
+          </button>
+          <button
+            className="flex items-center justify-center flex-col hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-3 rounded-md"
+            onClick={() => {
+              activate(walletconnect);
+              onClose();
+            }}
+          >
+            <p className="md:text-xl sm:text-lg mb-2">WalletConnect</p>
+            <p className="text-gray-400 font-bold sm:text-sm text-xs mb-8">
+              Scan with WalletConnect to connect
+            </p>
+            <Image
+              src={WalletConnectSvg.src}
+              alt="WalletConnect"
+              height={48}
+              width={48}
+            />
+          </button>
         </div>
       </Modal>
     </div>
