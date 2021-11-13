@@ -19,6 +19,15 @@ import { Spinner } from "../components/Spinner";
 import { MagicProvider } from "../context/magicContext";
 import Footer from "../components/Footer";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 2500,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 const config = {
   readOnlyChainId: ChainId.Arbitrum,
   readOnlyUrls: {
@@ -30,18 +39,6 @@ const config = {
 };
 
 function MyApp({ Component, pageProps }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            refetchInterval: 2500,
-            refetchOnWindowFocus: false,
-          },
-        },
-      })
-  );
-
   return (
     <>
       <Head>
