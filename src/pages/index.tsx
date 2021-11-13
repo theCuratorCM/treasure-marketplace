@@ -57,7 +57,7 @@ export default function Home() {
             </p>
             <div className="mt-4 flex items-center space-x-6 divide-x-[1px]">
               <Link href="/inventory" passHref>
-                <a className="hover:text-gray-900 text-gray-300 dark:hover:text-gray-200">
+                <a className="hover:text-gray-900 text-gray-500 dark:hover:text-gray-200">
                   Inventory
                 </a>
               </Link>
