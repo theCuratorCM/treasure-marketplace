@@ -1,6 +1,6 @@
 import "../css/tailwind.css";
 
-import * as React from "react";
+import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { ChainId, DAppProvider } from "@yuyao17/corefork";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -22,6 +22,7 @@ import Footer from "../components/Footer";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      refetchInterval: 2500,
       refetchOnWindowFocus: false,
     },
   },
@@ -108,7 +109,7 @@ function MyApp({ Component, pageProps }) {
             {(t) => (
               <Transition
                 show={t.visible}
-                as={React.Fragment}
+                as={Fragment}
                 enter="transform ease-out duration-300 transition"
                 enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
                 enterTo="translate-y-0 opacity-100 sm:translate-x-0"
@@ -159,10 +160,10 @@ function MyApp({ Component, pageProps }) {
 }
 
 const Main = ({ pageProps, Component }) => {
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // When mounted on client, now we can show the UI
-  React.useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
 
