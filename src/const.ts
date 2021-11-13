@@ -7,7 +7,7 @@ export const Contracts = {
   },
   [ChainId.Arbitrum]: {
     magic: "0x539bdE0d7Dbd336b79148AA742883198BBF60342",
-    marketplace: "0x134569A78306A0F239deaF8890d0f6DDd457Bd06",
+    marketplace: "0x2E3b85F85628301a0Bce300Dee3A6B04195A15Ee",
   },
 };
 
