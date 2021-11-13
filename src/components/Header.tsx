@@ -172,7 +172,7 @@ const Header = () => {
           </Transition.Child>
         </Dialog>
       </Transition.Root>
-      <div className="fixed w-full shadow z-10">
+      <div className="fixed w-full shadow z-30">
         <div className="sticky inset-0 z-10 border-t-4 border-red-500"></div>
         <header className="relative">
           <nav aria-label="Top">
