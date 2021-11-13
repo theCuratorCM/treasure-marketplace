@@ -3,6 +3,7 @@ import { useEthers, useTokenBalance } from "@yuyao17/corefork";
 import { Contracts } from "../const";
 import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
+import { useChainId } from "../lib/hooks";
 
 const BalanceContext = React.createContext<null | {
   magicBalance: BigNumber;
@@ -12,7 +13,9 @@ const BalanceContext = React.createContext<null | {
 }>(null);
 
 export const MagicProvider = ({ children }) => {
-  const { account, chainId } = useEthers();
+  const { account } = useEthers();
+  const chainId = useChainId();
+
   const [price, setPrice] = React.useState<number>(0);
   const [sushiModalOpen, setSushiModalOpen] = React.useState(false);
 
@@ -39,8 +42,9 @@ export const MagicProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // crashes if you don't have a valid chainId (all chains except mainnet and arbi)
   const magicBalance =
-    useTokenBalance(Contracts[chainId || 4]?.magic, account) || Zero;
+    useTokenBalance(Contracts[chainId].magic, account) || Zero;
 
   return (
     <BalanceContext.Provider

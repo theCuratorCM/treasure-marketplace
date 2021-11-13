@@ -108,7 +108,7 @@ function Option({ item, state }: OptionProps) {
     <li
       {...optionProps}
       ref={ref}
-      className="m-1 rounded-md py-2 px-2 text-sm outline-none cursor-default flex items-center justify-between text-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+      className="m-1 rounded-md py-2 px-2 text-sm outline-none cursor-default flex items-center justify-between text-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 hover:bg-red-500 hover:text-white"
     >
       {item.rendered}
     </li>
@@ -194,7 +194,7 @@ export function SearchAutocomplete<T extends object>(props: Props<T>) {
       <div
         className={`relative px-2 inline-flex bg-white dark:bg-black flex-row items-center rounded-md overflow-hidden shadow-sm border ${
           state.isFocused
-            ? "border-gray-500 dark:border-gray-200"
+            ? "border-red-500 dark:border-gray-200"
             : "border-gray-300 dark:border-gray-500"
         }`}
       >

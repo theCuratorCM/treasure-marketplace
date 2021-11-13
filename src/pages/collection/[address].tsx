@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 
 import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
@@ -15,13 +15,12 @@ import Link from "next/link";
 import { Modal } from "../../components/Modal";
 import {
   GetCollectionListingsQuery,
-  GetCollectionStatsQuery,
   OrderDirection,
 } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
-import { useApproveMagic, useBuyItem } from "../../lib/hooks";
+import { useApproveMagic, useBuyItem, useChainId } from "../../lib/hooks";
 import {
   shortenAddress,
   TransactionStatus,
@@ -68,7 +67,6 @@ const Collection = () => {
   const router = useRouter();
   const { address, sort } = router.query;
   const { account } = useEthers();
-  const [searchToken, setSearchToken] = useState("");
   const [searchParams, setSearchParams] = useState("");
   const [isDetailedFloorPriceModalOpen, setDetailedFloorPriceModalOpen] =
     useState(false);
@@ -98,6 +96,7 @@ const Collection = () => {
       }),
     {
       enabled: !!address,
+      refetchInterval: false,
     }
   );
 
@@ -154,11 +153,16 @@ const Collection = () => {
 
   const { send, state } = useBuyItem(keyParams);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state.status === "Success") {
       setModalProps({ isOpen: false, targetNft: null });
     }
   }, [state.status]);
+
+  // reset searchParams on address change
+  useEffect(() => {
+    setSearchParams("");
+  }, [address]);
 
   const hasNextPage =
     listingData?.pages[listingData.pages.length - 1]?.collection?.listings
@@ -173,6 +177,17 @@ const Collection = () => {
       fetchNextPage();
     }
   }, [fetchNextPage, inView]);
+
+  const listingsWithoutDuplicates =
+    statData?.collection?.listings.reduce((acc, curr) => {
+      if (curr.token.name && !acc[curr.token.name]) {
+        acc[curr.token.name] = formatNumber(
+          parseFloat(formatEther(curr.token.floorPrice || Zero))
+        );
+      }
+
+      return acc;
+    }, {}) ?? {};
 
   return (
     <main>
@@ -210,7 +225,7 @@ const Collection = () => {
                       className="text-[0.5rem] block underline place-self-start mt-2 dark:text-gray-300"
                       onClick={() => setDetailedFloorPriceModalOpen(true)}
                     >
-                      Detailed floor price &gt;
+                      Compare floor prices &gt;
                     </button>
                   )}
               </div>
@@ -227,79 +242,76 @@ const Collection = () => {
             Product filters
           </h2>
 
-          <div className="flex items-center justify-between">
-            <div className="relative flex items-stretch flex-grow focus-within:z-10 mr-8">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
+          {statData?.collection && (
+            <div className="flex items-center">
+              <div className="mr-2 w-full">
+                <SearchAutocomplete
+                  label="Search Item"
+                  placeholder="Search Name..."
+                  onSelectionChange={(name) => {
+                    if (name != null) {
+                      setSearchParams(name as string);
+                    }
+                  }}
+                >
+                  {Object.keys(listingsWithoutDuplicates).map((listing) => (
+                    <Item key={listing}>{listing}</Item>
+                  ))}
+                </SearchAutocomplete>
               </div>
-              <input
-                type="text"
-                className="focus:ring-red-500 focus:border-red-500 focus:ring-2 dark:ring-0 block w-full rounded-md pl-10 sm:text-sm border-gray-300 placeholder-gray-400 outline-none py-1 dark:bg-black dark:placeholder-gray-400 dark:text-gray-200 dark:border-gray-600 dark:border dark:focus:border-gray-300"
-                placeholder="Search name..."
-                value={searchToken}
-                onChange={(e) => setSearchToken(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setSearchParams(searchToken);
-                  }
-                }}
-              />
-            </div>
-            <Menu as="div" className="relative z-20 inline-block text-left">
-              <div>
-                <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-200">
-                  Sort
-                  <ChevronDownIcon
-                    className="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-100"
-                    aria-hidden="true"
-                  />
-                </Menu.Button>
-              </div>
+              <Menu as="div" className="relative z-20 inline-block text-left">
+                <div>
+                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-200">
+                    Sort
+                    <ChevronDownIcon
+                      className="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-100"
+                      aria-hidden="true"
+                    />
+                  </Menu.Button>
+                </div>
 
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="py-1">
-                    {sortOptions.map((option) => {
-                      const active = option.value === sortParam;
-                      return (
-                        <Menu.Item key={option.name}>
-                          <QueryLink
-                            href={{
-                              pathname: router.pathname,
-                              query: {
-                                ...router.query,
-                                sort: option.value,
-                              },
-                            }}
-                            passHref
-                            className={classNames(
-                              "block px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-500",
-                              {
-                                "text-red-500 dark:text-gray-100": active,
-                              }
-                            )}
-                          >
-                            <span>{option.name}</span>
-                          </QueryLink>
-                        </Menu.Item>
-                      );
-                    })}
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      {sortOptions.map((option) => {
+                        const active = option.value === sortParam;
+                        return (
+                          <Menu.Item key={option.name}>
+                            <QueryLink
+                              href={{
+                                pathname: router.pathname,
+                                query: {
+                                  ...router.query,
+                                  sort: option.value,
+                                },
+                              }}
+                              passHref
+                              className={classNames(
+                                "block px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-500",
+                                {
+                                  "text-red-500 dark:text-gray-100": active,
+                                }
+                              )}
+                            >
+                              <span>{option.name}</span>
+                            </QueryLink>
+                          </Menu.Item>
+                        );
+                      })}
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+          )}
         </section>
         {isListingLoading && <CenterLoadingDots className="h-60" />}
         {listingData?.pages[0]?.collection?.listings.length === 0 &&
@@ -448,7 +460,7 @@ const Collection = () => {
         <DetailedFloorPriceModal
           isOpen={true}
           onClose={() => setDetailedFloorPriceModalOpen(false)}
-          listings={statData.collection.listings}
+          listingsWithoutDuplicates={listingsWithoutDuplicates}
         />
       )}
     </main>
@@ -458,24 +470,12 @@ const Collection = () => {
 const DetailedFloorPriceModal = ({
   isOpen,
   onClose,
-  listings,
+  listingsWithoutDuplicates,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  listings: Exclude<
-    GetCollectionStatsQuery["collection"],
-    null | undefined
-  >["listings"];
+  listingsWithoutDuplicates: { [key: string]: string };
 }) => {
-  const listingsWithoutDuplicates = listings.reduce((acc, curr) => {
-    if (curr.token.name && !acc[curr.token.name]) {
-      acc[curr.token.name] = formatNumber(
-        parseFloat(formatEther(curr.token.floorPrice || Zero))
-      );
-    }
-
-    return acc;
-  }, {});
   const [lists, setList] = useState(listingsWithoutDuplicates);
 
   return (
@@ -573,6 +573,8 @@ const PurchaseItemModal = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const { account } = useEthers();
+  const chainId = useChainId();
+
   const router = useRouter();
   const { address } = router.query;
   const { magicBalance, magicPrice, setSushiModalOpen } = useMagic();
@@ -591,9 +593,9 @@ const PurchaseItemModal = ({
   const { send: approve, state: approveState } = useApproveMagic();
 
   const magicAllowance = useTokenAllowance(
-    Contracts[4].magic,
+    Contracts[chainId].magic,
     account ?? AddressZero,
-    Contracts[4].marketplace
+    Contracts[chainId].marketplace
   );
 
   const notAllowed = magicAllowance?.isZero() ?? true;

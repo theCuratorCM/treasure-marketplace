@@ -12,7 +12,13 @@ body {
   margin-top: auto;
 }
 
-.landing {
+.dark .landing {
+  background-image: url("/img/badboidtreasure_black.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.light .landing {
   background-image: url("/img/badboidtreasure.png");
   background-repeat: no-repeat;
   background-size: cover;
