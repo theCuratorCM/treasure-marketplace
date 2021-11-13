@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon, SearchIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 
 import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
@@ -15,7 +15,6 @@ import Link from "next/link";
 import { Modal } from "../../components/Modal";
 import {
   GetCollectionListingsQuery,
-  GetCollectionStatsQuery,
   OrderDirection,
 } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
@@ -97,6 +96,7 @@ const Collection = () => {
       }),
     {
       enabled: !!address,
+      refetchInterval: false,
     }
   );
 
