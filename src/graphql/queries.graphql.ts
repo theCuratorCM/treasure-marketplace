@@ -107,3 +107,32 @@ export const getCollectionListings = gql`
     }
   }
 `;
+
+export const getActivity = gql`
+  query getActivity($orderBy: Listing_orderBy!) {
+    listings(
+      where: { status: Sold }
+      orderBy: $orderBy 
+      orderDirection: desc
+    ) {
+      blockTimestamp
+      buyer {
+        id
+      }
+      id
+      pricePerItem
+      quantity
+      seller: user {
+        id
+      }
+      token {
+        metadata {
+          description
+          image
+        }
+        name
+      }
+      transactionLink
+    }
+  }
+`;

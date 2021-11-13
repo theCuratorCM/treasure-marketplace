@@ -306,6 +306,13 @@ const Header = () => {
                       )}
 
                       <div className="ml-4 flow-root sm:border-l border-gray-200 pl-4 sm:pl-6 text-sm">
+                        <Link href="/activity" passHref>
+                          <a className="hover:text-gray-900 text-gray-500 dark:hover:text-gray-200">
+                            Activity
+                          </a>
+                        </Link>
+                      </div>
+                      <div className="ml-4 flow-root sm:border-l border-gray-200 pl-4 sm:pl-6 text-sm">
                         <Link href="/inventory" passHref>
                           <a className="hover:text-gray-900 text-gray-500 dark:hover:text-gray-200">
                             Inventory

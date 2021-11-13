@@ -1,3 +1,5 @@
+import { formatEther } from "ethers/lib/utils";
+
 export const generateIpfsLink = (hash: string) => {
   const removedIpfs = hash.substring(7);
 
@@ -6,3 +8,6 @@ export const generateIpfsLink = (hash: string) => {
 
 export const formatNumber = (number: number) =>
   new Intl.NumberFormat().format(number);
+
+export const formatPrice = (price: string) =>
+  formatNumber(parseFloat(formatEther(price)));
