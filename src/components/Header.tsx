@@ -20,15 +20,31 @@ import { collections, coreCollections } from "../const";
 import classNames from "clsx";
 import toast from "react-hot-toast";
 import { useChainId } from "../lib/hooks";
+import MetaMaskSvg from "../../public/img/metamask.svg";
+import WalletConnectSvg from "../../public/img/walletconnect.svg";
+import Image from "next/image";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+
+const walletconnect = new WalletConnectConnector({
+  rpc: {
+    [ChainId.Arbitrum]:
+      "https://arb-mainnet.g.alchemy.com/v2/gBb4c8M46YRZdoX3xrwbvaOk9CJQk82s",
+    [ChainId.Rinkeby]:
+      "https://rinkeby.infura.io/v3/62687d1a985d4508b2b7a24827551934",
+  },
+  qrcode: true,
+});
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
     activateBrowserWallet,
     account,
+    activate,
     chainId: currentChainId,
   } = useEthers();
   const chainId = useChainId();
+  const [isOpenWalletModal, setIsOpenWalletModal] = useState(false);
 
   const Router = useRouter();
   const { address } = Router.query;
@@ -38,6 +54,8 @@ const Header = () => {
     // Close dialog on sidebar click
     setMobileMenuOpen(false);
   }, [address]);
+
+  const onClose = () => setIsOpenWalletModal(false);
 
   const targetCollections = collections[chainId];
 
@@ -281,11 +299,7 @@ const Header = () => {
                       ) : (
                         <button
                           className="mx-2 inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-red-300 dark:border-gray-500 rounded text-xs md:text-sm font-bold text-white dark:text-gray-300 bg-red-500 dark:bg-gray-800 hover:bg-red-600 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-gray-700"
-                          onClick={() => {
-                            activateBrowserWallet((err) => {
-                              console.log(err);
-                            });
-                          }}
+                          onClick={() => setIsOpenWalletModal(true)}
                         >
                           Connect Wallet
                         </button>
@@ -360,6 +374,53 @@ const Header = () => {
               zIndex: 1,
             }}
           />
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isOpenWalletModal}
+        onClose={onClose}
+        className="md:max-w-3xl sm:max-w-xl"
+        hideCloseIcon
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2">
+          <button
+            className="flex items-center justify-center flex-col hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md"
+            onClick={() => {
+              activateBrowserWallet((err) => {
+                console.log(err);
+              });
+              onClose();
+            }}
+          >
+            <p className="md:text-xl sm:text-lg mb-2">MetaMask</p>
+            <p className="text-gray-400 font-bold sm:text-sm text-xs mb-8">
+              Connect to your MetaMask Wallet
+            </p>
+            <Image
+              src={MetaMaskSvg.src}
+              alt="MetaMask"
+              height={48}
+              width={48}
+            />
+          </button>
+          <button
+            className="flex items-center justify-center flex-col hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-3 rounded-md"
+            onClick={() => {
+              activate(walletconnect);
+              onClose();
+            }}
+          >
+            <p className="md:text-xl sm:text-lg mb-2">WalletConnect</p>
+            <p className="text-gray-400 font-bold sm:text-sm text-xs mb-8">
+              Scan with WalletConnect to connect
+            </p>
+            <Image
+              src={WalletConnectSvg.src}
+              alt="WalletConnect"
+              height={48}
+              width={48}
+            />
+          </button>
         </div>
       </Modal>
     </div>
