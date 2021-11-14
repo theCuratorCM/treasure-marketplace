@@ -222,7 +222,7 @@ const Collection = () => {
                 {collectionData.collection.standard === "ERC1155" &&
                   statData.collection.totalListings > 0 && (
                     <button
-                      className="text-[0.5rem] block underline place-self-start mt-2 dark:text-gray-300"
+                      className="text-xs block underline place-self-start mt-2 dark:text-gray-300"
                       onClick={() => setDetailedFloorPriceModalOpen(true)}
                     >
                       Compare floor prices &gt;
@@ -479,7 +479,7 @@ const DetailedFloorPriceModal = ({
   const [lists, setList] = useState(listingsWithoutDuplicates);
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen} title="Detailed floor prices">
+    <Modal onClose={onClose} isOpen={isOpen} title="Compare floor prices">
       <div className="mt-4">
         <SearchAutocomplete
           placeholder="Search Token..."
