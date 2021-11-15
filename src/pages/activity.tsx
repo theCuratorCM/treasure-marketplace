@@ -1,5 +1,8 @@
-import { SearchAutocomplete } from "../components/SearchAutocomplete";
-import { ChevronDownIcon, ExternalLinkIcon } from "@heroicons/react/solid";
+import {
+  ChevronDownIcon,
+  ExternalLinkIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/solid";
 import { Fragment } from "react";
 import { Listing_OrderBy } from "../../generated/graphql";
 import { Menu, Transition } from "@headlessui/react";
@@ -12,6 +15,7 @@ import Image from "next/image";
 import QueryLink from "../components/QueryLink";
 import classNames from "clsx";
 import client from "../lib/client";
+import { Disclosure } from "@headlessui/react";
 
 const sortOptions = [
   { name: "Highest Price", value: "price" },
@@ -45,21 +49,6 @@ const Activity = () => {
                 </h2>
 
                 <div className="flex items-center">
-                  {/* <div className="mr-2 w-full">
-                    <SearchAutocomplete
-                      label="Search Item"
-                      placeholder="Search Name..."
-                      onSelectionChange={(name) => {
-                        if (name != null) {
-                          setSearchParams(name as string);
-                        }
-                      }}
-                    >
-                      {Object.keys(listingsWithoutDuplicates).map((listing) => (
-                        <Item key={listing}>{listing}</Item>
-                      ))}
-                    </SearchAutocomplete>
-                  </div> */}
                   <Menu
                     as="div"
                     className="relative z-20 inline-block text-left"
@@ -118,23 +107,7 @@ const Activity = () => {
               </section>
             </h1>
 
-            <div className="mt-4">
-              {/* <SearchAutocomplete
-        placeholder="Search Token..."
-        onSelectionChange={(key) => {
-          if (!key) {
-            setList(listingsWithoutDuplicates);
-            return;
-          }
-          const targetCollection = { [key]: lists[key] };
-
-          setList(targetCollection);
-        }}
-      >
-        {Object.keys(listingsWithoutDuplicates).map((key) => (
-          <Item key={key}>{key}</Item>
-        ))}
-      </SearchAutocomplete> */}
+            <div className="mt-4 hidden lg:block">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 dark:bg-gray-500 sticky top-0">
                   <tr>
@@ -239,6 +212,110 @@ const Activity = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+          <div className="lg:hidden block">
+            <ul
+              role="list"
+              className="mt-2 divide-y divide-gray-200 dark:divide-gray-300 overflow-hidden"
+            >
+              {data?.listings.map((listing) => (
+                <Disclosure as="li" key={listing.id}>
+                  {({ open }) => (
+                    <>
+                      <div className="relative">
+                        <div className="block px-4 py-4 hover:bg-gray-50 dark:bg-gray-200">
+                          <span className="flex items-center">
+                            <span className="flex-1 flex space-x-4 truncate">
+                              <Image
+                                alt={listing.token.name ?? ""}
+                                height="50%"
+                                src={
+                                  listing.token.metadata?.image?.includes(
+                                    "ipfs"
+                                  )
+                                    ? generateIpfsLink(
+                                        listing.token.metadata.image
+                                      )
+                                    : listing.token.metadata?.image ?? ""
+                                }
+                                width="60%"
+                                aria-hidden="true"
+                              />
+                              <span className="flex flex-col text-gray-500 space-y-1 text-sm truncate">
+                                <span className="truncate text-xs text-gray-400 uppercase">
+                                  {" "}
+                                  {listing.token.metadata?.description}
+                                </span>
+                                <span className="truncate text-gray-600 font-semibold">
+                                  {" "}
+                                  {listing.token.name}
+                                </span>
+                                <span>
+                                  <span className="text-gray-900 font-medium">
+                                    {formatPrice(listing.pricePerItem)}
+                                  </span>{" "}
+                                  $MAGIC
+                                </span>
+                              </span>
+                            </span>
+                            {open ? (
+                              <ChevronDownIcon
+                                className="flex-shrink-0 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <ChevronRightIcon
+                                className="flex-shrink-0 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            )}
+                          </span>
+                        </div>
+                        <Disclosure.Button className="absolute inset-0 focus:outline-none w-full h-full" />
+                      </div>
+                      <Transition show={open} as={Fragment}>
+                        <Disclosure.Panel
+                          static
+                          className="block px-4 dark:bg-gray-200 text-gray-700"
+                        >
+                          <div className="pb-4 flex divide-x-[1px] divide-gray-400 text-sm">
+                            <div className="space-y-1 pr-4 sm:pr-8">
+                              <p className="text-xs dark:text-gray-500">
+                                From:
+                              </p>
+                              <p>{shortenAddress(listing.seller.id)}</p>
+                            </div>
+                            <div className="px-4 sm:px-8 space-y-1">
+                              <p className="text-xs dark:text-gray-500">To:</p>
+                              <p>{shortenAddress(listing.buyer?.id ?? "")}</p>
+                            </div>
+                            <div className="pl-4 sm:pl-8 space-y-1">
+                              <p className="text-xs dark:text-gray-500">
+                                Time:
+                              </p>
+                              <a
+                                className="flex items-center"
+                                href={listing.transactionLink ?? ""}
+                                rel="noreferrer"
+                                target="_blank"
+                              >
+                                {formatDistanceToNow(
+                                  new Date(
+                                    Number(listing.blockTimestamp) * 1000
+                                  ),
+                                  { addSuffix: true }
+                                )}
+                                <ExternalLinkIcon className="h-4 m-[0.125rem] pl-1" />
+                              </a>
+                            </div>
+                          </div>
+                        </Disclosure.Panel>
+                      </Transition>
+                    </>
+                  )}
+                </Disclosure>
+              ))}
+            </ul>
           </div>
         </main>
       </div>
