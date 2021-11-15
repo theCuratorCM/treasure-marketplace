@@ -94,6 +94,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
+        <script async src="https://cdn.splitbee.io/sb.js"></script>
       </Head>
       <ThemeProvider attribute="class">
         <SSRProvider>

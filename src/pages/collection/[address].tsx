@@ -222,7 +222,7 @@ const Collection = () => {
                 {collectionData.collection.standard === "ERC1155" &&
                   statData.collection.totalListings > 0 && (
                     <button
-                      className="text-xs block underline place-self-start mt-2 dark:text-gray-300"
+                      className="text-[0.5rem] sm:text-xs block underline place-self-start mt-2 dark:text-gray-300"
                       onClick={() => setDetailedFloorPriceModalOpen(true)}
                     >
                       Compare floor prices &gt;

@@ -219,7 +219,7 @@ const Activity = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-700">
                           {shortenAddress(listing.buyer?.id ?? "")}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-700 dark:text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-red-500 dark:text-gray-700">
                           <a
                             className="flex flex-1 items-center"
                             href={listing.transactionLink ?? ""}
