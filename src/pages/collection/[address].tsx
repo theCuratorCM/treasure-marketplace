@@ -252,9 +252,11 @@ const Collection = () => {
                     setSearchParams((name as string | null) ?? "")
                   }
                 >
-                  {Object.keys(listingsWithoutDuplicates).map((listing) => (
-                    <Item key={listing}>{listing}</Item>
-                  ))}
+                  {Object.keys(listingsWithoutDuplicates)
+                    .sort()
+                    .map((listing) => (
+                      <Item key={listing}>{listing}</Item>
+                    ))}
                 </SearchAutocomplete>
               </div>
               <Menu as="div" className="relative z-20 inline-block text-left">
@@ -491,9 +493,11 @@ const DetailedFloorPriceModal = ({
             setList(targetCollection);
           }}
         >
-          {Object.keys(listingsWithoutDuplicates).map((key) => (
-            <Item key={key}>{key}</Item>
-          ))}
+          {Object.keys(listingsWithoutDuplicates)
+            .sort()
+            .map((key) => (
+              <Item key={key}>{key}</Item>
+            ))}
         </SearchAutocomplete>
         <div className="flex flex-col mt-2">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -517,7 +521,7 @@ const DetailedFloorPriceModal = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.keys(lists).map((list, listIdx) => {
+                    {Object.keys(lists).sort().map((list, listIdx) => {
                       const floorPrice = lists[list];
                       return (
                         <tr
