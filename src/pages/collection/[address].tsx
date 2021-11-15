@@ -248,11 +248,9 @@ const Collection = () => {
                 <SearchAutocomplete
                   label="Search Item"
                   placeholder="Search Name..."
-                  onSelectionChange={(name) => {
-                    if (name != null) {
-                      setSearchParams(name as string);
-                    }
-                  }}
+                  onSelectionChange={(name) =>
+                    setSearchParams((name as string | null) ?? "")
+                  }
                 >
                   {Object.keys(listingsWithoutDuplicates).map((listing) => (
                     <Item key={listing}>{listing}</Item>
