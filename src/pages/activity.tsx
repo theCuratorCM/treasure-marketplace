@@ -283,18 +283,22 @@ const Activity = () => {
                               <p className="text-xs dark:text-gray-500">
                                 From:
                               </p>
-                              <p>{shortenAddress(listing.seller.id)}</p>
+                              <p className="text-[0.75rem] sm:text-sm">
+                                {shortenAddress(listing.seller.id)}
+                              </p>
                             </div>
                             <div className="px-4 sm:px-8 space-y-1">
                               <p className="text-xs dark:text-gray-500">To:</p>
-                              <p>{shortenAddress(listing.buyer?.id ?? "")}</p>
+                              <p className="text-[0.75rem] sm:text-sm">
+                                {shortenAddress(listing.buyer?.id ?? "")}
+                              </p>
                             </div>
                             <div className="pl-4 sm:pl-8 space-y-1">
                               <p className="text-xs dark:text-gray-500">
                                 Time:
                               </p>
                               <a
-                                className="flex items-center"
+                                className="flex items-center text-[0.75rem] sm:text-sm"
                                 href={listing.transactionLink ?? ""}
                                 rel="noreferrer"
                                 target="_blank"
@@ -305,7 +309,7 @@ const Activity = () => {
                                   ),
                                   { addSuffix: true }
                                 )}
-                                <ExternalLinkIcon className="h-4 m-[0.125rem] pl-1" />
+                                <ExternalLinkIcon className="h-4 pl-1" />
                               </a>
                             </div>
                           </div>
