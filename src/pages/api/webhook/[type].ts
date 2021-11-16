@@ -41,7 +41,58 @@ export default async function handler(
     .parse(req.body);
 
   try {
+    console.log("embeds", [
+      {
+        title: type === "list" ? "Item Listed!" : "Item Sold!",
+        thumbnail: {
+          url: image,
+        },
+        fields: [
+          {
+            name: "Name",
+            value: name,
+          },
+          {
+            name: "Collection",
+            value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
+          },
+          {
+            name: `${type === "list" ? "Listing" : "Sale"} Price`,
+            value: `${price} $MAGIC`,
+          },
+          { name: "Quantity", value: quantity },
+          expires
+            ? { name: "Expires in", value: formatDistanceToNow(expires) }
+            : null,
+          {
+            name: type === "list" ? "Seller" : "Buyer",
+            value: user,
+          },
+        ].filter(Boolean),
+        footer: {
+          text: `${
+            type === "list" ? "Listed" : "Sold"
+          } on Treasure Marketplace • ${new Date().toLocaleDateString()}`,
+          icon_url: "https://marketplace.treasure.lol/favicon-32x32.png",
+        },
+      },
+    ]);
+
     await got.post(type === "list" ? listWebhook : soldWebhook, {
+      hooks: {
+        beforeError: [
+          (error) => {
+            console.log("beforeError", error.response);
+
+            return error;
+          },
+        ],
+        beforeRequest: [
+          (options) => {
+            console.log("body", options.body);
+          },
+        ],
+      },
       json: {
         embeds: [
           {
@@ -82,7 +133,8 @@ export default async function handler(
       },
     });
   } catch (error) {
-    console.log(error);
+    console.log("error", error);
+    console.log("error.message", error.message);
   }
 
   res.status(200).json({ ok: true });
