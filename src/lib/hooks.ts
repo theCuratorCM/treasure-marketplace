@@ -32,7 +32,7 @@ type WebhookBody = {
 
 function callWebhook(
   type: "list" | "sold" | "update",
-  { image, user, ...body }: WebhookBody
+  { image, ...body }: WebhookBody
 ) {
   fetch(`/api/webhook/${type}`, {
     method: "post",
@@ -40,7 +40,6 @@ function callWebhook(
     body: JSON.stringify({
       ...body,
       image: image.replace(/ /g, "%20"),
-      user: user.toLowerCase(),
     }),
   });
 }

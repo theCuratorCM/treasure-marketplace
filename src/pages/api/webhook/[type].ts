@@ -5,6 +5,23 @@ import { formatPrice } from "../../../utils";
 import { z } from "zod";
 import got from "got";
 
+function formatUpdate<T>(
+  valueRaw: T,
+  updatedRaw: T,
+  field: { name: string; value: number | string |null },
+  format = (value: T) => `${value}`
+) {
+  const value = format(valueRaw);
+  const updated = format(updatedRaw);
+
+  return updated === value
+    ? field
+    : {
+        ...field,
+        value: `${value} → ${updated}`,
+      };
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -94,33 +111,24 @@ export default async function handler(
                   value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
                 },
                 updates
-                  ? updates.price === price
-                    ? priceField
-                    : {
-                        ...priceField,
-                        value: `${formatPrice(price)} $MAGIC → ${formatPrice(
-                          updates.price
-                        )} $MAGIC`,
-                      }
+                  ? formatUpdate(
+                      price,
+                      updates.price,
+                      priceField,
+                      (value) => `${formatPrice(value)} $MAGIC`
+                    )
                   : priceField,
                 ,
                 updates
-                  ? updates.quantity === quantity
-                    ? quantityField
-                    : {
-                        ...quantityField,
-                        value: `${quantity} → ${updates.quantity}`,
-                      }
+                  ? formatUpdate(quantity, updates.quantity, quantityField)
                   : quantityField,
                 expires && updates
-                  ? updates.expires === expires
-                    ? expiresField
-                    : {
-                        ...expiresField,
-                        value: `${formatDistanceToNow(
-                          expires
-                        )} → ${formatDistanceToNow(updates.expires)}`,
-                      }
+                  ? formatUpdate(
+                      expires,
+                      updates.expires,
+                      expiresField,
+                      (value) => `${formatDistanceToNow(value)}`
+                    )
                   : expires
                   ? expiresField
                   : null,
