@@ -153,6 +153,7 @@ export function useCreateListing() {
         queryClient.invalidateQueries("inventory", { refetchInactive: true });
 
         webhook.current?.();
+        webhook.current = undefined;
 
         break;
     }
@@ -265,6 +266,7 @@ export function useBuyItem(keys: {
         });
 
         webhook.current?.();
+        webhook.current = undefined;
 
         break;
     }
@@ -339,6 +341,7 @@ export function useUpdateListing() {
         queryClient.invalidateQueries("inventory", { refetchInactive: true });
 
         webhook.current?.();
+        webhook.current = undefined;
 
         break;
     }
