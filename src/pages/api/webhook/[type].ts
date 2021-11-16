@@ -27,48 +27,56 @@ export default async function handler(
     .object({ type: z.enum(["list", "sold"]) })
     .parse(req.query);
 
-  const { address, collection, expires, image, name, price, quantity, user } = z
-    .object({
-      address: z.string(),
-      collection: z.string(),
-      expires: z.number().optional(),
-      image: z.string(),
-      name: z.string(),
-      price: z.string(),
-      quantity: z.number(),
-      user: z.string(),
-    })
-    .parse(req.body);
+  const { address, collection, expires, name, price, quantity, user, ...body } =
+    z
+      .object({
+        address: z.string(),
+        collection: z.string(),
+        expires: z.number().optional(),
+        image: z.string(),
+        name: z.string(),
+        price: z.string(),
+        quantity: z.number(),
+        user: z.string(),
+      })
+      .parse(req.body);
+
+  const image = body.image.replace(/ /g, "%20");
 
   try {
+    console.log(
+      "embeds.fields",
+      [
+        {
+          name: "Name",
+          value: name,
+        },
+        {
+          name: "Collection",
+          value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
+        },
+        {
+          name: `${type === "list" ? "Listing" : "Sale"} Price`,
+          value: `${price} $MAGIC`,
+        },
+        { name: "Quantity", value: quantity },
+        expires
+          ? { name: "Expires in", value: formatDistanceToNow(expires) }
+          : null,
+        {
+          name: type === "list" ? "Seller" : "Buyer",
+          value: user,
+        },
+      ].filter(Boolean)
+    );
+
     console.log("embeds", [
       {
         title: type === "list" ? "Item Listed!" : "Item Sold!",
         thumbnail: {
           url: image,
         },
-        fields: [
-          {
-            name: "Name",
-            value: name,
-          },
-          {
-            name: "Collection",
-            value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
-          },
-          {
-            name: `${type === "list" ? "Listing" : "Sale"} Price`,
-            value: `${price} $MAGIC`,
-          },
-          { name: "Quantity", value: quantity },
-          expires
-            ? { name: "Expires in", value: formatDistanceToNow(expires) }
-            : null,
-          {
-            name: type === "list" ? "Seller" : "Buyer",
-            value: user,
-          },
-        ].filter(Boolean),
+        fields: [],
         footer: {
           text: `${
             type === "list" ? "Listed" : "Sold"
@@ -78,23 +86,10 @@ export default async function handler(
       },
     ]);
 
-    await got.post(type === "list" ? listWebhook : soldWebhook, {
-      hooks: {
-        beforeError: [
-          (error) => {
-            console.log("beforeError", error.response);
-
-            return error;
-          },
-        ],
-        beforeRequest: [
-          (options) => {
-            console.log("body", options.body);
-          },
-        ],
-      },
-      json: {
-        embeds: [
+    console.log(
+      "stringify(embeds)",
+      JSON.stringify(
+        [
           {
             title: type === "list" ? "Item Listed!" : "Item Sold!",
             thumbnail: {
@@ -130,11 +125,73 @@ export default async function handler(
             },
           },
         ],
-      },
-    });
+        null,
+        2
+      )
+    );
+
+    const response = await got
+      .post(type === "list" ? listWebhook : soldWebhook, {
+        hooks: {
+          beforeError: [
+            (error) => {
+              console.log("beforeError", error.response);
+
+              return error;
+            },
+          ],
+          beforeRequest: [
+            (options) => {
+              console.log("json", options.json);
+            },
+          ],
+        },
+        json: {
+          embeds: [
+            {
+              title: type === "list" ? "Item Listed!" : "Item Sold!",
+              thumbnail: {
+                url: encodeURIComponent(image),
+              },
+              fields: [
+                {
+                  name: "Name",
+                  value: name,
+                },
+                {
+                  name: "Collection",
+                  value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
+                },
+                {
+                  name: `${type === "list" ? "Listing" : "Sale"} Price`,
+                  value: `${price} $MAGIC`,
+                },
+                { name: "Quantity", value: quantity },
+                expires
+                  ? { name: "Expires in", value: formatDistanceToNow(expires) }
+                  : null,
+                {
+                  name: type === "list" ? "Seller" : "Buyer",
+                  value: user,
+                },
+              ].filter(Boolean),
+              footer: {
+                text: `${
+                  type === "list" ? "Listed" : "Sold"
+                } on Treasure Marketplace • ${new Date().toLocaleDateString()}`,
+                icon_url: "https://marketplace.treasure.lol/favicon-32x32.png",
+              },
+            },
+          ],
+        },
+      })
+      .json();
+
+    console.log("response", response);
   } catch (error) {
     console.log("error", error);
     console.log("error.message", error.message);
+    console.log("error.response", error.response);
   }
 
   res.status(200).json({ ok: true });
