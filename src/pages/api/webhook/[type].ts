@@ -151,7 +151,7 @@ export default async function handler(
             {
               title: type === "list" ? "Item Listed!" : "Item Sold!",
               thumbnail: {
-                url: encodeURIComponent(image),
+                url: image,
               },
               fields: [
                 {
