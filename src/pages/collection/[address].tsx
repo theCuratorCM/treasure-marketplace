@@ -15,7 +15,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Modal } from "../../components/Modal";
-import { OrderDirection } from "../../../generated/graphql";
+import { Listing_OrderBy, OrderDirection } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
@@ -46,17 +46,27 @@ function QueryLink(props: any) {
 const sortOptions = [
   { name: "Price: Low to High", value: "asc" },
   { name: "Price: High to Low", value: "desc" },
+  { name: "Latest", value: "latest" },
 ];
 
 function assertUnreachable(): never {
   throw new Error("Didn't expect to get here");
 }
 
+const MapSortToOrder = (sort: string) => {
+  if (sort === "latest") {
+    return Listing_OrderBy.BlockTimestamp;
+  }
+
+  return Listing_OrderBy.PricePerItem;
+};
+
 const MapSortToEnum = (sort: string) => {
   switch (sort) {
     case "asc":
       return OrderDirection.Asc;
     case "desc":
+    case "latest":
       return OrderDirection.Desc;
   }
   return assertUnreachable();
@@ -121,6 +131,9 @@ const Collection = () => {
         tokenName: queryKey[1].searchParams,
         skipBy: pageParam,
         first: MAX_ITEMS_PER_PAGE,
+        orderBy: sort
+          ? MapSortToOrder(Array.isArray(sort) ? sort[0] : sort)
+          : Listing_OrderBy.PricePerItem,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,

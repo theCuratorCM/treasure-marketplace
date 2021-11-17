@@ -78,6 +78,7 @@ export const getCollectionListings = gql`
     $tokenName: String
     $skipBy: Int!
     $first: Int!
+    $orderBy: Listing_orderBy!
   ) {
     collection(id: $id) {
       name
@@ -85,7 +86,7 @@ export const getCollectionListings = gql`
       listings(
         first: $first
         skip: $skipBy
-        orderBy: pricePerItem
+        orderBy: $orderBy
         orderDirection: $orderDirection
         where: { status: Active, tokenName_contains: $tokenName }
       ) {
@@ -112,11 +113,7 @@ export const getCollectionListings = gql`
 
 export const getActivity = gql`
   query getActivity($orderBy: Listing_orderBy!) {
-    listings(
-      where: { status: Sold }
-      orderBy: $orderBy 
-      orderDirection: desc
-    ) {
+    listings(where: { status: Sold }, orderBy: $orderBy, orderDirection: desc) {
       blockTimestamp
       buyer {
         id
