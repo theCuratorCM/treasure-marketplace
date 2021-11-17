@@ -1,3 +1,5 @@
+import type { Nft } from "../../types";
+
 import {
   Fragment,
   useCallback,
@@ -32,21 +34,6 @@ import { CenterLoadingDots } from "../../components/CenterLoadingDots";
 import { formatEther } from "ethers/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { FEE, USER_SHARE } from "../../const";
-
-type Nft = {
-  address: string;
-  collection: string;
-  listing?: {
-    expires: string;
-    pricePerItem: string;
-    quantity: number;
-  };
-  name: string;
-  total: number;
-  standard: "ERC721" | "ERC1155";
-  source: string;
-  tokenId: string;
-};
 
 type DrawerProps = {
   actions: Array<"create" | "remove" | "update">;
@@ -443,7 +430,7 @@ const Drawer = ({
                                     loadingText="Listing..."
                                     onClick={() =>
                                       createListing.send(
-                                        nft.name,
+                                        nft,
                                         nft.address,
                                         Number(nft.tokenId),
                                         Number(quantity),
@@ -497,7 +484,7 @@ const Drawer = ({
                                     loadingText="Updating..."
                                     onClick={() =>
                                       updateListing.send(
-                                        nft.name,
+                                        nft,
                                         nft.address,
                                         Number(nft.tokenId),
                                         Number(quantity),
@@ -658,7 +645,7 @@ const Inventory = () => {
                       <li key={id} className="group">
                         <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
                           <Image
-                            alt={token.metadata?.name ?? ""}
+                            alt={token.name ?? ""}
                             className={classNames(
                               "object-fill object-center pointer-events-none",
                               { "group-hover:opacity-80": section !== "sold" }
@@ -678,7 +665,7 @@ const Inventory = () => {
                                 setNft({
                                   address: token.collection.address,
                                   collection: token.collection.name,
-                                  name: token.metadata?.name || "",
+                                  name: token.name ?? "",
                                   listing: pricePerItem
                                     ? { expires, pricePerItem, quantity }
                                     : updates[
@@ -697,7 +684,7 @@ const Inventory = () => {
                               }
                             >
                               <span className="sr-only">
-                                View details for {token.metadata?.name}
+                                View details for {token.name}
                               </span>
                             </button>
                           ) : null}
@@ -730,7 +717,7 @@ const Inventory = () => {
                         </div>
                         <div className="flex items-baseline justify-between mt-1">
                           <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
-                            {token.metadata?.name}
+                            {token.name}
                           </p>
                           {expires && (
                             <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">

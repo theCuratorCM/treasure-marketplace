@@ -1,3 +1,5 @@
+import type { ListedNft } from "../../types";
+
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
@@ -13,10 +15,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Modal } from "../../components/Modal";
-import {
-  GetCollectionListingsQuery,
-  OrderDirection,
-} from "../../../generated/graphql";
+import { OrderDirection } from "../../../generated/graphql";
 import { useMagic } from "../../context/magicContext";
 import { BigNumber } from "@ethersproject/bignumber";
 import Button from "../../components/Button";
@@ -72,12 +71,7 @@ const Collection = () => {
     useState(false);
   const [modalProps, setModalProps] = useState<{
     isOpen: boolean;
-    targetNft:
-      | (Exclude<
-          GetCollectionListingsQuery["collection"],
-          null | undefined
-        >["listings"][number] & { standard: "ERC721" | "ERC1155" })
-      | null;
+    targetNft: ListedNft | null;
   }>({
     isOpen: false,
     targetNft: null,
@@ -136,11 +130,6 @@ const Collection = () => {
       getNextPageParam: (_, pages) => pages.length * MAX_ITEMS_PER_PAGE,
     }
   );
-
-  // const onClose = React.useCallback(
-  //   () => setModalProps({ isOpen: false, targetNft: null }),
-  //   []
-  // );
 
   const keyParams = React.useMemo(
     () => ({
@@ -252,9 +241,11 @@ const Collection = () => {
                     setSearchParams((name as string | null) ?? "")
                   }
                 >
-                  {Object.keys(listingsWithoutDuplicates).map((listing) => (
-                    <Item key={listing}>{listing}</Item>
-                  ))}
+                  {Object.keys(listingsWithoutDuplicates)
+                    .sort()
+                    .map((listing) => (
+                      <Item key={listing}>{listing}</Item>
+                    ))}
                 </SearchAutocomplete>
               </div>
               <Menu as="div" className="relative z-20 inline-block text-left">
@@ -342,7 +333,7 @@ const Collection = () => {
                                 ? generateIpfsLink(listing.token.metadata.image)
                                 : listing.token.metadata?.image ?? ""
                             }
-                            alt={listing.token.metadata?.name ?? ""}
+                            alt={listing.token.name ?? ""}
                             layout="fill"
                             className={classNames(
                               "w-full h-full object-center object-fill",
@@ -368,7 +359,7 @@ const Collection = () => {
                               }
                             >
                               <span className="sr-only">
-                                View details for {listing.token.metadata?.name}
+                                View details for {listing.token.name}
                               </span>
                             </button>
                           )}
@@ -386,7 +377,7 @@ const Collection = () => {
                         </div>
                         <div className="flex items-baseline mt-1">
                           <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
-                            {listing.token.metadata?.name}
+                            {listing.token.name}
                           </p>
                           <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
                             <span className="text-gray-500 dark:text-gray-400">
@@ -491,9 +482,11 @@ const DetailedFloorPriceModal = ({
             setList(targetCollection);
           }}
         >
-          {Object.keys(listingsWithoutDuplicates).map((key) => (
-            <Item key={key}>{key}</Item>
-          ))}
+          {Object.keys(listingsWithoutDuplicates)
+            .sort()
+            .map((key) => (
+              <Item key={key}>{key}</Item>
+            ))}
         </SearchAutocomplete>
         <div className="flex flex-col mt-2">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -517,26 +510,28 @@ const DetailedFloorPriceModal = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.keys(lists).map((list, listIdx) => {
-                      const floorPrice = lists[list];
-                      return (
-                        <tr
-                          key={list}
-                          className={
-                            listIdx % 2 === 0
-                              ? "bg-white dark:bg-gray-200"
-                              : "bg-gray-50 dark:bg-gray-300"
-                          }
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-700">
-                            {list}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-700">
-                            {floorPrice}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {Object.keys(lists)
+                      .sort()
+                      .map((list, listIdx) => {
+                        const floorPrice = lists[list];
+                        return (
+                          <tr
+                            key={list}
+                            className={
+                              listIdx % 2 === 0
+                                ? "bg-white dark:bg-gray-200"
+                                : "bg-gray-50 dark:bg-gray-300"
+                            }
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-700">
+                              {list}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-700">
+                              {floorPrice}
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -557,12 +552,10 @@ const PurchaseItemModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  list: Exclude<
-    GetCollectionListingsQuery["collection"],
-    null | undefined
-  >["listings"][number] & { standard: "ERC721" | "ERC1155" };
+  list: ListedNft;
   state: TransactionStatus;
   send: (
+    nft: ListedNft,
     address: string,
     ownerAddress: string,
     tokenId: number,
@@ -615,7 +608,7 @@ const PurchaseItemModal = ({
                       ? generateIpfsLink(list.token.metadata.image)
                       : list.token.metadata?.image ?? ""
                   }
-                  alt={list.token.metadata?.name ?? ""}
+                  alt={list.token.name ?? ""}
                   width="50%"
                   height="50%"
                 />
@@ -629,7 +622,7 @@ const PurchaseItemModal = ({
                         {list.token.metadata?.description}
                       </p>
                       <p className="mt-1 font-medium text-gray-800 dark:text-gray-50 hover:text-gray-800">
-                        {list.token.metadata?.name ?? ""}
+                        {list.token.name ?? ""}
                       </p>
                     </h4>
                   </div>
@@ -699,6 +692,7 @@ const PurchaseItemModal = ({
                   loadingText="Confirming order..."
                   onClick={() => {
                     send(
+                      list,
                       normalizedAddress,
                       list.user.id,
                       Number(list.token.tokenId),
