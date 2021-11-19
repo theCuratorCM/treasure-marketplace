@@ -101,7 +101,7 @@ const Collection = () => {
 
   const formattedTab = tab ? (Array.isArray(tab) ? tab[0] : tab) : "collection";
 
-  const { data: activityData } = useQuery(
+  const { data: activityData, isLoading: isActivityLoading } = useQuery(
     ["activity", { address, activitySortParam }],
     () =>
       client.getActivity({
@@ -523,6 +523,7 @@ const Collection = () => {
           </>
         ) : (
           <>
+            {isActivityLoading && <CenterLoadingDots className="h-60" />}
             {activityData?.collection?.listings && (
               <Listings
                 listings={activityData.collection.listings}
