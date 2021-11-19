@@ -22,7 +22,7 @@ export default async (req, res) => {
     const getLatestTime = sheet.title;
 
     const query = `
-      query getActivity($time: String!) {
+      query getAllActivities($time: String!) {
         listings(
           where: { status: Sold, blockTimestamp_gt: $time }
           orderBy: blockTimestamp

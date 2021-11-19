@@ -111,27 +111,49 @@ export const getCollectionListings = gql`
   }
 `;
 
-export const getActivity = gql`
-  query getActivity($orderBy: Listing_orderBy!) {
-    listings(where: { status: Sold }, orderBy: $orderBy, orderDirection: desc) {
-      blockTimestamp
-      buyer {
-        id
-      }
+const LISTING_FRAGMENT = gql`
+  fragment ListingFields on Listing {
+    blockTimestamp
+    buyer {
       id
-      pricePerItem
-      quantity
-      seller: user {
-        id
+    }
+    id
+    pricePerItem
+    quantity
+    seller: user {
+      id
+    }
+    token {
+      metadata {
+        description
+        image
       }
-      token {
-        metadata {
-          description
-          image
-        }
-        name
+      name
+    }
+    transactionLink
+  }
+`;
+
+export const getActivity = gql`
+  ${LISTING_FRAGMENT}
+  query getActivity($id: ID!, $orderBy: Listing_orderBy!) {
+    collection(id: $id) {
+      listings(
+        where: { status: Sold }
+        orderBy: $orderBy
+        orderDirection: desc
+      ) {
+        ...ListingFields
       }
-      transactionLink
+    }
+  }
+`;
+
+export const getAllActivities = gql`
+  ${LISTING_FRAGMENT}
+  query getAllActivities($orderBy: Listing_orderBy!) {
+    listings(where: { status: Sold }, orderBy: $orderBy, orderDirection: desc) {
+      ...ListingFields
     }
   }
 `;
