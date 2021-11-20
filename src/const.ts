@@ -11,7 +11,7 @@ export const Contracts = {
   },
 };
 
-export const coreCollections = ["Legions", "Treasures"]; // TODO: Add smol brains later
+export const coreCollections = ["Legions", "Treasures", "Smol Brains"]; // TODO: Add smol brains later
 
 export const collections = {
   [ChainId.Rinkeby]: [
