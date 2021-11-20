@@ -36,7 +36,11 @@ export const collections = {
     },
     {
       name: "Smol Brains",
-      address: "0xd72e14b8bcc89742b3f366ea80d175c3c4205b1d",
+      address: "0x4FeeA06250D9f315a6a454c9c8a7fcBCf8701210",
+    },
+    {
+      name: "Smol Brains Land",
+      address: "0xe42C57AB8E093d21e52cB07B5f32b1B106cDBfe4",
     },
     {
       name: "Treasures",
@@ -58,11 +62,14 @@ export const collections = {
       name: "Legions Genesis",
       address: "0xE83c0200E93Cb1496054e387BDdaE590C07f0194",
     },
-    // { name: "Life", address: "#" },
-    // {
-    //   name: "Smol Brains",
-    //   address: "0xd72e14b8bcc89742b3f366ea80d175c3c4205b1d",
-    // },
+    {
+      name: "Smol Brains Land",
+      address: "0xd666d1CC3102cd03e07794A61E5F4333B4239F53",
+    },
+    {
+      name: "Smol Brains",
+      address: "0x6325439389E0797Ab35752B4F43a14C004f22A9c",
+    },
     {
       name: "Treasures",
       address: "0xEBba467eCB6b21239178033189CeAE27CA12EaDf",
