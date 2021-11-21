@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const getUserInventory = gql`
   query getUserInventory($id: ID!) {
     user(id: $id) {
-      listings(where: { status: Active }) {
+      listings(where: { status: Active, quantity_gt: 0 }) {
         id
         expires
         pricePerItem
@@ -88,7 +88,7 @@ export const getCollectionListings = gql`
         skip: $skipBy
         orderBy: $orderBy
         orderDirection: $orderDirection
-        where: { status: Active, tokenName_contains: $tokenName }
+        where: { status: Active, tokenName_contains: $tokenName, quantity_gt: 0 }
       ) {
         user {
           id
