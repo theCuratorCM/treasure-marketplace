@@ -175,235 +175,6 @@ const Drawer = ({
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-4">
-                        <div>
-                          <label
-                            htmlFor="price"
-                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                          >
-                            Price Per Item
-                          </label>
-                          <div className="mt-1 relative rounded-md shadow-sm">
-                            <input
-                              type="number"
-                              name="price"
-                              id="price"
-                              className="form-input focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 block w-full pr-16 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 dark:placeholder-gray-400 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 transition-placeholder transition-text ease-linear duration-300 disabled:cursor-not-allowed"
-                              placeholder="0.00"
-                              maxLength={10}
-                              min="0"
-                              aria-describedby="price-currency"
-                              onChange={(event) => {
-                                const { value, maxLength } = event.target;
-                                const price = value.slice(0, maxLength);
-                                setPrice(String(Math.abs(parseFloat(price))));
-                              }}
-                              value={price}
-                              disabled={isFormDisabled}
-                            />
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <span
-                                className="text-gray-500 dark:text-gray-400 sm:text-sm"
-                                id="price-currency"
-                              >
-                                $MAGIC
-                              </span>
-                            </div>
-                          </div>
-                          <div
-                            className={classNames(
-                              "space-y-1 mt-2 text-[0.5rem]",
-                              {
-                                "opacity-75": isFormDisabled,
-                              }
-                            )}
-                          >
-                            <div className="flex justify-between px-2">
-                              <p className="text-gray-400">
-                                Royalties ({FEE * 100 + "%"})
-                              </p>
-                              <p>
-                                ≈ {formatNumber(parseFloat(price || "0") * FEE)}{" "}
-                                $MAGIC
-                              </p>
-                            </div>
-                            <div className="flex justify-between px-2">
-                              <p className="text-gray-400">
-                                Your share ({USER_SHARE * 100 + "%"})
-                              </p>
-                              <p>
-                                ≈{" "}
-                                {formatNumber(
-                                  parseFloat(price || "0") * USER_SHARE
-                                )}{" "}
-                                $MAGIC
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <Listbox
-                            value={selectedDate}
-                            onChange={setSelectedDate}
-                            disabled={isFormDisabled}
-                          >
-                            <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Expire Date
-                            </Listbox.Label>
-                            <div className="mt-1 relative">
-                              <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
-                                <span className="block truncate">
-                                  {selectedDate.label}
-                                </span>
-                                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                  <SelectorIcon
-                                    className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              </Listbox.Button>
-
-                              <Transition
-                                as={Fragment}
-                                leave="transition ease-in duration-100"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                              >
-                                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                  {dates.map((date) => (
-                                    <Listbox.Option
-                                      key={date.id}
-                                      className={({ active }) =>
-                                        classNames(
-                                          active
-                                            ? "text-white bg-red-600 dark:bg-gray-800"
-                                            : "text-gray-900 dark:text-gray-200",
-                                          "cursor-default select-none relative py-2 pl-3 pr-9"
-                                        )
-                                      }
-                                      value={date}
-                                    >
-                                      {({ selected, active }) => (
-                                        <>
-                                          <span
-                                            className={classNames(
-                                              selected
-                                                ? "font-semibold"
-                                                : "font-normal",
-                                              "block truncate"
-                                            )}
-                                          >
-                                            {date.label}
-                                          </span>
-
-                                          {selected ? (
-                                            <span
-                                              className={classNames(
-                                                active
-                                                  ? "text-white"
-                                                  : "text-red-600 dark:text-gray-200",
-                                                "absolute inset-y-0 right-0 flex items-center pr-4"
-                                              )}
-                                            >
-                                              <CheckIcon
-                                                className="h-5 w-5"
-                                                aria-hidden="true"
-                                              />
-                                            </span>
-                                          ) : null}
-                                        </>
-                                      )}
-                                    </Listbox.Option>
-                                  ))}
-                                </Listbox.Options>
-                              </Transition>
-                            </div>
-                          </Listbox>
-                        </div>
-                        {nft.standard === "ERC1155" && (
-                          <div>
-                            <Listbox
-                              value={quantity}
-                              onChange={setQuantity}
-                              disabled={isFormDisabled}
-                            >
-                              <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Quantity
-                              </Listbox.Label>
-                              <div className="mt-1 relative">
-                                <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
-                                  <span className="block truncate">
-                                    {quantity}
-                                  </span>
-                                  <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                    <SelectorIcon
-                                      className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                </Listbox.Button>
-
-                                <Transition
-                                  as={Fragment}
-                                  leave="transition ease-in duration-100"
-                                  leaveFrom="opacity-100"
-                                  leaveTo="opacity-0"
-                                >
-                                  <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                    {Array.from({
-                                      length: Number(nft.total) || 0,
-                                    }).map((_, idx) => (
-                                      <Listbox.Option
-                                        key={idx}
-                                        className={({ active }) =>
-                                          classNames(
-                                            active
-                                              ? "text-white bg-red-600 dark:bg-gray-800"
-                                              : "text-gray-900 dark:text-gray-200",
-                                            "cursor-default select-none relative py-2 pl-3 pr-9"
-                                          )
-                                        }
-                                        value={idx + 1}
-                                      >
-                                        {({ selected, active }) => (
-                                          <>
-                                            <span
-                                              className={classNames(
-                                                selected
-                                                  ? "font-semibold"
-                                                  : "font-normal",
-                                                "block truncate"
-                                              )}
-                                            >
-                                              {idx + 1}
-                                            </span>
-
-                                            {selected ? (
-                                              <span
-                                                className={classNames(
-                                                  active
-                                                    ? "text-white"
-                                                    : "text-red-600 dark:text-gray-200",
-                                                  "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                )}
-                                              >
-                                                <CheckIcon
-                                                  className="h-5 w-5"
-                                                  aria-hidden="true"
-                                                />
-                                              </span>
-                                            ) : null}
-                                          </>
-                                        )}
-                                      </Listbox.Option>
-                                    ))}
-                                  </Listbox.Options>
-                                </Transition>
-                              </div>
-                            </Listbox>
-                          </div>
-                        )}
-                      </div>
 
                       {needsContractApproval ? (
                         <Button
@@ -415,92 +186,331 @@ const Drawer = ({
                           Approve Collection to List
                         </Button>
                       ) : (
-                        <div>
-                          {actions.map((action) => {
-                            switch (action) {
-                              case "create":
-                                return (
-                                  <Button
-                                    disabled={
-                                      price.trim() === "" || isFormDisabled
-                                    }
-                                    isLoading={
-                                      createListing.state.status === "Mining"
-                                    }
-                                    loadingText="Listing..."
-                                    onClick={() =>
-                                      createListing.send(
-                                        nft,
-                                        nft.address,
-                                        Number(nft.tokenId),
-                                        Number(quantity),
-                                        ethers.utils.parseEther(price),
-                                        selectedDate.value.getTime()
-                                      )
-                                    }
+                        <>
+                          <div className="space-y-4">
+                            <div>
+                              <label
+                                htmlFor="price"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                              >
+                                Price
+                                {nft.standard === "ERC1155" ? " Per Item" : ""}
+                              </label>
+                              <div className="mt-1 relative rounded-md shadow-sm">
+                                <input
+                                  type="number"
+                                  name="price"
+                                  id="price"
+                                  className="form-input focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 block w-full pr-16 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 dark:placeholder-gray-400 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 transition-placeholder transition-text ease-linear duration-300 disabled:cursor-not-allowed"
+                                  placeholder="0.00"
+                                  maxLength={10}
+                                  min="0"
+                                  aria-describedby="price-currency"
+                                  onChange={(event) => {
+                                    const { value, maxLength } = event.target;
+                                    const price = value.slice(0, maxLength);
+                                    setPrice(
+                                      String(Math.abs(parseFloat(price)))
+                                    );
+                                  }}
+                                  value={price}
+                                  disabled={isFormDisabled}
+                                />
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                  <span
+                                    className="text-gray-500 dark:text-gray-400 sm:text-sm"
+                                    id="price-currency"
                                   >
-                                    Create {nft.name} Listing
-                                  </Button>
-                                );
-                              case "remove":
-                                return (
-                                  <>
-                                    <div className="relative my-4">
-                                      <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-gray-300 dark:border-gray-300" />
+                                    $MAGIC
+                                  </span>
+                                </div>
+                              </div>
+                              <div
+                                className={classNames(
+                                  "space-y-1 mt-2 text-[0.5rem]",
+                                  {
+                                    "opacity-75": isFormDisabled,
+                                  }
+                                )}
+                              >
+                                <div className="flex justify-between px-2">
+                                  <p className="text-gray-400">
+                                    Royalties ({FEE * 100 + "%"})
+                                  </p>
+                                  <p>
+                                    ≈{" "}
+                                    {formatNumber(
+                                      parseFloat(price || "0") * FEE
+                                    )}{" "}
+                                    $MAGIC
+                                  </p>
+                                </div>
+                                <div className="flex justify-between px-2">
+                                  <p className="text-gray-400">
+                                    Your share ({USER_SHARE * 100 + "%"})
+                                  </p>
+                                  <p>
+                                    ≈{" "}
+                                    {formatNumber(
+                                      parseFloat(price || "0") * USER_SHARE
+                                    )}{" "}
+                                    $MAGIC
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <Listbox
+                                value={selectedDate}
+                                onChange={setSelectedDate}
+                                disabled={isFormDisabled}
+                              >
+                                <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Expire Date
+                                </Listbox.Label>
+                                <div className="mt-1 relative">
+                                  <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
+                                    <span className="block truncate">
+                                      {selectedDate.label}
+                                    </span>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                      <SelectorIcon
+                                        className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                      {dates.map((date) => (
+                                        <Listbox.Option
+                                          key={date.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? "text-white bg-red-600 dark:bg-gray-800"
+                                                : "text-gray-900 dark:text-gray-200",
+                                              "cursor-default select-none relative py-2 pl-3 pr-9"
+                                            )
+                                          }
+                                          value={date}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <span
+                                                className={classNames(
+                                                  selected
+                                                    ? "font-semibold"
+                                                    : "font-normal",
+                                                  "block truncate"
+                                                )}
+                                              >
+                                                {date.label}
+                                              </span>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? "text-white"
+                                                      : "text-red-600 dark:text-gray-200",
+                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </Listbox>
+                            </div>
+                            {nft.standard === "ERC1155" && (
+                              <div>
+                                <Listbox
+                                  value={quantity}
+                                  onChange={setQuantity}
+                                  disabled={isFormDisabled}
+                                >
+                                  <Listbox.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Quantity
+                                  </Listbox.Label>
+                                  <div className="mt-1 relative">
+                                    <Listbox.Button className="bg-white relative w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 sm:text-sm disabled:text-gray-300 disabled:cursor-not-allowed transition-text ease-linear duration-300">
+                                      <span className="block truncate">
+                                        {quantity}
+                                      </span>
+                                      <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                        <SelectorIcon
+                                          className="h-5 w-5 text-gray-500 dark:text-gray-400"
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                    </Listbox.Button>
+
+                                    <Transition
+                                      as={Fragment}
+                                      leave="transition ease-in duration-100"
+                                      leaveFrom="opacity-100"
+                                      leaveTo="opacity-0"
+                                    >
+                                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                        {Array.from({
+                                          length: Number(nft.total) || 0,
+                                        }).map((_, idx) => (
+                                          <Listbox.Option
+                                            key={idx}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active
+                                                  ? "text-white bg-red-600 dark:bg-gray-800"
+                                                  : "text-gray-900 dark:text-gray-200",
+                                                "cursor-default select-none relative py-2 pl-3 pr-9"
+                                              )
+                                            }
+                                            value={idx + 1}
+                                          >
+                                            {({ selected, active }) => (
+                                              <>
+                                                <span
+                                                  className={classNames(
+                                                    selected
+                                                      ? "font-semibold"
+                                                      : "font-normal",
+                                                    "block truncate"
+                                                  )}
+                                                >
+                                                  {idx + 1}
+                                                </span>
+
+                                                {selected ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-red-600 dark:text-gray-200",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                    )}
+                                                  >
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
+                                      </Listbox.Options>
+                                    </Transition>
+                                  </div>
+                                </Listbox>
+                              </div>
+                            )}
+                          </div>
+
+                          <div>
+                            {actions.map((action) => {
+                              switch (action) {
+                                case "create":
+                                  return (
+                                    <Button
+                                      disabled={
+                                        price.trim() === "" || isFormDisabled
+                                      }
+                                      isLoading={
+                                        createListing.state.status === "Mining"
+                                      }
+                                      loadingText="Listing..."
+                                      onClick={() =>
+                                        createListing.send(
+                                          nft,
+                                          nft.address,
+                                          Number(nft.tokenId),
+                                          Number(quantity),
+                                          ethers.utils.parseEther(price),
+                                          selectedDate.value.getTime()
+                                        )
+                                      }
+                                    >
+                                      Create {nft.name} Listing
+                                    </Button>
+                                  );
+                                case "remove":
+                                  return (
+                                    <>
+                                      <div className="relative my-4">
+                                        <div className="absolute inset-0 flex items-center">
+                                          <div className="w-full border-t border-gray-300 dark:border-gray-300" />
+                                        </div>
+                                        <div className="relative flex justify-center text-sm">
+                                          <span className="px-2 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-300">
+                                            OR
+                                          </span>
+                                        </div>
                                       </div>
-                                      <div className="relative flex justify-center text-sm">
-                                        <span className="px-2 bg-white text-gray-500 dark:bg-gray-900 dark:text-gray-300">
-                                          OR
-                                        </span>
-                                      </div>
-                                    </div>
+                                      <Button
+                                        disabled={isFormDisabled}
+                                        isLoading={
+                                          removeListing.state.status ===
+                                          "Mining"
+                                        }
+                                        loadingText="Removing..."
+                                        onClick={() =>
+                                          removeListing.send(
+                                            nft.name,
+                                            nft.address,
+                                            Number(nft.tokenId)
+                                          )
+                                        }
+                                        variant="secondary"
+                                      >
+                                        Remove {nft.name} Listing
+                                      </Button>
+                                    </>
+                                  );
+                                case "update":
+                                  return (
                                     <Button
                                       disabled={isFormDisabled}
                                       isLoading={
-                                        removeListing.state.status === "Mining"
+                                        updateListing.state.status === "Mining"
                                       }
-                                      loadingText="Removing..."
+                                      loadingText="Updating..."
                                       onClick={() =>
-                                        removeListing.send(
-                                          nft.name,
+                                        updateListing.send(
+                                          nft,
                                           nft.address,
-                                          Number(nft.tokenId)
+                                          Number(nft.tokenId),
+                                          Number(quantity),
+                                          ethers.utils.parseEther(price),
+                                          selectedDate.value.getTime()
                                         )
                                       }
-                                      variant="secondary"
                                     >
-                                      Remove {nft.name} Listing
+                                      Update {nft.name} Listing
                                     </Button>
-                                  </>
-                                );
-                              case "update":
-                                return (
-                                  <Button
-                                    disabled={isFormDisabled}
-                                    isLoading={
-                                      updateListing.state.status === "Mining"
-                                    }
-                                    loadingText="Updating..."
-                                    onClick={() =>
-                                      updateListing.send(
-                                        nft,
-                                        nft.address,
-                                        Number(nft.tokenId),
-                                        Number(quantity),
-                                        ethers.utils.parseEther(price),
-                                        selectedDate.value.getTime()
-                                      )
-                                    }
-                                  >
-                                    Update {nft.name} Listing
-                                  </Button>
-                                );
-                              default:
-                                return null;
-                            }
-                          })}
-                        </div>
+                                  );
+                                default:
+                                  return null;
+                              }
+                            })}
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
