@@ -9,7 +9,7 @@ import { useInfiniteQuery, useQuery } from "react-query";
 import client from "../../lib/client";
 import { AddressZero, Zero } from "@ethersproject/constants";
 import { CenterLoadingDots } from "../../components/CenterLoadingDots";
-import { formatNumber, generateIpfsLink } from "../../utils";
+import { abbreviatePrice, formatNumber, formatPrice, generateIpfsLink } from "../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -229,9 +229,7 @@ const Collection = () => {
                       Floor Price ($MAGIC)
                     </dt>
                     <dd className="order-1 text-base font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
-                      {formatNumber(
-                        parseFloat(formatEther(statData.collection.floorPrice))
-                      )}
+                      {formatPrice(statData.collection.floorPrice)}
                     </dd>
                   </div>
                   <div className="flex flex-col px-8 pt-8">
@@ -240,6 +238,14 @@ const Collection = () => {
                     </dt>
                     <dd className="order-1 text-base font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
                       {statData.collection.totalListings}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col px-8 pt-8">
+                    <dt className="order-2 text-xs sm:text-base font-medium text-gray-500 dark:text-gray-400 mt-2">
+                      Volume ($MAGIC)
+                    </dt>
+                    <dd className="order-1 text-base font-extrabold text-red-600 dark:text-gray-200 sm:text-3xl">
+                      {abbreviatePrice(statData.collection.totalVolume)}
                     </dd>
                   </div>
                 </dl>

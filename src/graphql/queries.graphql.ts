@@ -61,6 +61,7 @@ export const getCollectionStats = gql`
     collection(id: $id) {
       floorPrice
       totalListings
+      totalVolume
       listings(where: { status: Active }) {
         token {
           floorPrice
