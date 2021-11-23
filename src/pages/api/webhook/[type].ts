@@ -5,10 +5,23 @@ import { formatPrice } from "../../../utils";
 import { z } from "zod";
 import got from "got";
 
+const collectionWebhooks = {
+  // Smol Brains
+  "0x6325439389e0797ab35752b4f43a14c004f22a9c": {
+    listWebhook: process.env.SMOLBRAINS_LIST_WEBHOOK,
+    soldWebhook: process.env.SMOLBRAINS_SOLD_WEBHOOK,
+  },
+  // Smol Brains Land
+  "0xd666d1cc3102cd03e07794a61e5f4333b4239f53": {
+    listWebhook: process.env.SMOLBRAINS_LIST_WEBHOOK,
+    soldWebhook: process.env.SMOLBRAINS_SOLD_WEBHOOK,
+  },
+};
+
 function formatUpdate<T>(
   valueRaw: T,
   updatedRaw: T,
-  field: { name: string; value: number | string |null },
+  field: { name: string; value: number | string | null },
   format = (value: T) => `${value}`
 ) {
   const value = format(valueRaw);
@@ -85,73 +98,86 @@ export default async function handler(
   };
   const quantityField = { name: "Quantity", value: quantity };
 
-  try {
-    await got
-      .post(type === "sold" ? soldWebhook : listWebhook, {
-        json: {
-          embeds: [
+  const payload = {
+    json: {
+      embeds: [
+        {
+          color: type === "update" ? 0x663399 : 0xef4444,
+          title:
+            type === "list"
+              ? "Item Listed!"
+              : type === "update"
+              ? "Item Updated!"
+              : "Item Sold!",
+          thumbnail: {
+            url: image,
+          },
+          fields: [
             {
-              color: type === "update" ? 0x663399 : 0xef4444,
-              title:
-                type === "list"
-                  ? "Item Listed!"
-                  : type === "update"
-                  ? "Item Updated!"
-                  : "Item Sold!",
-              thumbnail: {
-                url: image,
-              },
-              fields: [
-                {
-                  name: "Name",
-                  value: name,
-                },
-                {
-                  name: "Collection",
-                  value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
-                },
-                updates
-                  ? formatUpdate(
-                      price,
-                      updates.price,
-                      priceField,
-                      (value) => `${formatPrice(value)} $MAGIC`
-                    )
-                  : priceField,
-                ,
-                updates
-                  ? formatUpdate(quantity, updates.quantity, quantityField)
-                  : quantityField,
-                expires && updates
-                  ? formatUpdate(
-                      expires,
-                      updates.expires,
-                      expiresField,
-                      (value) => `${formatDistanceToNow(value)}`
-                    )
-                  : expires
-                  ? expiresField
-                  : null,
-                {
-                  name: type === "sold" ? "Buyer" : "Seller",
-                  value: user,
-                },
-              ].filter(Boolean),
-              footer: {
-                text: `${
-                  type === "list"
-                    ? "Listed"
-                    : type === "update"
-                    ? "Updated"
-                    : "Sold"
-                } on Treasure Marketplace • ${new Date().toLocaleDateString()}`,
-                icon_url: "https://marketplace.treasure.lol/favicon-32x32.png",
-              },
+              name: "Name",
+              value: name,
             },
-          ],
+            {
+              name: "Collection",
+              value: `[${collection}](https://marketplace.treasure.lol/collection/${address})`,
+            },
+            updates
+              ? formatUpdate(
+                  price,
+                  updates.price,
+                  priceField,
+                  (value) => `${formatPrice(value)} $MAGIC`
+                )
+              : priceField,
+            ,
+            updates
+              ? formatUpdate(quantity, updates.quantity, quantityField)
+              : quantityField,
+            expires && updates
+              ? formatUpdate(
+                  expires,
+                  updates.expires,
+                  expiresField,
+                  (value) => `${formatDistanceToNow(value)}`
+                )
+              : expires
+              ? expiresField
+              : null,
+            {
+              name: type === "sold" ? "Buyer" : "Seller",
+              value: user,
+            },
+          ].filter(Boolean),
+          footer: {
+            text: `${
+              type === "list"
+                ? "Listed"
+                : type === "update"
+                ? "Updated"
+                : "Sold"
+            } on Treasure Marketplace • ${new Date().toLocaleDateString()}`,
+            icon_url: "https://marketplace.treasure.lol/favicon-32x32.png",
+          },
         },
-      })
-      .json();
+      ],
+    },
+  };
+
+  try {
+    await got.post(type === "sold" ? soldWebhook : listWebhook, payload).json();
+
+    if (collectionWebhooks[address]) {
+      console.log("Posting to collection webhook!");
+
+      await got
+        .post(
+          type === "sold"
+            ? collectionWebhooks[address].soldWebhook
+            : collectionWebhooks[address].listWebhook,
+          payload
+        )
+        .json();
+    }
 
     console.log("Webhook posted successfully!");
   } catch (error) {
