@@ -14,10 +14,10 @@ const Activity = () => {
 
   const { data, isLoading } = useQuery(["activity", { sortParam }], () =>
     client.getAllActivities({
-      orderBy:
-        sortParam === "price"
-          ? Listing_OrderBy.PricePerItem
-          : Listing_OrderBy.BlockTimestamp,
+      // orderBy:
+      //   sortParam === "price"
+      //     ? Listing_OrderBy.PricePerItem
+      //     : Listing_OrderBy.BlockTimestamp,
     })
   );
 
