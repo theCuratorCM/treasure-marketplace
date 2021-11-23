@@ -166,14 +166,16 @@ export default async function handler(
   try {
     await got.post(type === "sold" ? soldWebhook : listWebhook, payload).json();
 
-    if (collectionWebhooks[address.toLowerCase()]) {
+    const lowerAddress = address.toLowerCase()
+
+    if (collectionWebhooks[lowerAddress]) {
       console.log("Posting to collection webhook!");
 
       await got
         .post(
           type === "sold"
-            ? collectionWebhooks[address].soldWebhook
-            : collectionWebhooks[address].listWebhook,
+            ? collectionWebhooks[lowerAddress].soldWebhook
+            : collectionWebhooks[lowerAddress].listWebhook,
           payload
         )
         .json();
