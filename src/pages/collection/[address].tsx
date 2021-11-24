@@ -106,10 +106,10 @@ const Collection = () => {
     () =>
       client.getActivity({
         id: formattedAddress,
-        // orderBy:
-        //   activitySortParam === "price"
-        //     ? Listing_OrderBy.PricePerItem
-        //     : Listing_OrderBy.BlockTimestamp,
+        orderBy:
+          activitySortParam === "price"
+            ? Listing_OrderBy.PricePerItem
+            : Listing_OrderBy.BlockTimestamp,
       }),
     {
       enabled: formattedTab === "activity",
@@ -153,9 +153,9 @@ const Collection = () => {
         tokenName: queryKey[1].searchParams,
         skipBy: pageParam,
         first: MAX_ITEMS_PER_PAGE,
-        // orderBy: sort
-        //   ? MapSortToOrder(Array.isArray(sort) ? sort[0] : sort)
-        //   : Listing_OrderBy.PricePerItem,
+        orderBy: sort
+          ? MapSortToOrder(Array.isArray(sort) ? sort[0] : sort)
+          : Listing_OrderBy.PricePerItem,
         orderDirection: sort
           ? MapSortToEnum(Array.isArray(sort) ? sort[0] : sort)
           : OrderDirection.Asc,
@@ -330,7 +330,7 @@ const Collection = () => {
                   </div>
                   <Menu
                     as="div"
-                    className="hidden relative z-20 text-left"
+                    className="relative z-20 inline-block text-left"
                   >
                     <div>
                       <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-200">
