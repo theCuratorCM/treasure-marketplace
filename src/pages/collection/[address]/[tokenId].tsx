@@ -327,6 +327,16 @@ export default function Example() {
                           $MAGIC
                         </span>
                       </p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        ≈ $
+                        {formatNumber(
+                          Number(
+                            parseFloat(
+                              formatEther(tokenInfo.lowestPrice[0].pricePerItem)
+                            )
+                          ) * magicPrice
+                        )}
+                      </p>
                     </div>
 
                     <div className="mt-6">
