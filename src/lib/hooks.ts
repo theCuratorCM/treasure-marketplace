@@ -1,4 +1,4 @@
-import type { ListedNft, Nft } from "../types";
+import type { Nft, targetNftT } from "../types";
 
 import * as abis from "./abis";
 import {
@@ -17,12 +17,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
 import { MaxUint256 } from "@ethersproject/constants";
 import plur from "plur";
+import { TokenStandard } from "../../generated/graphql";
 
 type WebhookBody = {
   address: string;
   collection: string;
   expires?: number;
   image: string;
+  tokenId: string;
   name: string;
   price: string;
   quantity: number;
@@ -56,14 +58,14 @@ export function useChainId() {
   }
 }
 
-export function useApproveContract(
-  contract: string,
-  standard: "ERC721" | "ERC1155"
-) {
+export function useApproveContract(contract: string, standard: TokenStandard) {
   const chainId = useChainId();
 
   const approve = useContractFunction(
-    new Contract(contract, standard === "ERC721" ? abis.erc721 : abis.erc1155),
+    new Contract(
+      contract,
+      standard === TokenStandard.Erc721 ? abis.erc721 : abis.erc1155
+    ),
     "setApprovalForAll"
   );
 
@@ -85,7 +87,7 @@ export function useApproveContract(
 }
 
 export function useContractApprovals(
-  collections: Array<{ address: string; standard: "ERC721" | "ERC1155" }>
+  collections: Array<{ address: string; standard: TokenStandard }>
 ) {
   const { account } = useEthers();
   const chainId = useChainId();
@@ -178,6 +180,7 @@ export function useCreateListing() {
           address,
           collection,
           expires,
+          tokenId: nft.tokenId,
           image: source,
           name,
           price: price.toString(),
@@ -234,11 +237,7 @@ export function useRemoveListing() {
   }, [remove]);
 }
 
-export function useBuyItem(keys: {
-  address: string | string[] | undefined;
-  sortParam: string | string[];
-  searchParams: string;
-}) {
+export function useBuyItem() {
   const queryClient = useQueryClient();
   const chainId = useChainId();
   const { account } = useEthers();
@@ -258,23 +257,18 @@ export function useBuyItem(keys: {
       case "Success":
         toast.success("Successfully purchased!");
 
-        queryClient.invalidateQueries(["listings", keys], {
-          refetchInactive: true,
-        });
-        queryClient.invalidateQueries(["stats", keys.address], {
-          refetchInactive: true,
-        });
+        queryClient.invalidateQueries();
 
         webhook.current?.();
         webhook.current = undefined;
 
         break;
     }
-  }, [queryClient, state.errorMessage, keys, state.status]);
+  }, [queryClient, state.errorMessage, state.status]);
 
   return useMemo(() => {
     const send = (
-      nft: ListedNft,
+      nft: targetNftT,
       address: string,
       ownerAddress: string,
       tokenId: number,
@@ -283,16 +277,17 @@ export function useBuyItem(keys: {
       sendBuy(address, tokenId, ownerAddress, quantity);
 
       webhook.current = () => {
-        const { pricePerItem, token } = nft;
+        const { metadata, payload } = nft;
 
         callWebhook("sold", {
           address,
-          collection: token.metadata?.description ?? "",
-          image: token.metadata?.image?.includes("ipfs")
-            ? generateIpfsLink(token.metadata.image)
-            : token.metadata?.image ?? "",
-          name: token.name ?? "",
-          price: pricePerItem.toString(),
+          collection: metadata?.description ?? "",
+          image: metadata?.image?.includes("ipfs")
+            ? generateIpfsLink(metadata.image)
+            : metadata?.image ?? "",
+          name: metadata?.name ?? "",
+          tokenId: payload.tokenId,
+          price: payload.pricePerItem.toString(),
           quantity,
           user: String(account),
         });
@@ -366,11 +361,12 @@ export function useUpdateListing() {
       update.send(address, tokenId, quantity, price, expires);
 
       webhook.current = () => {
-        const { collection, listing, name, source } = nft;
+        const { collection, listing, name, source, tokenId } = nft;
 
         callWebhook("update", {
           address,
           collection,
+          tokenId,
           expires: Number(listing?.expires ?? 0),
           image: source,
           name,

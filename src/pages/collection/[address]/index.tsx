@@ -1,37 +1,35 @@
-import type { ListedNft } from "../../types";
-
 import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 
 import { useInfiniteQuery, useQuery } from "react-query";
-import client from "../../lib/client";
+import client from "../../../lib/client";
 import { AddressZero, Zero } from "@ethersproject/constants";
-import { CenterLoadingDots } from "../../components/CenterLoadingDots";
-import { abbreviatePrice, formatNumber, formatPrice, generateIpfsLink } from "../../utils";
+import { CenterLoadingDots } from "../../../components/CenterLoadingDots";
+import {
+  abbreviatePrice,
+  formatNumber,
+  formatPrice,
+  generateIpfsLink,
+} from "../../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { Modal } from "../../components/Modal";
-import { Listing_OrderBy, OrderDirection } from "../../../generated/graphql";
-import { useMagic } from "../../context/magicContext";
-import { BigNumber } from "@ethersproject/bignumber";
-import Button from "../../components/Button";
-import { useApproveMagic, useBuyItem, useChainId } from "../../lib/hooks";
+import { Modal } from "../../../components/Modal";
 import {
-  shortenAddress,
-  TransactionStatus,
-  useEthers,
-  useTokenAllowance,
-} from "@yuyao17/corefork";
-import { Contracts } from "../../const";
+  GetCollectionListingsQuery,
+  Listing_OrderBy,
+  OrderDirection,
+  TokenStandard,
+} from "../../../../generated/graphql";
+import { shortenAddress, useEthers } from "@yuyao17/corefork";
 import classNames from "clsx";
 import { useInView } from "react-intersection-observer";
-import { SearchAutocomplete } from "../../components/SearchAutocomplete";
+import { SearchAutocomplete } from "../../../components/SearchAutocomplete";
 import { Item } from "react-stately";
-import Listings from "../../components/Listings";
+import Listings from "../../../components/Listings";
 
 const MAX_ITEMS_PER_PAGE = 42;
 
@@ -78,6 +76,19 @@ const MapSortToEnum = (sort: string) => {
   return assertUnreachable();
 };
 
+const getTotalQuantity = (
+  listings: NonNullable<
+    NonNullable<GetCollectionListingsQuery["collection"]>["tokens"]
+  >[number]["listings"]
+) => {
+  return listings && listings.length > 0
+    ? listings.reduce<number>(
+        (acc, listing) => acc + Number(listing.quantity),
+        0
+      )
+    : 0;
+};
+
 const Collection = () => {
   const router = useRouter();
   const { address, sort, tab, activitySort } = router.query;
@@ -85,13 +96,6 @@ const Collection = () => {
   const [searchParams, setSearchParams] = useState("");
   const [isDetailedFloorPriceModalOpen, setDetailedFloorPriceModalOpen] =
     useState(false);
-  const [modalProps, setModalProps] = useState<{
-    isOpen: boolean;
-    targetNft: ListedNft | null;
-  }>({
-    isOpen: false,
-    targetNft: null,
-  });
 
   const sortParam = sort ?? OrderDirection.Asc;
   const activitySortParam = activitySort ?? "time";
@@ -139,6 +143,9 @@ const Collection = () => {
     }
   );
 
+  const isERC1155 =
+    collectionData?.collection?.standard === TokenStandard.Erc1155;
+
   const {
     data: listingData,
     isLoading: isListingLoading,
@@ -148,6 +155,7 @@ const Collection = () => {
     ({ queryKey, pageParam = 0 }) =>
       client.getCollectionListings({
         id: formattedAddress,
+        isERC1155,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         tokenName: queryKey[1].searchParams,
@@ -161,36 +169,21 @@ const Collection = () => {
           : OrderDirection.Asc,
       }),
     {
-      enabled: !!address,
+      enabled: !!address && !!collectionData,
       getNextPageParam: (_, pages) => pages.length * MAX_ITEMS_PER_PAGE,
     }
   );
-
-  const keyParams = React.useMemo(
-    () => ({
-      address,
-      sortParam,
-      searchParams,
-    }),
-    [address, searchParams, sortParam]
-  );
-
-  const { send, state } = useBuyItem(keyParams);
-
-  useEffect(() => {
-    if (state.status === "Success") {
-      setModalProps({ isOpen: false, targetNft: null });
-    }
-  }, [state.status]);
 
   // reset searchParams on address change
   useEffect(() => {
     setSearchParams("");
   }, [address]);
 
-  const hasNextPage =
-    listingData?.pages[listingData.pages.length - 1]?.collection?.listings
-      .length === MAX_ITEMS_PER_PAGE;
+  const collection =
+    listingData?.pages[listingData.pages.length - 1]?.collection;
+  const data = isERC1155 ? collection?.tokens : collection?.listings;
+
+  const hasNextPage = data?.length === MAX_ITEMS_PER_PAGE;
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -249,15 +242,14 @@ const Collection = () => {
                     </dd>
                   </div>
                 </dl>
-                {collectionData.collection.standard === "ERC1155" &&
-                  statData.collection.totalListings > 0 && (
-                    <button
-                      className="text-[0.5rem] sm:text-xs block underline place-self-start mt-2 dark:text-gray-300"
-                      onClick={() => setDetailedFloorPriceModalOpen(true)}
-                    >
-                      Compare floor prices &gt;
-                    </button>
-                  )}
+                {isERC1155 && statData.collection.totalListings > 0 && (
+                  <button
+                    className="text-[0.5rem] sm:text-xs block underline place-self-start mt-2 dark:text-gray-300"
+                    onClick={() => setDetailedFloorPriceModalOpen(true)}
+                  >
+                    Compare floor prices &gt;
+                  </button>
+                )}
               </div>
             </>
           ) : (
@@ -273,7 +265,6 @@ const Collection = () => {
               >
                 {tabs.map((tab) => {
                   const isCurrentTab = formattedTab === tab.name.toLowerCase();
-                  console.log(formattedTab);
                   return (
                     <Link
                       key={tab.name}
@@ -386,14 +377,13 @@ const Collection = () => {
               )}
             </section>
             {isListingLoading && <CenterLoadingDots className="h-60" />}
-            {listingData?.pages[0]?.collection?.listings.length === 0 &&
-              !isListingLoading && (
-                <div className="flex flex-col justify-center items-center h-36">
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">
-                    No NFTs listed 😞
-                  </h3>
-                </div>
-              )}
+            {data?.length === 0 && !isListingLoading && (
+              <div className="flex flex-col justify-center items-center h-36">
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">
+                  No NFTs listed 😞
+                </h3>
+              </div>
+            )}
             {listingData && collectionData && (
               <section aria-labelledby="products-heading" className="my-8">
                 <h2 id="products-heading" className="sr-only">
@@ -405,7 +395,71 @@ const Collection = () => {
                 >
                   {listingData.pages.map((group, i) => (
                     <React.Fragment key={i}>
-                      {group.collection?.listings.map((listing) => {
+                      {/* ERC1155 */}
+                      {group.collection?.tokens
+                        ?.filter((token) => Boolean(token?.listings?.length))
+                        .map((token) => {
+                          return (
+                            <li key={token.id} className="group">
+                              <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                                <Image
+                                  src={
+                                    token.metadata?.image?.includes("ipfs")
+                                      ? generateIpfsLink(token.metadata.image)
+                                      : token.metadata?.image ?? ""
+                                  }
+                                  alt={token.name ?? ""}
+                                  layout="fill"
+                                  className={
+                                    "w-full h-full object-center object-fill group-hover:opacity-75"
+                                  }
+                                />
+                                <Link
+                                  href={`/collection/${formattedAddress}/${token.tokenId}`}
+                                  passHref
+                                >
+                                  <a className="absolute inset-0 focus:outline-none">
+                                    <span className="sr-only">
+                                      View details for {token.name}
+                                    </span>
+                                  </a>
+                                </Link>
+                              </div>
+                              <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+                                <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
+                                  {collectionData.collection?.name}
+                                </p>
+                                <p className="dark:text-gray-100">
+                                  {formatNumber(
+                                    parseFloat(
+                                      formatEther(
+                                        token?.listings?.[0]?.pricePerItem
+                                      )
+                                    )
+                                  )}{" "}
+                                  <span className="text-xs font-light">
+                                    $MAGIC
+                                  </span>
+                                </p>
+                              </div>
+                              <div className="flex items-baseline mt-1">
+                                <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
+                                  {token.name}
+                                </p>
+                                <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
+                                  <span className="text-gray-500 dark:text-gray-400">
+                                    Listed Items:
+                                  </span>{" "}
+                                  <span className="font-bold text-gray-700 dark:text-gray-300">
+                                    {getTotalQuantity(token.listings)}
+                                  </span>
+                                </p>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      {/* ERC721 */}
+                      {group.collection?.listings?.map((listing) => {
                         const yourItem =
                           account?.toLowerCase() === listing.user.id;
                         return (
@@ -423,34 +477,17 @@ const Collection = () => {
                                 }
                                 alt={listing.token.name ?? ""}
                                 layout="fill"
-                                className={classNames(
-                                  "w-full h-full object-center object-fill",
-                                  {
-                                    "group-hover:opacity-75": !yourItem,
-                                  }
-                                )}
+                                className="w-full h-full object-center object-fill group-hover:opacity-75"
                               />
-                              {!yourItem && (
-                                <button
-                                  type="button"
-                                  className="absolute inset-0 focus:outline-none"
-                                  onClick={() =>
-                                    setModalProps({
-                                      isOpen: true,
-                                      targetNft: {
-                                        ...listing,
-                                        standard:
-                                          collectionData.collection?.standard ??
-                                          "ERC1155",
-                                      },
-                                    })
-                                  }
-                                >
+                              <Link
+                                href={`/collection/${formattedAddress}/${listing.token.tokenId}`}
+                              >
+                                <a className="absolute inset-0 focus:outline-none">
                                   <span className="sr-only">
                                     View details for {listing.token.name}
                                   </span>
-                                </button>
-                              )}
+                                </a>
+                              </Link>
                             </div>
                             <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
                               <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
@@ -480,8 +517,7 @@ const Collection = () => {
                                 </span>
                               </p>
                             </div>
-                            {collectionData.collection?.standard ===
-                              "ERC1155" && (
+                            {isERC1155 && (
                               <div className="flex mt-1 justify-end">
                                 <span className="text-gray-600 text-xs text-[0.6rem]">
                                   <span className="text-gray-500 dark:text-gray-400">
@@ -539,15 +575,7 @@ const Collection = () => {
           </>
         )}
       </div>
-      {modalProps.isOpen && modalProps.targetNft && (
-        <PurchaseItemModal
-          isOpen={true}
-          state={state}
-          send={send}
-          onClose={() => setModalProps({ isOpen: false, targetNft: null })}
-          list={modalProps.targetNft}
-        />
-      )}
+
       {statData?.collection && isDetailedFloorPriceModalOpen && (
         <DetailedFloorPriceModal
           isOpen={true}
@@ -639,187 +667,6 @@ const DetailedFloorPriceModal = ({
                 </table>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </Modal>
-  );
-};
-
-const PurchaseItemModal = ({
-  isOpen,
-  onClose,
-  list,
-  state,
-  send,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  list: ListedNft;
-  state: TransactionStatus;
-  send: (
-    nft: ListedNft,
-    address: string,
-    ownerAddress: string,
-    tokenId: number,
-    quantity: number
-  ) => void;
-}) => {
-  const [quantity, setQuantity] = useState(1);
-  const { account } = useEthers();
-  const chainId = useChainId();
-
-  const router = useRouter();
-  const { address } = router.query;
-  const { magicBalance, magicPrice, setSushiModalOpen } = useMagic();
-
-  const normalizedAddress = Array.isArray(address)
-    ? address[0]
-    : address ?? AddressZero;
-
-  const totalPrice =
-    quantity * Number(parseFloat(formatEther(list.pricePerItem)));
-
-  const canPurchase = magicBalance.gte(
-    BigNumber.from(list.pricePerItem).mul(quantity)
-  );
-
-  const { send: approve, state: approveState } = useApproveMagic();
-
-  const magicAllowance = useTokenAllowance(
-    Contracts[chainId].magic,
-    account ?? AddressZero,
-    Contracts[chainId].marketplace
-  );
-
-  const notAllowed = magicAllowance?.isZero() ?? true;
-
-  return (
-    <Modal onClose={onClose} isOpen={isOpen} title="Order Summary">
-      <div className="sm:mt-10 lg:mt-0">
-        <div className="sm:mt-4">
-          <h3 className="sr-only">Items in your cart</h3>
-          <ul role="list" className="divide-y divide-gray-200">
-            <li
-              key={list.id}
-              className="flex flex-col sm:flex-row py-6 px-4 sm:px-6"
-            >
-              <div className="flex-shrink-0">
-                <Image
-                  src={
-                    list.token.metadata?.image?.includes("ipfs")
-                      ? generateIpfsLink(list.token.metadata.image)
-                      : list.token.metadata?.image ?? ""
-                  }
-                  alt={list.token.name ?? ""}
-                  width="50%"
-                  height="50%"
-                />
-              </div>
-
-              <div className="sm:ml-6 sm:space-y-0 mt-2 sm:mt-0 space-y-2 flex-1 flex flex-col">
-                <div className="flex">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm">
-                      <p className="text-sm text-gray-500 dark:text-gray-400 uppercase">
-                        {list.token.metadata?.description}
-                      </p>
-                      <p className="mt-1 font-medium text-gray-800 dark:text-gray-50 hover:text-gray-800">
-                        {list.token.name ?? ""}
-                      </p>
-                    </h4>
-                  </div>
-                </div>
-
-                {list.standard === "ERC1155" && (
-                  <div className="flex-1 sm:pt-2 flex items-end justify-between">
-                    <p className="mt-1 text-xs font-medium text-gray-900 dark:text-gray-100">
-                      {formatEther(list.pricePerItem)} $MAGIC{" "}
-                      <span className="text-[0.5rem] text-gray-500 dark:text-gray-400">
-                        Per Item
-                      </span>
-                    </p>
-
-                    <div className="ml-4">
-                      <label htmlFor="quantity" className="sr-only">
-                        Quantity
-                      </label>
-                      <select
-                        id="quantity"
-                        name="quantity"
-                        value={quantity}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
-                        className="form-select rounded-md border dark:text-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 dark:focus:ring-gray-300 dark:focus:border-gray-300 text-base font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                      >
-                        {Array.from({
-                          length: Number(list.quantity) || 0,
-                        }).map((_, idx) => (
-                          <option key={idx} value={idx + 1}>
-                            {idx + 1}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </li>
-          </ul>
-          <dl className="py-6 px-4 space-y-6 sm:px-6">
-            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-              <dt className="text-base font-medium">Total</dt>
-              <dd className="text-base font-medium text-gray-900 dark:text-gray-100 flex flex-col items-end">
-                <p>{totalPrice} $MAGIC</p>
-                <p className="text-gray-500 text-sm mt-1">
-                  ≈ ${formatNumber(totalPrice * magicPrice)}
-                </p>
-              </dd>
-            </div>
-          </dl>
-
-          <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
-            {notAllowed ? (
-              <Button
-                onClick={approve}
-                isLoading={approveState.status === "Mining"}
-                loadingText="Approving $MAGIC..."
-                variant="secondary"
-              >
-                Approve $MAGIC to purchase this item
-              </Button>
-            ) : (
-              <>
-                <Button
-                  disabled={!canPurchase || state.status === "Mining"}
-                  isLoading={state.status === "Mining"}
-                  loadingText="Confirming order..."
-                  onClick={() => {
-                    send(
-                      list,
-                      normalizedAddress,
-                      list.user.id,
-                      Number(list.token.tokenId),
-                      quantity
-                    );
-                  }}
-                >
-                  {canPurchase
-                    ? "Confirm order"
-                    : "You have insufficient funds"}
-                </Button>
-                {!canPurchase && (
-                  <button
-                    className="mt-4 text-xs w-full m-auto text-red-500 underline"
-                    onClick={() => {
-                      onClose();
-                      setSushiModalOpen(true);
-                    }}
-                  >
-                    Purchase MAGIC on SushiSwap
-                  </button>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
