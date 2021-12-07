@@ -285,7 +285,7 @@ export function useBuyItem() {
           image: metadata?.image?.includes("ipfs")
             ? generateIpfsLink(metadata.image)
             : metadata?.image ?? "",
-          name: metadata?.name ?? "",
+          name: `${metadata?.description ?? ""} ${metadata?.name ?? ""}`,
           tokenId: payload.tokenId,
           price: payload.pricePerItem.toString(),
           quantity,

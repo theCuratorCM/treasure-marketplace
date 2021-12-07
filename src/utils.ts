@@ -1,5 +1,5 @@
 import { formatEther } from "ethers/lib/utils";
-import { BigNumberish, BigNumber } from "ethers";
+import { BigNumberish } from "ethers";
 
 const UNITS = ["", "K", "M", "B", "T", "Q"];
 
@@ -16,7 +16,8 @@ export const formatPrice = (price: BigNumberish) =>
   formatNumber(parseFloat(formatEther(price)));
 
 export const formattable = (string: BigNumberish) => {
-  if (isNaN(Number(string)) || !BigNumber.isBigNumber(string)) {
+  // TODO: Fix regex, but will work for Head Size for now
+  if (isNaN(Number(string)) || /^\d$/.test(string.toString())) {
     return string;
   }
 
