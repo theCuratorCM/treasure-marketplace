@@ -3,6 +3,14 @@ import { BigNumberish } from "ethers";
 
 const UNITS = ["", "K", "M", "B", "T", "Q"];
 
+function toFixed(num: number, fixed: number) {
+  const formatted = parseFloat(num.toFixed(2));
+  const re = new RegExp("^-?\\d+(?:.\\d{0," + (fixed || -1) + "})?");
+
+  const numStr = formatted.toString().match(re);
+  return numStr ? numStr[0] : formatted.toString();
+}
+
 export const generateIpfsLink = (hash: string) => {
   const removedIpfs = hash.substring(7);
 
@@ -26,11 +34,7 @@ export const formattable = (string: BigNumberish) => {
 
 export const formatPercent = (percentage: string) => {
   const number = parseFloat(percentage);
-  return number.toLocaleString("en-US", {
-    style: "percent",
-    // if its a whole number, don't add the decimal
-    minimumFractionDigits: number % 1 !== 0 ? 2 : 0,
-  });
+  return toFixed(number * 100, 2) + "%";
 };
 
 export const abbreviatePrice = (number: string) => {

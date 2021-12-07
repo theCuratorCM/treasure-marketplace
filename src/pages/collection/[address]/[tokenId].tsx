@@ -270,7 +270,8 @@ export default function Example() {
                                     <p className="mt-1 font-medium dark:text-gray-900">
                                       {formattable(attribute.value)}
                                     </p>
-                                    <p className="mt-2 text-xs text-gray-600 dark:text-gray-600">
+                                    <p className="mt-2 text-[0.6rem] 2xl:text-xs text-gray-600 dark:text-gray-600">
+                                      {/* TODO: remove when updated graph */}
                                       {attribute.name === "IQ"
                                         ? "100%"
                                         : formatPercent(
@@ -585,7 +586,7 @@ export default function Example() {
                                     <p className="mt-1 font-medium dark:text-gray-900">
                                       {formattable(attribute.value)}
                                     </p>
-                                    <p className="mt-2 text-xs text-gray-600 dark:text-gray-600">
+                                    <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
                                       {/* TODO: remove when updated graph */}
                                       {attribute.name === "IQ"
                                         ? "100%"
