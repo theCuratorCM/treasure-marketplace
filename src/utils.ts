@@ -1,4 +1,5 @@
 import { formatEther } from "ethers/lib/utils";
+import { BigNumberish, BigNumber } from "ethers";
 
 const UNITS = ["", "K", "M", "B", "T", "Q"];
 
@@ -11,11 +12,11 @@ export const generateIpfsLink = (hash: string) => {
 export const formatNumber = (number: number) =>
   new Intl.NumberFormat().format(number);
 
-export const formatPrice = (price: string) =>
+export const formatPrice = (price: BigNumberish) =>
   formatNumber(parseFloat(formatEther(price)));
 
-export const formattable = (string: string) => {
-  if (isNaN(Number(string))) {
+export const formattable = (string: BigNumberish) => {
+  if (isNaN(Number(string)) || !BigNumber.isBigNumber(string)) {
     return string;
   }
 
