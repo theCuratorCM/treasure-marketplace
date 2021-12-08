@@ -662,8 +662,8 @@ const Inventory = () => {
                 >
                   {data.map(
                     ({ id, expires, pricePerItem, quantity, token }) => (
-                      <li key={id} className="group">
-                        <div className="block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
+                      <li key={id}>
+                        <div className="group block w-full aspect-w-1 aspect-h-1 rounded-sm overflow-hidden sm:aspect-w-3 sm:aspect-h-3 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-red-500">
                           <Image
                             alt={token.name ?? ""}
                             className={classNames(
@@ -710,9 +710,14 @@ const Inventory = () => {
                           ) : null}
                         </div>
                         <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                          <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
-                            {token.metadata?.description}
-                          </p>
+                          <Link
+                            href={`/collection/${token.collection.address}`}
+                            passHref
+                          >
+                            <a className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem] hover:underline">
+                              {token.metadata?.description}
+                            </a>
+                          </Link>
                           {pricePerItem && (
                             <p className="dark:text-gray-100">
                               {formatNumber(
