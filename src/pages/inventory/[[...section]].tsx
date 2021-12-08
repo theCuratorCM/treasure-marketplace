@@ -742,9 +742,14 @@ const Inventory = () => {
                             )}
                         </div>
                         <div className="flex items-baseline justify-between mt-1">
-                          <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
-                            {token.name}
-                          </p>
+                          <Link
+                            href={`/collection/${token.collection.address}/${token.tokenId}`}
+                            passHref
+                          >
+                            <a className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate hover:underline">
+                              {token.name}
+                            </a>
+                          </Link>
                           {expires && (
                             <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
                               <span className="text-gray-500 dark:text-gray-400">
