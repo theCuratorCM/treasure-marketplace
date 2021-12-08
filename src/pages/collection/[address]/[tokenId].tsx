@@ -107,7 +107,6 @@ export default function Example() {
   const {
     data: listingData,
     isLoading: isListingLoading,
-    isFetchingNextPage: isListingFetchingNextPage,
     fetchNextPage,
   } = useInfiniteQuery(
     "erc1155Listings",
@@ -518,17 +517,16 @@ export default function Example() {
                                           </td>
                                         </tr>
                                       ))}
-                                      {hasNextPage &&
-                                        isListingFetchingNextPage && (
-                                          <tr ref={ref}>
-                                            <td
-                                              className="px-6 py-4 span"
-                                              colSpan={100}
-                                            >
-                                              <CenterLoadingDots />
-                                            </td>
-                                          </tr>
-                                        )}
+                                      {hasNextPage && (
+                                        <tr ref={ref}>
+                                          <td
+                                            className="px-6 py-4 span"
+                                            colSpan={100}
+                                          >
+                                            <CenterLoadingDots />
+                                          </td>
+                                        </tr>
+                                      )}
                                     </React.Fragment>
                                   ))}
                                 </tbody>
