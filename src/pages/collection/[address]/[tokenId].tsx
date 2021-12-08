@@ -517,20 +517,15 @@ export default function Example() {
                                           </td>
                                         </tr>
                                       ))}
-                                      {hasNextPage && (
-                                        <tr ref={ref}>
-                                          <td
-                                            className="px-6 py-4 span"
-                                            colSpan={100}
-                                          >
-                                            <CenterLoadingDots />
-                                          </td>
-                                        </tr>
-                                      )}
                                     </React.Fragment>
                                   ))}
                                 </tbody>
                               </table>
+                              {hasNextPage && (
+                                <div ref={ref} className="px-6 py-4">
+                                  <CenterLoadingDots />
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
