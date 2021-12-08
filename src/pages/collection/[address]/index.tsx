@@ -344,31 +344,34 @@ const Collection = () => {
                     >
                       <Menu.Items className="origin-top-left absolute right-0 z-10 mt-2 w-48 rounded-md shadow-2xl bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="py-1">
-                          {sortOptions.map((option) => {
-                            const active = option.value === sortParam;
-                            return (
-                              <Menu.Item key={option.name}>
-                                <QueryLink
-                                  href={{
-                                    pathname: router.pathname,
-                                    query: {
-                                      ...router.query,
-                                      sort: option.value,
-                                    },
-                                  }}
-                                  passHref
-                                  className={classNames(
-                                    "block px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-500",
-                                    {
-                                      "text-red-500 dark:text-gray-100": active,
-                                    }
-                                  )}
-                                >
-                                  <span>{option.name}</span>
-                                </QueryLink>
-                              </Menu.Item>
-                            );
-                          })}
+                          {sortOptions
+                            .slice(0, isERC1155 ? -1 : sortOptions.length)
+                            .map((option) => {
+                              const active = option.value === sortParam;
+                              return (
+                                <Menu.Item key={option.name}>
+                                  <QueryLink
+                                    href={{
+                                      pathname: router.pathname,
+                                      query: {
+                                        ...router.query,
+                                        sort: option.value,
+                                      },
+                                    }}
+                                    passHref
+                                    className={classNames(
+                                      "block px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-500",
+                                      {
+                                        "text-red-500 dark:text-gray-100":
+                                          active,
+                                      }
+                                    )}
+                                  >
+                                    <span>{option.name}</span>
+                                  </QueryLink>
+                                </Menu.Item>
+                              );
+                            })}
                         </div>
                       </Menu.Items>
                     </Transition>

@@ -95,7 +95,11 @@ export const getCollectionListings = gql`
       name
       address
       standard
-      tokens(where: { name_contains: $tokenName }) @include(if: $isERC1155) {
+      tokens(
+        orderBy: floorPrice
+        orderDirection: $orderDirection
+        where: { name_contains: $tokenName }
+      ) @include(if: $isERC1155) {
         id
         name
         tokenId
