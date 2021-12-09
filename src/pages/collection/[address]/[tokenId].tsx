@@ -266,18 +266,22 @@ export default function Example() {
                                     <p className="text-red-700 dark:text-gray-500 text-xs font-light">
                                       {attribute.name}
                                     </p>
-                                    <p className="mt-1 font-medium dark:text-gray-900">
+                                    <p
+                                      className={classNames(
+                                        attribute.percentage === null
+                                          ? "flex-1 flex items-center"
+                                          : "mt-1",
+                                        "font-medium dark:text-gray-900"
+                                      )}
+                                    >
                                       {formattable(attribute.value)}
                                     </p>
-                                    <p className="mt-2 text-[0.6rem] 2xl:text-xs text-gray-600 dark:text-gray-600">
-                                      {/* TODO: remove when updated graph */}
-                                      {attribute.name === "IQ"
-                                        ? "100%"
-                                        : formatPercent(
-                                            attribute.percentage
-                                          )}{" "}
-                                      have this trait
-                                    </p>
+                                    {attribute.percentage !== null ? (
+                                      <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
+                                        {formatPercent(attribute.percentage)}{" "}
+                                        have this trait
+                                      </p>
+                                    ) : null}
                                   </div>
                                 )
                               )}
@@ -586,18 +590,22 @@ export default function Example() {
                                     <p className="text-red-700 dark:text-gray-500 text-xs font-light">
                                       {attribute.name}
                                     </p>
-                                    <p className="mt-1 font-medium dark:text-gray-900">
+                                    <p
+                                      className={classNames(
+                                        attribute.percentage === null
+                                          ? "flex-1 flex items-center"
+                                          : "mt-1",
+                                        "font-medium dark:text-gray-900"
+                                      )}
+                                    >
                                       {formattable(attribute.value)}
                                     </p>
-                                    <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
-                                      {/* TODO: remove when updated graph */}
-                                      {attribute.name === "IQ"
-                                        ? "100%"
-                                        : formatPercent(
-                                            attribute.percentage
-                                          )}{" "}
-                                      have this trait
-                                    </p>
+                                    {attribute.percentage !== null ? (
+                                      <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
+                                        {formatPercent(attribute.percentage)}{" "}
+                                        have this trait
+                                      </p>
+                                    ) : null}
                                   </div>
                                 )
                               )}
