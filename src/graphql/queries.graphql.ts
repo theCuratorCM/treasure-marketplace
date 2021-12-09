@@ -154,11 +154,15 @@ const LISTING_FRAGMENT = gql`
       id
     }
     token {
+      tokenId
       metadata {
         description
         image
       }
       name
+    }
+    collection {
+      id
     }
     transactionLink
   }
@@ -269,6 +273,12 @@ export const getTokenDetails = gql`
         }
         owner {
           id
+        }
+        owners {
+          quantity
+          user {
+            id
+          }
         }
       }
     }
