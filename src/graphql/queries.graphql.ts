@@ -229,8 +229,26 @@ export const getERC1155Listings = gql`
   }
 `;
 
+export const getTokenExistsInWallet = gql`
+  query getTokenExistsInWallet(
+    $collectionId: ID!
+    $tokenId: BigInt!
+    $address: String!
+  ) {
+    collection(id: $collectionId) {
+      tokens(where: { tokenId: $tokenId }) {
+        owners(where: { user: $address }) {
+          user {
+            id
+          }
+          quantity
+        }
+      }
+    }
+  }
+`;
+
 export const getTokenDetails = gql`
-  ${LISTING_FRAGMENT_WITH_TOKEN}
   query getTokenDetails($collectionId: ID!, $tokenId: BigInt!) {
     collection(id: $collectionId) {
       name
@@ -273,12 +291,6 @@ export const getTokenDetails = gql`
         }
         owner {
           id
-        }
-        owners {
-          quantity
-          user {
-            id
-          }
         }
       }
     }

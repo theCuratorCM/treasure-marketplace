@@ -40,6 +40,7 @@ import {
 } from "../../../utils";
 import {
   GetTokenDetailsQuery,
+  GetTokenExistsInWalletQuery,
   Status,
   TokenStandard,
 } from "../../../../generated/graphql";
@@ -110,6 +111,21 @@ export default function Example() {
       }),
     {
       enabled: !!address || !!tokenId,
+      refetchInterval: false,
+    }
+  );
+
+  const { data: tokenExistance } = useQuery(
+    "tokenExistance",
+    () =>
+      client.getTokenExistsInWallet({
+        collectionId: formattedAddress,
+        tokenId: formattedTokenId,
+        address: account?.toLowerCase() ?? AddressZero,
+      }),
+    {
+      enabled:
+        !!account && data?.collection?.standard === TokenStandard.Erc1155,
       refetchInterval: false,
     }
   );
@@ -188,17 +204,23 @@ export default function Example() {
 
   const loading = isLoading || isIdle;
 
-  const yourListingExists =
-    data?.collection?.standard === TokenStandard.Erc721
-      ? addressEqual(
-          account ?? AddressZero,
-          tokenInfo?.owner ? tokenInfo.owner.id : AddressZero
-        )
-      : tokenInfo?.owners &&
-        tokenInfo.owners.length > 0 &&
-        tokenInfo.owners.some((owner) =>
-          addressEqual(owner.user.id, account ?? AddressZero)
-        );
+  const isYourListing =
+    data?.collection?.standard === TokenStandard.Erc721 &&
+    addressEqual(
+      account ?? AddressZero,
+      tokenInfo?.owner ? tokenInfo.owner.id : AddressZero
+    );
+
+  const hasErc1155Token =
+    tokenExistance?.collection?.tokens &&
+    tokenExistance.collection.tokens.length > 0 &&
+    tokenExistance.collection.tokens[0].owners
+      ? tokenExistance.collection.tokens[0].owners[0]
+      : null;
+
+  const showTransfer =
+    isYourListing ||
+    (data?.collection?.standard === TokenStandard.Erc1155 && hasErc1155Token);
 
   return (
     <div className="pt-12">
@@ -316,7 +338,7 @@ export default function Example() {
               </div>
 
               <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0 lg:col-span-3 relative">
-                {yourListingExists && (
+                {showTransfer && (
                   <Tooltip content="Transfer NFT" sideOffset={5}>
                     <div className="absolute right-0">
                       <span className="relative z-0 inline-flex shadow-sm rounded-md">
@@ -350,7 +372,7 @@ export default function Example() {
                     <div className="mt-2 text-xs text-gray-400">
                       Owned by:{" "}
                       <span>
-                        {yourListingExists
+                        {isYourListing
                           ? "You"
                           : shortenIfAddress(tokenInfo.owner.id)}
                       </span>
@@ -380,7 +402,7 @@ export default function Example() {
                     </div>
 
                     <div className="mt-6">
-                      {yourListingExists &&
+                      {isYourListing ||
                       addressEqual(
                         tokenInfo.lowestPrice[0].user.id,
                         account ?? AddressZero
@@ -867,12 +889,12 @@ export default function Example() {
           </>
         )}
       </div>
-      {tokenInfo && data?.collection?.standard && (
+      {tokenInfo && hasErc1155Token && data?.collection?.standard && (
         <TransferNFTModal
           isOpen={isTransferModalOpen}
           onClose={() => setTransferModalOpen(false)}
           title={tokenInfo?.metadata?.name ?? ""}
-          token={tokenInfo}
+          token={hasErc1155Token}
           standard={data.collection.standard}
         />
       )}
@@ -937,9 +959,12 @@ const TransferNFTModal = ({
   onClose: () => void;
   title: string;
   token: Exclude<
-    GetTokenDetailsQuery["collection"],
+    Exclude<
+      GetTokenExistsInWalletQuery["collection"],
+      null | undefined
+    >["tokens"][number]["owners"],
     null | undefined
-  >["tokens"][number];
+  >[number];
   standard: TokenStandard;
 }) => {
   const [quantity, setQuantity] = React.useState(1);
@@ -969,13 +994,7 @@ const TransferNFTModal = ({
   }, [router, transferState.status]);
 
   const tokenQuantityLeft =
-    standard === TokenStandard.Erc1155 &&
-    token.owners &&
-    token.owners.length > 0
-      ? token.owners.find((owner) =>
-          addressEqual(owner.user.id, account ?? AddressZero)
-        )?.quantity ?? 0
-      : null;
+    standard === TokenStandard.Erc1155 && token.quantity;
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title={`Transfer ${title}`}>
