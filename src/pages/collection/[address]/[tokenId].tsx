@@ -1037,7 +1037,7 @@ const TransferNFTModal = ({
             Address
           </label>
           <input
-            type="address"
+            type="text"
             name="address"
             id="address"
             value={recipientAddress}
