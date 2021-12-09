@@ -889,7 +889,7 @@ export default function Example() {
           </>
         )}
       </div>
-      {tokenInfo && hasErc1155Token && data?.collection?.standard && (
+      {tokenInfo && data?.collection?.standard && (
         <TransferNFTModal
           isOpen={isTransferModalOpen}
           onClose={() => setTransferModalOpen(false)}
@@ -958,13 +958,15 @@ const TransferNFTModal = ({
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  token: Exclude<
-    Exclude<
-      GetTokenExistsInWalletQuery["collection"],
-      null | undefined
-    >["tokens"][number]["owners"],
-    null | undefined
-  >[number];
+  token:
+    | Exclude<
+        Exclude<
+          GetTokenExistsInWalletQuery["collection"],
+          null | undefined
+        >["tokens"][number]["owners"],
+        null | undefined
+      >[number]
+    | null;
   standard: TokenStandard;
 }) => {
   const [quantity, setQuantity] = React.useState(1);
@@ -994,7 +996,7 @@ const TransferNFTModal = ({
   }, [router, transferState.status]);
 
   const tokenQuantityLeft =
-    standard === TokenStandard.Erc1155 && token.quantity;
+    standard === TokenStandard.Erc1155 && token?.quantity;
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title={`Transfer ${title}`}>
