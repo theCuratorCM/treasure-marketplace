@@ -190,7 +190,7 @@ const Drawer = ({
                           }}
                           variant="secondary"
                         >
-                          Collection Not Whitelisted
+                          Collection Not Available To List
                         </Button>
                       ) : needsContractApproval ? (
                         <Button
