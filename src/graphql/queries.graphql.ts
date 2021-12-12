@@ -30,6 +30,7 @@ export const getUserInventory = gql`
         }
       }
       tokens(
+        first: 1000,
         where: {
           token_not_contains: "0x17DaCAD7975960833f374622fad08b90Ed67D1B5"
         }
