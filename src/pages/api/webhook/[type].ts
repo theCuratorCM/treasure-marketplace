@@ -7,7 +7,7 @@ import got from "got";
 
 const collectionWebhooks = {
   // Smol Bodies
-  "0x17DaCAD7975960833f374622fad08b90Ed67D1B5": {
+  "0x17dacad7975960833f374622fad08b90ed67d1b5": {
     listWebhook: process.env.SMOLBODIES_LIST_WEBHOOK,
     soldWebhook: process.env.SMOLBODIES_SOLD_WEBHOOK,
   },
