@@ -16,14 +16,14 @@ import { Item } from "react-stately";
 import { SearchAutocomplete } from "./SearchAutocomplete";
 import { useRouter } from "next/router";
 import { useMagic } from "../context/magicContext";
-import { collections, coreCollections } from "../const";
+import { coreCollections } from "../const";
 import classNames from "clsx";
 import toast from "react-hot-toast";
-import { useChainId } from "../lib/hooks";
 import MetaMaskSvg from "../../public/img/metamask.svg";
 import WalletConnectSvg from "../../public/img/walletconnect.svg";
 import Image from "next/image";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { useCollections } from "../lib/hooks";
 
 const walletconnect = new WalletConnectConnector({
   rpc: {
@@ -43,7 +43,6 @@ const Header = () => {
     activate,
     chainId: currentChainId,
   } = useEthers();
-  const chainId = useChainId();
   const [isOpenWalletModal, setIsOpenWalletModal] = useState(false);
 
   const Router = useRouter();
@@ -57,7 +56,7 @@ const Header = () => {
 
   const onClose = () => setIsOpenWalletModal(false);
 
-  const targetCollections = collections[chainId];
+  const data = useCollections();
 
   const switchToArbitrum = async () => {
     if (window.ethereum) {
@@ -134,7 +133,7 @@ const Header = () => {
                 </button>
               </div>
               <div className="py-6 px-4 space-y-6 flex-1">
-                {targetCollections.map((page) => (
+                {data.map((page) => (
                   <div key={page.name} className="flow-root">
                     <Link href={`/collection/${page.address}`} passHref>
                       <a className="-m-2 p-2 block font-medium text-gray-900 dark:text-gray-200">
@@ -181,7 +180,7 @@ const Header = () => {
                 <div className="h-16 flex items-center justify-between">
                   <div className="hidden h-full lg:flex lg:items-center">
                     <div className="h-full justify-center space-x-6 mr-6 hidden xl:flex">
-                      {targetCollections
+                      {data
                         .filter((collection) =>
                           coreCollections.includes(collection.name)
                         )
@@ -213,7 +212,7 @@ const Header = () => {
                         label="Search Collection"
                         allowsCustomValue
                         onSelectionChange={(name) => {
-                          const targetCollection = targetCollections.find(
+                          const targetCollection = data.find(
                             (collection) => collection.name === name
                           );
 
@@ -224,9 +223,9 @@ const Header = () => {
                           }
                         }}
                       >
-                        {targetCollections.map((collection) => (
+                        {data.map((collection) => (
                           <Item key={collection.name}>{collection.name}</Item>
-                        ))}
+                        )) ?? []}
                       </SearchAutocomplete>
                     </div>
                   </div>

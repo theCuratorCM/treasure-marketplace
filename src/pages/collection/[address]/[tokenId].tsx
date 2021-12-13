@@ -824,7 +824,7 @@ export default function Example() {
                                             <div>
                                               {(() => {
                                                 switch (listing.status) {
-                                                  case Status.Sold:
+                                                  case Status.Active:
                                                     return (
                                                       <span className="bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-900">
                                                         <ShoppingCartIcon
@@ -833,7 +833,7 @@ export default function Example() {
                                                         />
                                                       </span>
                                                     );
-                                                  case Status.Active:
+                                                  case Status.Sold:
                                                     return (
                                                       <span className="bg-red-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-900">
                                                         <CurrencyDollarIcon

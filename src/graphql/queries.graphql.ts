@@ -29,7 +29,11 @@ export const getUserInventory = gql`
           ...TokenFields
         }
       }
-      tokens {
+      tokens(
+        where: {
+          token_not_contains: "0x17DaCAD7975960833f374622fad08b90Ed67D1B5"
+        }
+      ) {
         id
         quantity
         token {
@@ -77,6 +81,15 @@ export const getCollectionStats = gql`
           name
         }
       }
+    }
+  }
+`;
+
+export const getCollections = gql`
+  query getCollections {
+    collections(orderBy: name) {
+      address
+      name
     }
   }
 `;
