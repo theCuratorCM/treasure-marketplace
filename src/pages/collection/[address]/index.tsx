@@ -851,11 +851,11 @@ const Collection = () => {
                                     </a>
                                   </Link>
                                 </div>
-                                <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                                  <p className="text-gray-500 dark:text-gray-400 font-thin tracking-wide uppercase text-[0.5rem]">
-                                    {collectionData.collection?.name}
+                                <div className="mt-4 text-base font-medium text-gray-900 space-y-2">
+                                  <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
+                                    {token.name}
                                   </p>
-                                  <p className="dark:text-gray-100">
+                                  <p className="dark:text-gray-100 text-sm xl:text-base capsize">
                                     {formatNumber(
                                       parseFloat(
                                         formatEther(
@@ -863,14 +863,9 @@ const Collection = () => {
                                         )
                                       )
                                     )}{" "}
-                                    <span className="text-xs font-light">
+                                    <span className="text-[0.5rem] xl:text-xs font-light">
                                       $MAGIC
                                     </span>
-                                  </p>
-                                </div>
-                                <div className="flex items-baseline mt-1">
-                                  <p className="text-xs text-gray-800 dark:text-gray-50 font-semibold truncate">
-                                    {token.name}
                                   </p>
                                   <p className="text-xs text-[0.6rem] ml-auto whitespace-nowrap">
                                     <span className="text-gray-500 dark:text-gray-400">
