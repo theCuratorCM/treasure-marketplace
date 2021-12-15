@@ -297,32 +297,47 @@ export default function Example() {
                           tokenInfo.metadata.attributes.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                               {tokenInfo.metadata?.attributes.map(
-                                ({ attribute }) => (
-                                  <div
-                                    key={attribute.id}
-                                    className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2"
-                                  >
-                                    <p className="text-red-700 dark:text-gray-500 text-xs font-light">
-                                      {attribute.name}
-                                    </p>
-                                    <p
-                                      className={classNames(
-                                        attribute.percentage === null
-                                          ? "flex-1 flex items-center"
-                                          : "mt-1",
-                                        "font-medium dark:text-gray-900"
-                                      )}
+                                ({ attribute }) => {
+                                  if (attribute.percentage == null) {
+                                    return (
+                                      <div className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2">
+                                        <p className="text-red-700 dark:text-gray-500 text-xs font-light">
+                                          {attribute.name}
+                                        </p>
+                                        <p className="flex-1 flex items-center font-medium dark:text-gray-900">
+                                          {formattable(attribute.value)}
+                                        </p>
+                                      </div>
+                                    );
+                                  }
+                                  return (
+                                    <Link
+                                      key={attribute.id}
+                                      href={{
+                                        pathname: `/collection/${formattedAddress}`,
+                                        query: {
+                                          search: new URLSearchParams({
+                                            [attribute.name]: attribute.value,
+                                          }).toString(),
+                                        },
+                                      }}
+                                      passHref
                                     >
-                                      {formattable(attribute.value)}
-                                    </p>
-                                    {attribute.percentage !== null ? (
-                                      <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
-                                        {formatPercent(attribute.percentage)}{" "}
-                                        have this trait
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                )
+                                      <a className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2 hover:shadow-xl shadow-red-500/50">
+                                        <p className="text-red-700 dark:text-gray-500 text-xs font-light">
+                                          {attribute.name}
+                                        </p>
+                                        <p className="mt-1 font-medium dark:text-gray-900">
+                                          {formattable(attribute.value)}
+                                        </p>
+                                        <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
+                                          {formatPercent(attribute.percentage)}{" "}
+                                          have this trait
+                                        </p>
+                                      </a>
+                                    </Link>
+                                  );
+                                }
                               )}
                             </div>
                           ) : (
@@ -641,32 +656,47 @@ export default function Example() {
                           tokenInfo.metadata.attributes.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                               {tokenInfo.metadata?.attributes.map(
-                                ({ attribute }) => (
-                                  <div
-                                    key={attribute.id}
-                                    className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2"
-                                  >
-                                    <p className="text-red-700 dark:text-gray-500 text-xs font-light">
-                                      {attribute.name}
-                                    </p>
-                                    <p
-                                      className={classNames(
-                                        attribute.percentage === null
-                                          ? "flex-1 flex items-center"
-                                          : "mt-1",
-                                        "font-medium dark:text-gray-900"
-                                      )}
+                                ({ attribute }) => {
+                                  if (attribute.percentage == null) {
+                                    return (
+                                      <div className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2">
+                                        <p className="text-red-700 dark:text-gray-500 text-xs font-light">
+                                          {attribute.name}
+                                        </p>
+                                        <p className="flex-1 flex items-center font-medium dark:text-gray-900">
+                                          {formattable(attribute.value)}
+                                        </p>
+                                      </div>
+                                    );
+                                  }
+                                  return (
+                                    <Link
+                                      key={attribute.id}
+                                      href={{
+                                        pathname: `/collection/${formattedAddress}`,
+                                        query: {
+                                          search: new URLSearchParams({
+                                            [attribute.name]: attribute.value,
+                                          }).toString(),
+                                        },
+                                      }}
+                                      passHref
                                     >
-                                      {formattable(attribute.value)}
-                                    </p>
-                                    {attribute.percentage !== null ? (
-                                      <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
-                                        {formatPercent(attribute.percentage)}{" "}
-                                        have this trait
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                )
+                                      <a className="border-2 border-red-400 dark:border-gray-400 rounded-md bg-red-200 dark:bg-gray-300 flex items-center flex-col py-2 hover:shadow-xl shadow-red-500/50">
+                                        <p className="text-red-700 dark:text-gray-500 text-xs font-light">
+                                          {attribute.name}
+                                        </p>
+                                        <p className="mt-1 font-medium dark:text-gray-900">
+                                          {formattable(attribute.value)}
+                                        </p>
+                                        <p className="mt-2 text-[0.6rem] sm:text-xs text-gray-600 dark:text-gray-600">
+                                          {formatPercent(attribute.percentage)}{" "}
+                                          have this trait
+                                        </p>
+                                      </a>
+                                    </Link>
+                                  );
+                                }
                               )}
                             </div>
                           ) : (

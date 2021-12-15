@@ -218,6 +218,7 @@ const Collection = () => {
   const router = useRouter();
   const { address, sort, tab, activitySort, search } = router.query;
   const formattedSearch = Array.isArray(search) ? search[0] : search;
+  const [searchToken, setSearchToken] = useState("");
   const [searchParams, setSearchParams] = useState("");
   const [isDetailedFloorPriceModalOpen, setDetailedFloorPriceModalOpen] =
     useState(false);
@@ -720,19 +721,18 @@ const Collection = () => {
                 {statData?.collection && (
                   <div className="flex items-center">
                     <div className="mr-2 w-full">
-                      <SearchAutocomplete
-                        label="Search Item"
-                        placeholder="Search Name..."
-                        onSelectionChange={(name) =>
-                          setSearchParams((name as string | null) ?? "")
-                        }
-                      >
-                        {Object.keys(listingsWithoutDuplicates)
-                          .sort()
-                          .map((listing) => (
-                            <Item key={listing}>{listing}</Item>
-                          ))}
-                      </SearchAutocomplete>
+                      <input
+                        type="text"
+                        className="form-input focus:ring-red-500 focus:border-red-500 dark:focus:ring-gray-300 dark:focus:border-gray-300 block w-full pr-16 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:disabled:bg-gray-500 dark:placeholder-gray-400 rounded-md disabled:placeholder-gray-300 disabled:text-gray-300 transition-placeholder transition-text ease-linear duration-300 disabled:cursor-not-allowed"
+                        placeholder="Search Name... (Enter to search)"
+                        value={searchToken}
+                        onChange={(e) => setSearchToken(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            setSearchParams(searchToken);
+                          }
+                        }}
+                      />
                     </div>
                     <Menu
                       as="div"
@@ -746,14 +746,19 @@ const Collection = () => {
                             aria-hidden="true"
                           />
                         </Menu.Button>
-                        <button
-                          type="button"
-                          className="p-2 -m-2 text-gray-400 hover:text-gray-500 lg:hidden"
-                          onClick={() => setMobileFiltersOpen(true)}
-                        >
-                          <span className="sr-only">Filters</span>
-                          <FilterIcon className="w-5 h-5" aria-hidden="true" />
-                        </button>
+                        {!isERC1155 && (
+                          <button
+                            type="button"
+                            className="p-2 -m-2 text-gray-400 hover:text-gray-500 lg:hidden"
+                            onClick={() => setMobileFiltersOpen(true)}
+                          >
+                            <span className="sr-only">Filters</span>
+                            <FilterIcon
+                              className="w-5 h-5"
+                              aria-hidden="true"
+                            />
+                          </button>
+                        )}
                       </div>
 
                       <Transition
