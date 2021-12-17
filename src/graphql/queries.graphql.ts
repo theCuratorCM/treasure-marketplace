@@ -29,11 +29,7 @@ export const getUserInventory = gql`
           ...TokenFields
         }
       }
-      tokens(
-        where: {
-          token_not_contains: "0x17DaCAD7975960833f374622fad08b90Ed67D1B5"
-        }
-      ) {
+      tokens {
         id
         quantity
         token {
