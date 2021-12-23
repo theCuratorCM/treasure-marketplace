@@ -63,6 +63,7 @@ export const getCollectionInfo = gql`
       standard
       attributes {
         name
+        percentage
         value
       }
     }

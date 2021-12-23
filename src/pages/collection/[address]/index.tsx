@@ -16,12 +16,12 @@ import { CenterLoadingDots } from "../../../components/CenterLoadingDots";
 import {
   abbreviatePrice,
   formatNumber,
+  formatPercent,
   formatPrice,
   generateIpfsLink,
 } from "../../../utils";
 import { formatEther } from "ethers/lib/utils";
 import Image from "next/image";
-import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Modal } from "../../../components/Modal";
 import {
@@ -31,7 +31,6 @@ import {
   OrderDirection,
   TokenStandard,
 } from "../../../../generated/graphql";
-import { shortenAddress, useEthers } from "@yuyao17/corefork";
 import classNames from "clsx";
 import { useInView } from "react-intersection-observer";
 import { SearchAutocomplete } from "../../../components/SearchAutocomplete";
@@ -99,14 +98,29 @@ const getTotalQuantity = (
 
 const reduceAttributes = (
   attributes: NonNullable<GetCollectionInfoQuery["collection"]>["attributes"]
-) => {
+): {
+  [key: string]: { value: string; percentage: string }[];
+} | null => {
   return attributes && attributes.length > 0
-    ? attributes.reduce<{ [key: string]: string[] }>((acc, attribute) => {
+    ? attributes.reduce<{
+        [key: string]: { value: string; percentage: string }[];
+      }>((acc, attribute) => {
         if (!acc[attribute.name]) {
-          acc[attribute.name] = [attribute.value];
+          acc[attribute.name] = [
+            {
+              value: attribute.value,
+              percentage: formatPercent(attribute.percentage),
+            },
+          ];
           return acc;
         }
-        acc[attribute.name] = [...acc[attribute.name], attribute.value];
+        acc[attribute.name] = [
+          ...acc[attribute.name],
+          {
+            value: attribute.value,
+            percentage: formatPercent(attribute.percentage),
+          },
+        ];
         return acc;
       }, {})
     : null;
@@ -397,16 +411,17 @@ const Collection = () => {
                 <h3 className="sr-only">Filter</h3>
 
                 {attributeFilterList &&
-                  Object.keys(attributeFilterList).map((attribute) => {
-                    const attributes = attributeFilterList[attribute];
+                  Object.keys(attributeFilterList).map((attributeKey) => {
+                    const attributes = attributeFilterList[attributeKey];
 
                     return (
                       <Disclosure
                         as="div"
-                        key={attribute}
+                        key={attributeKey}
                         className="border-t border-gray-200 dark:border-gray-500 px-4 py-6"
                         defaultOpen={
-                          filters[attribute] && filters[attribute].length > 0
+                          filters[attributeKey] &&
+                          filters[attributeKey].length > 0
                         }
                       >
                         {({ open }) => (
@@ -421,9 +436,12 @@ const Collection = () => {
                                       : "text-gray-900 dark:text-gray-400"
                                   )}
                                 >
-                                  {attribute}
+                                  {attributeKey}
                                 </span>
                                 <span className="ml-6 flex items-center">
+                                  <span className="mr-2 text-gray-600">
+                                    {attributes.length}
+                                  </span>
                                   {open ? (
                                     <MinusSmIcon
                                       className="block h-6 w-6 text-red-400 dark:text-gray-400 group-hover:text-gray-500"
@@ -440,46 +458,59 @@ const Collection = () => {
                             </h3>
                             <Disclosure.Panel className="pt-6">
                               <div className="space-y-6">
-                                {attributes.map((value, optionIdx) => (
-                                  <div
-                                    key={value}
-                                    className="flex items-center"
-                                  >
-                                    <input
-                                      id={`filter-mobile-${value}-${optionIdx}`}
-                                      name={value}
-                                      onChange={(e) => {
-                                        router.replace({
-                                          pathname: `/collection/${formattedAddress}`,
-                                          query: {
-                                            search: e.target.checked
-                                              ? createFilter(formattedSearch, {
-                                                  key: attribute,
-                                                  value,
-                                                })
-                                              : removeFilter(formattedSearch, {
-                                                  key: attribute,
-                                                  value,
-                                                }),
-                                          },
-                                        });
-                                      }}
-                                      checked={
-                                        filters[attribute]?.[0]
-                                          .split(",")
-                                          .includes(value) ?? false
-                                      }
-                                      type="checkbox"
-                                      className="h-4 w-4 border-gray-300 rounded accent-red-500"
-                                    />
-                                    <label
-                                      htmlFor={`filter-mobile-${value}-${optionIdx}`}
-                                      className="ml-3 min-w-0 flex-1 text-gray-500"
+                                {attributes.map(
+                                  ({ value, percentage }, optionIdx) => (
+                                    <div
+                                      key={value}
+                                      className="flex justify-between text-sm"
                                     >
-                                      {value}
-                                    </label>
-                                  </div>
-                                ))}
+                                      <div className="flex items-center">
+                                        <input
+                                          id={`filter-mobile-${value}-${optionIdx}`}
+                                          name={value}
+                                          onChange={(e) => {
+                                            router.replace({
+                                              pathname: `/collection/${formattedAddress}`,
+                                              query: {
+                                                search: e.target.checked
+                                                  ? createFilter(
+                                                      formattedSearch,
+                                                      {
+                                                        key: attributeKey,
+                                                        value,
+                                                      }
+                                                    )
+                                                  : removeFilter(
+                                                      formattedSearch,
+                                                      {
+                                                        key: attributeKey,
+                                                        value,
+                                                      }
+                                                    ),
+                                              },
+                                            });
+                                          }}
+                                          checked={
+                                            filters[attributeKey]?.[0]
+                                              .split(",")
+                                              .includes(value) ?? false
+                                          }
+                                          type="checkbox"
+                                          className="h-4 w-4 border-gray-300 rounded accent-red-500"
+                                        />
+                                        <label
+                                          htmlFor={`filter-mobile-${value}-${optionIdx}`}
+                                          className="ml-3 min-w-0 flex-1 text-gray-600 dark:text-gray-400"
+                                        >
+                                          {value}
+                                        </label>
+                                      </div>
+                                      <p className="text-gray-400 dark:text-gray-500">
+                                        {percentage}
+                                      </p>
+                                    </div>
+                                  )
+                                )}
                               </div>
                             </Disclosure.Panel>
                           </>
@@ -599,15 +630,16 @@ const Collection = () => {
               <div className="hidden lg:block sticky top-6">
                 <h3 className="sr-only">Filter</h3>
                 <div className="sticky top-16 overflow-auto h-[calc(100vh-72px)]">
-                  {Object.keys(attributeFilterList).map((attribute) => {
-                    const attributes = attributeFilterList[attribute];
+                  {Object.keys(attributeFilterList).map((attributeKey) => {
+                    const attributes = attributeFilterList[attributeKey];
                     return (
                       <Disclosure
                         as="div"
-                        key={attribute}
+                        key={attributeKey}
                         className="border-b border-gray-200 dark:border-gray-500 py-6"
                         defaultOpen={
-                          filters[attribute] && filters[attribute].length > 0
+                          filters[attributeKey] &&
+                          filters[attributeKey].length > 0
                         }
                       >
                         {({ open }) => (
@@ -622,10 +654,10 @@ const Collection = () => {
                                       : "text-gray-900 dark:text-gray-400"
                                   )}
                                 >
-                                  {attribute}
+                                  {attributeKey}
                                 </span>
                                 <span className="ml-6 flex items-center">
-                                  <span className="mr-2 text-gray-500">
+                                  <span className="mr-2 text-gray-600">
                                     {attributes.length}
                                   </span>
                                   {open ? (
@@ -644,46 +676,59 @@ const Collection = () => {
                             </h3>
                             <Disclosure.Panel className="pt-6 overflow-auto max-h-72">
                               <div className="space-y-4">
-                                {attributes.map((value, optionIdx) => (
-                                  <div
-                                    key={value}
-                                    className="flex items-center"
-                                  >
-                                    <input
-                                      id={`filter-${value}-${optionIdx}`}
-                                      name={value}
-                                      onChange={(e) => {
-                                        router.replace({
-                                          pathname: `/collection/${formattedAddress}`,
-                                          query: {
-                                            search: e.target.checked
-                                              ? createFilter(formattedSearch, {
-                                                  key: attribute,
-                                                  value,
-                                                })
-                                              : removeFilter(formattedSearch, {
-                                                  key: attribute,
-                                                  value,
-                                                }),
-                                          },
-                                        });
-                                      }}
-                                      checked={
-                                        filters[attribute]?.[0]
-                                          .split(",")
-                                          .includes(value) ?? false
-                                      }
-                                      type="checkbox"
-                                      className="h-4 w-4 border-gray-300 rounded accent-red-500"
-                                    />
-                                    <label
-                                      htmlFor={`filter-${value}-${optionIdx}`}
-                                      className="ml-3 text-sm text-gray-600 dark:text-gray-400"
+                                {attributes.map(
+                                  ({ value, percentage }, optionIdx) => (
+                                    <div
+                                      key={value}
+                                      className="flex justify-between text-sm"
                                     >
-                                      {value}
-                                    </label>
-                                  </div>
-                                ))}
+                                      <div className="flex items-center">
+                                        <input
+                                          id={`filter-${value}-${optionIdx}`}
+                                          name={value}
+                                          onChange={(e) => {
+                                            router.replace({
+                                              pathname: `/collection/${formattedAddress}`,
+                                              query: {
+                                                search: e.target.checked
+                                                  ? createFilter(
+                                                      formattedSearch,
+                                                      {
+                                                        key: attributeKey,
+                                                        value,
+                                                      }
+                                                    )
+                                                  : removeFilter(
+                                                      formattedSearch,
+                                                      {
+                                                        key: attributeKey,
+                                                        value,
+                                                      }
+                                                    ),
+                                              },
+                                            });
+                                          }}
+                                          checked={
+                                            filters[attributeKey]?.[0]
+                                              .split(",")
+                                              .includes(value) ?? false
+                                          }
+                                          type="checkbox"
+                                          className="h-4 w-4 border-gray-300 rounded accent-red-500"
+                                        />
+                                        <label
+                                          htmlFor={`filter-${value}-${optionIdx}`}
+                                          className="ml-3 text-gray-600 dark:text-gray-400"
+                                        >
+                                          {value}
+                                        </label>
+                                      </div>
+                                      <p className="text-gray-400 dark:text-gray-500">
+                                        {percentage}
+                                      </p>
+                                    </div>
+                                  )
+                                )}
                               </div>
                             </Disclosure.Panel>
                           </>
