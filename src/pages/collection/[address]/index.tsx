@@ -109,7 +109,7 @@ const reduceAttributes = (
           acc[attribute.name] = [
             {
               value: attribute.value,
-              percentage: formatPercent(attribute.percentage),
+              percentage: attribute.percentage,
             },
           ];
           return acc;
@@ -118,7 +118,7 @@ const reduceAttributes = (
           ...acc[attribute.name],
           {
             value: attribute.value,
-            percentage: formatPercent(attribute.percentage),
+            percentage: attribute.percentage,
           },
         ];
         return acc;
@@ -412,8 +412,10 @@ const Collection = () => {
 
                 {attributeFilterList &&
                   Object.keys(attributeFilterList).map((attributeKey) => {
-                    const attributes = attributeFilterList[attributeKey];
-
+                    const attributes = attributeFilterList[attributeKey].sort(
+                      (a, b) =>
+                        parseFloat(a.percentage) - parseFloat(b.percentage)
+                    );
                     return (
                       <Disclosure
                         as="div"
@@ -506,7 +508,7 @@ const Collection = () => {
                                         </label>
                                       </div>
                                       <p className="text-gray-400 dark:text-gray-500">
-                                        {percentage}
+                                        {formatPercent(percentage)}
                                       </p>
                                     </div>
                                   )
@@ -631,7 +633,10 @@ const Collection = () => {
                 <h3 className="sr-only">Filter</h3>
                 <div className="sticky top-16 overflow-auto h-[calc(100vh-72px)]">
                   {Object.keys(attributeFilterList).map((attributeKey) => {
-                    const attributes = attributeFilterList[attributeKey];
+                    const attributes = attributeFilterList[attributeKey].sort(
+                      (a, b) =>
+                        parseFloat(a.percentage) - parseFloat(b.percentage)
+                    );
                     return (
                       <Disclosure
                         as="div"
@@ -724,7 +729,7 @@ const Collection = () => {
                                         </label>
                                       </div>
                                       <p className="text-gray-400 dark:text-gray-500">
-                                        {percentage}
+                                        {formatPercent(percentage)}
                                       </p>
                                     </div>
                                   )
