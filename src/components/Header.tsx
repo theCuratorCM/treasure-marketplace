@@ -27,8 +27,7 @@ import { useCollections } from "../lib/hooks";
 
 const walletconnect = new WalletConnectConnector({
   rpc: {
-    [ChainId.Arbitrum]:
-      "https://arb-mainnet.g.alchemy.com/v2/gBb4c8M46YRZdoX3xrwbvaOk9CJQk82s",
+    [ChainId.Arbitrum]: `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
     [ChainId.Rinkeby]:
       "https://rinkeby.infura.io/v3/62687d1a985d4508b2b7a24827551934",
   },
