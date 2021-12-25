@@ -32,7 +32,7 @@ and everytime you make changes to `queries.graphql.ts`, the watcher will check i
 
 ## Contributing
 
-Fork the repo, create a PR and tag `wyze` or `jcheese1` and we will review!
+Make an issue first, then fork the repo, create a PR and tag `wyze` or `jcheese1` and we will review!
 
 ## Contributors ✨
 
