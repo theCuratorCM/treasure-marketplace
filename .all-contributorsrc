@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "wyze",
+      "name": "Neil Kistner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/186971?v=4",
+      "profile": "https://neilkistner.com/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "treasure-marketplace",
+  "projectOwner": "TreasureProject",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
