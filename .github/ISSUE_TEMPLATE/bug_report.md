@@ -1,38 +1,72 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+name: '🐛 Bug report'
+description: Report a reproducible bug or regression
+body:
 
----
+- type: markdown
+  attributes:
+  value: |
+  Thank you for reporting an issue :pray:.
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+      This issue tracker is for reporting reproducible bugs or regression's found in Treasure Marketplace
+      If you have a question about how to achieve something and are struggling, please post a question
+      inside of Treasure Marketplace Discussion's tab: https://github.com/TreasureProject/treasure-marketplace/discussions
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+      Before submitting a new bug/issue, please check the links below to see if there is a solution or question posted there already:
+       - Treasure Marketplace Discussion's tab: https://github.com/TreasureProject/treasure-marketplace/discussions
+       - Treasure Marketplace Issue's tab: https://github.com/TreasureProject/treasure-marketplace/issues
+       - Treasure Marketplace Closed issues tab: https://github.com/TreasureProject/treasure-marketplace/issues?q=is%3Aissue+is%3Aclosed
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+      The more information you fill in, the better the community can help you.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+- type: textarea
+  id: description
+  attributes:
+  label: Describe the bug
+  description: Provide a clear and concise description of the challenge you are running into.
+  validations:
+  required: true
+- type: textarea
+  id: steps
+  attributes:
+  label: Steps to reproduce
+  description: Describe the steps we have to take to reproduce the behavior.
+  placeholder: | 1. Go to '...' 2. Click on '....' 3. Scroll down to '....' 4. See error
+  validations:
+  required: true
+- type: textarea
+  id: expected
+  attributes:
+  label: Expected behavior
+  description: Provide a clear and concise description of what you expected to happen.
+  placeholder: |
+  As a user, I expected **_ behavior but i am seeing _**
+  validations:
+  required: true
+- type: dropdown
+  attributes:
+  label: How often does this bug happen?
+  description: |
+  Following the repro steps above, how easily are you able to reproduce this bug?
+  options: - Every time - Often - Sometimes - Only once
+- type: textarea
+  id: screenshots_or_videos
+  attributes:
+  label: Screenshots or Videos
+  description: |
+  If applicable, add screenshots or a video to help explain your problem.
+  For more information on the supported file image/file types and the file size limits, please refer
+  to the following link: https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/attaching-files
+  placeholder: |
+  You can drag your video or image files inside of this editor ↓
+- type: textarea
+  id: platform
+  attributes:
+  label: Platform
+  value: | - OS: [e.g. macOS, Windows, Linux, iOS, Android] - Browser: [e.g. Chrome, Safari, Firefox, React Native] - Version: [e.g. 91.1]
+  validations:
+  required: true
+- type: textarea
+  id: additional
+  attributes:
+  label: Additional context
+  description: Add any other context about the problem here.
